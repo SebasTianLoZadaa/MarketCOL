@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Fondo -->
+  <rect width="200" height="200" fill="#f0f0f0"/>
+  
+  <!-- Caja de producto -->
+  <rect x="40" y="50" width="120" height="100" rx="8" fill="#e8e8e8" stroke="#bbb" stroke-width="2"/>
+  
+  <!-- Ícono de imagen -->
+  <circle cx="70" cy="75" r="6" fill="#999"/>
+  <path d="M 40 130 L 70 90 L 100 110 L 160 50" stroke="#999" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Texto -->
+  <text x="100" y="155" font-family="Arial, sans-serif" font-size="14" fill="#666" text-anchor="middle">Sin imagen</text>
+</svg>
