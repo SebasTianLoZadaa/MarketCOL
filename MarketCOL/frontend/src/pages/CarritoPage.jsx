@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import carritoService from '../services/carritoService';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { useAuth } from '../context/AuthContext';
+import { getImageUrl } from '../utils/helpers';
 
 const CarritoPage = () => {
   const [carrito, setCarrito]   = useState(null);
@@ -150,7 +151,7 @@ const CarritoPage = () => {
                     alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden',
                   }}>
                     <img
-                      src={item.producto?.imagen || item.imagen || '/images/producto-default.svg'}
+                      src={getImageUrl(item.producto?.imagen || item.imagen)}
                       alt={item.producto?.nombre || item.nombre}
                       style={{ maxWidth: 54, maxHeight: 54, objectFit: 'contain' }}
                       onError={e => { e.target.src = '/images/producto-default.svg'; }}

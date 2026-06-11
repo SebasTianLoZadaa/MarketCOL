@@ -51,11 +51,59 @@ export const formatDateTime = (dateString) => {
 /**
  * Obtener URL completa de la imagen
  */
+const normalizeImagePath = (imagePath) => {
+  if (typeof imagePath !== 'string') return '';
+  return imagePath.trim().replace(/\\\\/g, '/');
+};
+
+const encodeImageUrl = (url) => {
+  try {
+    return encodeURI(url);
+  } catch (err) {
+    return url;
+  }
+};
+
+const buildStaticImageCandidates = (imagePath) => {
+  const normalized = normalizeImagePath(imagePath);
+  const base = `/images/${normalized}`;
+  const encodedBase = encodeImageUrl(base);
+  const extMatch = normalized.match(/\.(png|jpg|jpeg|webp)$/i);
+  if (!extMatch) {
+    return [encodedBase, encodeImageUrl(`${base}.webp`), encodeImageUrl(`${base}.jpg`), encodeImageUrl(`${base}.png`)];
+  }
+
+  const originalExt = extMatch[0].toLowerCase();
+  const baseWithoutExt = encodedBase.replace(new RegExp(`${originalExt}$`, 'i'), '');
+  const candidates = [encodedBase];
+  if (originalExt !== '.webp') candidates.push(`${baseWithoutExt}.webp`);
+  if (originalExt !== '.jpg') candidates.push(`${baseWithoutExt}.jpg`);
+  if (originalExt !== '.png') candidates.push(`${baseWithoutExt}.png`);
+  if (originalExt !== '.jpeg') candidates.push(`${baseWithoutExt}.jpeg`);
+  return candidates;
+};
+
+export const getImageUrlCandidates = (imagePath) => {
+  if (!imagePath) return ['https://via.placeholder.com/200x200?text=No+Image'];
+  if (imagePath.startsWith('http')) return [encodeImageUrl(imagePath)];
+
+  if (imagePath.startsWith('/images/')) return [encodeImageUrl(imagePath)];
+  if (imagePath.includes('/') && !imagePath.startsWith('uploads/')) {
+    return buildStaticImageCandidates(imagePath);
+  }
+
+  const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+  try {
+    const u = new URL(apiUrl);
+    const base = u.origin;
+    return [encodeImageUrl(`${base}/uploads/${normalizeImagePath(imagePath)}`)];
+  } catch (err) {
+    return [encodeImageUrl(`http://localhost:5000/uploads/${normalizeImagePath(imagePath)}`)];
+  }
+};
+
 export const getImageUrl = (imagePath) => {
-  if (!imagePath) return 'https://via.placeholder.com/200x200?text=No+Image';
-  if (imagePath.startsWith('http')) return imagePath;
-  if (imagePath.startsWith('/images/')) return imagePath;
-  return `/images/${imagePath}`;
+  return getImageUrlCandidates(imagePath)[0];
 };
 
 /**

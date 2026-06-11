@@ -4,11 +4,24 @@
  * ============================================
  */
 
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { formatCurrency, getImageUrl } from '../../utils/helpers';
+import { formatCurrency, getImageUrl, getImageUrlCandidates } from '../../utils/helpers';
 
 const ProductCard = memo(({ producto, onAddToCart, showActions = true }) => {
+  const [imgSrc, setImgSrc] = useState(() => getImageUrl(producto.imagen));
+  const fallbackUrls = useMemo(() => getImageUrlCandidates(producto.imagen).slice(1), [producto.imagen]);
+
+  const handleImageError = useCallback((e) => {
+    if (fallbackUrls.length > 0) {
+      const nextUrl = fallbackUrls.shift();
+      setImgSrc(nextUrl);
+      return;
+    }
+
+    e.target.src = '/images/producto-default.svg';
+  }, [fallbackUrls]);
+
   const handleAddToCart = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -24,9 +37,9 @@ const ProductCard = memo(({ producto, onAddToCart, showActions = true }) => {
       <Link to={`/producto/${producto.id}`} style={{ textDecoration: 'none' }}>
         <div className="mk-product-img">
           <img
-            src={getImageUrl(producto.imagen)}
+            src={imgSrc}
             alt={producto.nombre}
-            onError={e => { e.target.src = '/images/producto-default.svg'; }}
+            onError={handleImageError}
           />
           {isLowStock && (
             <span className="mk-badge mk-badge-warning"

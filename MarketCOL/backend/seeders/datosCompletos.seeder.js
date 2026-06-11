@@ -196,124 +196,124 @@ const seedDatosCompletos = async () => {
       const productosData = {
         // DESPENSA
         'Arroz y granos': [
-          { nombre: 'Arroz Diana 1kg', descripcion: 'Arroz blanco premium', precio: 3500, stock: 100, imagen: 'DESPENSA/arroz-diana-1kg.png' },
-          { nombre: 'Lentejas 500g', descripcion: 'Lenteja nacional', precio: 2500, stock: 80, imagen: 'DESPENSA/lentejas-500g.png' },
-          { nombre: 'Frijol cargamanto 500g', descripcion: 'Frijol rojo tradicional', precio: 4000, stock: 70, imagen: 'DESPENSA/frijol-cargamanto-500g.png' },
-          { nombre: 'Garbanzos 500g', descripcion: 'Grano seco seleccionado', precio: 3500, stock: 60, imagen: 'DESPENSA/garbanzos-500g.png' },
-          { nombre: 'Arroz integral 1kg', descripcion: 'Alto en fibra', precio: 4500, stock: 50, imagen: 'DESPENSA/arroz-integral-1kg.png' }
+          { nombre: 'Arroz Diana 1kg', descripcion: 'Arroz blanco premium', precio: 3500, stock: 100, imagen: 'DESPENSA/ARROZ-DIANA-1KG.webp' },
+          { nombre: 'Lentejas 500g', descripcion: 'Lenteja nacional', precio: 2500, stock: 80, imagen: 'DESPENSA/LENTEJAS-500G.webp' },
+          { nombre: 'Frijol cargamanto 500g', descripcion: 'Frijol rojo tradicional', precio: 4000, stock: 70, imagen: 'DESPENSA/FRIJOL-CARGAMANTO-500G.webp' },
+          { nombre: 'Garbanzos 500g', descripcion: 'Grano seco seleccionado', precio: 3500, stock: 60, imagen: 'DESPENSA/GARBANZO-500G.webp' },
+          { nombre: 'Arroz integral 1kg', descripcion: 'Alto en fibra', precio: 4500, stock: 50, imagen: 'DESPENSA/ARROZ-INTEGRAL-1KG.webp' }
         ],
 
         'Aceites y vinagres': [
-          { nombre: 'Aceite Premier 1L', descripcion: 'Aceite vegetal', precio: 9000, stock: 60, imagen: 'ACEITES Y VINAGRES/aceite-premier-1l.png' },
-          { nombre: 'Aceite de oliva 500ml', descripcion: 'Extra virgen', precio: 18000, stock: 40, imagen: 'ACEITES Y VINAGRES/aceite-de-oliva-500ml.png' },
-          { nombre: 'Vinagre blanco 1L', descripcion: 'Multiusos', precio: 3000, stock: 70, imagen: 'ACEITES Y VINAGRES/vinagre-blanco-1l.png' },
-          { nombre: 'Vinagre de manzana 500ml', descripcion: 'Natural', precio: 5000, stock: 50, imagen: 'ACEITES Y VINAGRES/vinagre-de-manzana-500ml.png' },
-          { nombre: 'Aceite de girasol 1L', descripcion: 'Ligero para cocinar', precio: 8500, stock: 55, imagen: 'ACEITES Y VINAGRES/aceite-de-girasol-1l.png' }
+          { nombre: 'Aceite Premier 1L', descripcion: 'Aceite vegetal', precio: 9000, stock: 60, imagen: 'DESPENSA/ACEITE-PREMIER-1L.webp' },
+          { nombre: 'Aceite de oliva 500ml', descripcion: 'Extra virgen', precio: 18000, stock: 40, imagen: 'DESPENSA/ACEITE-DE-OLIVA-500ML.webp' },
+          { nombre: 'Vinagre blanco 1L', descripcion: 'Multiusos', precio: 3000, stock: 70, imagen: 'DESPENSA/VINAGRE-BLANCO-1L.jpg' },
+          { nombre: 'Vinagre de manzana 500ml', descripcion: 'Natural', precio: 5000, stock: 50, imagen: 'DESPENSA/VINAGRE-DE-MANZANA-500ML.webp' },
+          { nombre: 'Aceite de girasol 1L', descripcion: 'Ligero para cocinar', precio: 8500, stock: 55, imagen: 'DESPENSA/ACEITE-GIRASOL-1L.webp' }
         ],
         'Azucar y endulzantes': [
-          { nombre: 'Azúcar Manuelita 1kg', descripcion: 'Azúcar refinada', precio: 3200, stock: 100, imagen: 'AZUCAR Y ENDULZANTES/azucar-manuelita-1kg.png' },
-          { nombre: 'Panela en bloque', descripcion: 'Natural', precio: 4000, stock: 80, imagen: 'AZUCAR Y ENDULZANTES/panela-en-bloque.png' },
-          { nombre: 'Miel de abejas 500g', descripcion: '100% natural', precio: 12000, stock: 40, imagen: 'AZUCAR Y ENDULZANTES/miel-de-abejas-500g.png' },
-          { nombre: 'Stevia 100 sobres', descripcion: 'Endulzante sin calorías', precio: 8000, stock: 35, imagen: 'AZUCAR Y ENDULZANTES/stevia-100-sobres.png' },
-          { nombre: 'Azúcar morena 1kg', descripcion: 'Sin refinar', precio: 3500, stock: 60, imagen: 'AZUCAR Y ENDULZANTES/azucar-mrena-1kg.png' }
+          { nombre: 'Azúcar Manuelita 1kg', descripcion: 'Azúcar refinada', precio: 3200, stock: 100, imagen: 'DESPENSA/AZUCAR-MANUELITA-1KG.webp' },
+          { nombre: 'Panela en bloque', descripcion: 'Natural', precio: 4000, stock: 80, imagen: 'DESPENSA/PANELA-EN-BLOQUE-1KG.webp' },
+          { nombre: 'Miel de abejas 500g', descripcion: '100% natural', precio: 12000, stock: 40, imagen: 'DESPENSA/MIEL-DE-ABEJAS-500G.webp' },
+          { nombre: 'Stevia 100 sobres', descripcion: 'Endulzante sin calorías', precio: 8000, stock: 35, imagen: 'DESPENSA/STEVIA-100-SOBRES.webp' },
+          { nombre: 'Azúcar morena 1kg', descripcion: 'Sin refinar', precio: 3500, stock: 60, imagen: 'DESPENSA/AZUCAR-MORENA-1KG.webp' }
         ],
         // LÁCTEOS
         'Leches': [
-          { nombre: 'Leche Alquería 1L', descripcion: 'Entera', precio: 4200, stock: 100, imagen: 'LACTEOS Y HUEVOS/leche-alquería-1l.png' },
-          { nombre: 'Leche deslactosada 1L', descripcion: 'Baja en lactosa', precio: 4800, stock: 80, imagen: 'LACTEOS Y HUEVOS/leche-deslactosada-1l.png' },
-          { nombre: 'Leche en polvo 400g', descripcion: 'Instantánea', precio: 15000, stock: 50, imagen: 'LACTEOS Y HUEVOS/leche-en-polvo-400g.png' },
-          { nombre: 'Leche de almendras 1L', descripcion: 'Vegetal', precio: 12000, stock: 30, imagen: 'LACTEOS Y HUEVOS/leche-de-almendras-1l.png' },
-          { nombre: 'Leche chocolatada 1L', descripcion: 'Sabor chocolate', precio: 5000, stock: 60, imagen: 'LACTEOS Y HUEVOS/leche-chocolatada-1l.png' }
+          { nombre: 'Leche Alquería 1L', descripcion: 'Entera', precio: 4200, stock: 100, imagen: 'LACTEOS Y HUEVOS/LECHE-ALQUERIA-1L.webp' },
+          { nombre: 'Leche deslactosada 1L', descripcion: 'Baja en lactosa', precio: 4800, stock: 80, imagen: 'LACTEOS Y HUEVOS/LECHE-DESLACTOSADA.webp' },
+          { nombre: 'Leche en polvo 400g', descripcion: 'Instantánea', precio: 15000, stock: 50, imagen: 'LACTEOS Y HUEVOS/LECHE-EN-POLVO.webp' },
+          { nombre: 'Leche de almendras 1L', descripcion: 'Vegetal', precio: 12000, stock: 30, imagen: 'LACTEOS Y HUEVOS/LECHE-DE-ALMENDRAS.webp' },
+          { nombre: 'Leche chocolatada 1L', descripcion: 'Sabor chocolate', precio: 5000, stock: 60, imagen: 'LACTEOS Y HUEVOS/LECHE-CHOCOLATADA.png' }
         ],
 
         'Quesos': [
-          { nombre: 'Queso campesino 500g', descripcion: 'Fresco', precio: 9000, stock: 70, imagen: 'LACTEOS Y HUEVOS/queso-campesino.png' },
-          { nombre: 'Queso mozzarella 400g', descripcion: 'Para pizzas', precio: 11000, stock: 60, imagen: 'LACTEOS Y HUEVOS/queso-mozzarella.png' },
-          { nombre: 'Queso doble crema', descripcion: 'Suave', precio: 9500, stock: 65, imagen: 'LACTEOS Y HUEVOS/queso-doble-crema.png' },
-          { nombre: 'Queso parmesano 200g', descripcion: 'Madurado', precio: 12000, stock: 40, imagen: 'LACTEOS Y HUEVOS/queso-parmesano.png' },
-          { nombre: 'Queso tajado 200g', descripcion: 'Para sándwich', precio: 8000, stock: 75, imagen: 'LACTEOS Y HUEVOS/queso-tajado.png' }
+          { nombre: 'Queso campesino 500g', descripcion: 'Fresco', precio: 9000, stock: 70, imagen: 'LACTEOS Y HUEVOS/QUESO-CAMPESINO.jpg' },
+          { nombre: 'Queso mozzarella 400g', descripcion: 'Para pizzas', precio: 11000, stock: 60, imagen: 'LACTEOS Y HUEVOS/QUESO-MOZZARELLA-400G.webp' },
+          { nombre: 'Queso doble crema', descripcion: 'Suave', precio: 9500, stock: 65, imagen: 'LACTEOS Y HUEVOS/QUESO-DOBLE-CREMA.jpg' },
+          { nombre: 'Queso parmesano 200g', descripcion: 'Madurado', precio: 12000, stock: 40, imagen: 'LACTEOS Y HUEVOS/QUESO-PARMESANO-200G.webp' },
+          { nombre: 'Queso tajado 200g', descripcion: 'Para sándwich', precio: 8000, stock: 75, imagen: 'LACTEOS Y HUEVOS/QUESO-TAJADO-200G.webp' }
         ],
 
         'Huevos': [
-          { nombre: 'Huevos AA x30', descripcion: 'Frescos', precio: 15000, stock: 100, imagen: 'LACTEOS Y HUEVOS/huevos-aa-x30.png' },
-          { nombre: 'Huevos A x12', descripcion: 'Medianos', precio: 7000, stock: 90, imagen: 'LACTEOS Y HUEVOS/huevos-a-x12.png' },
-          { nombre: 'Huevos orgánicos x12', descripcion: 'Gallinas libres', precio: 12000, stock: 40, imagen: 'LACTEOS Y HUEVOS/huevos-orgánicos-x12.png' },
-          { nombre: 'Huevos jumbo x30', descripcion: 'Tamaño grande', precio: 18000, stock: 60, imagen: 'LACTEOS Y HUEVOS/huevos-jumbo-x30.png' },
-          { nombre: 'Huevos económicos x30', descripcion: 'Precio accesible', precio: 13000, stock: 80, imagen: 'LACTEOS Y HUEVOS/huevos-económicos-x30.png' }
+          { nombre: 'Huevos AA x30', descripcion: 'Frescos', precio: 15000, stock: 100, imagen: 'LACTEOS Y HUEVOS/HUEVOS-AA_x30.webp' },
+          { nombre: 'Huevos A x12', descripcion: 'Medianos', precio: 7000, stock: 90, imagen: 'LACTEOS Y HUEVOS/HUEVOS-A_x12.jpg' },
+          { nombre: 'Huevos orgánicos x12', descripcion: 'Gallinas libres', precio: 12000, stock: 40, imagen: 'LACTEOS Y HUEVOS/HUEVOS-ORGANICOS_x12.webp' },
+          { nombre: 'Huevos jumbo x30', descripcion: 'Tamaño grande', precio: 18000, stock: 60, imagen: 'LACTEOS Y HUEVOS/HUEVOS-JUMBO_x30.webp' },
+          { nombre: 'Huevos económicos x30', descripcion: 'Precio accesible', precio: 13000, stock: 80, imagen: 'LACTEOS Y HUEVOS/HUEVOS-ECONOMICOS_x30.png' }
         ],
 
         // BEBIDAS
         'Gaseosas': [
-          { nombre: 'Coca-Cola 1.5L', descripcion: 'Gaseosa clásica', precio: 6000, stock: 120, imagen: 'BEBIDAS/coca-cola-1.5l.png' },
-          { nombre: 'Pepsi 1.5L', descripcion: 'Sabor cola', precio: 5500, stock: 100, imagen: 'BEBIDAS/pepsi-1.5l.png' },
-          { nombre: 'Colombiana 1.5L', descripcion: 'Sabor tradicional', precio: 5800, stock: 90, imagen: 'BEBIDAS/colombiana-1.5l.png' },
-          { nombre: 'Sprite 1.5L', descripcion: 'Limón', precio: 5700, stock: 85, imagen: 'BEBIDAS/sprite-1.5l.png' },
-          { nombre: 'Fanta naranja 1.5L', descripcion: 'Sabor naranja', precio: 5600, stock: 80, imagen: 'BEBIDAS/fanta-naranja-1.5l.png' }
+          { nombre: 'Coca-Cola 1.5L', descripcion: 'Gaseosa clásica', precio: 6000, stock: 120, imagen: 'BEBIDAS/GASEOSA-COCA-COLA-ORIGINAL-1.5L.webp' },
+          { nombre: 'Pepsi 1.5L', descripcion: 'Sabor cola', precio: 5500, stock: 100, imagen: 'BEBIDAS/GASEOSA-PEPSI-ORIGINAL-1.5L.webp' },
+          { nombre: 'Colombiana 1.5L', descripcion: 'Sabor tradicional', precio: 5800, stock: 90, imagen: 'BEBIDAS/GASEOSA-COLOMBIANA-1.5L.webp' },
+          { nombre: 'Sprite 1.5L', descripcion: 'Limón', precio: 5700, stock: 85, imagen: 'BEBIDAS/GASEOSA-SPRITE-ORIGINAL-1.5L.webp' },
+          { nombre: 'Fanta naranja 1.5L', descripcion: 'Sabor naranja', precio: 5600, stock: 80, imagen: 'BEBIDAS/FANTA-NARANJA-1.5L.webp' }
         ],
 
         'Jugos': [
-          { nombre: 'Jugo Hit mango 1L', descripcion: 'Bebida frutal', precio: 3500, stock: 90, imagen: 'BEBIDAS/jugo-hit-mango.png' },
-          { nombre: 'Jugo del Valle naranja', descripcion: 'Natural', precio: 4000, stock: 85, imagen: 'BEBIDAS/jugo-del-valle-naranja.png' },
-          { nombre: 'Jugo en caja 200ml', descripcion: 'Para lonchera', precio: 1200, stock: 150, imagen: 'BEBIDAS/jugo-en-caja-200ml.png' },
-          { nombre: 'Jugo de mora 1L', descripcion: 'Natural', precio: 5000, stock: 60, imagen: 'BEBIDAS/jugo-de-mora.png' },
-          { nombre: 'Jugo de guanábana', descripcion: 'Pulpa', precio: 5500, stock: 50, imagen: 'BEBIDAS/jugo-de-guanabana.png' }
+          { nombre: 'Jugo Hit mango 1L', descripcion: 'Bebida frutal', precio: 3500, stock: 90, imagen: 'BEBIDAS/JUGO-HIT-MANGO-1L.webp' },
+          { nombre: 'Jugo del Valle naranja', descripcion: 'Natural', precio: 4000, stock: 85, imagen: 'BEBIDAS/JUGO-DEL-VALLE-NARANJA-1.5L.png' },
+          { nombre: 'Jugo en caja 200ml', descripcion: 'Para lonchera', precio: 1200, stock: 150, imagen: 'BEBIDAS/JUGO-EN-CAJA-200ML.webp' },
+          { nombre: 'Jugo de mora 1L', descripcion: 'Natural', precio: 5000, stock: 60, imagen: 'BEBIDAS/JUGO-HIT-MORA-1L.webp' },
+          { nombre: 'Jugo de guanábana', descripcion: 'Pulpa', precio: 5500, stock: 50, imagen: 'BEBIDAS/jugo-guanabana.jpg' }
         ],
 
         'Aguas': [
-          { nombre: 'Agua Cristal 600ml', descripcion: 'Sin gas', precio: 1500, stock: 200, imagen: 'BEBIDAS/agua-cristal.png' },
-          { nombre: 'Agua con gas 1L', descripcion: 'Carbonatada', precio: 2500, stock: 100, imagen: 'BEBIDAS/agua-con-gas.png' },
-          { nombre: 'Agua saborizada', descripcion: 'Frutos rojos', precio: 3000, stock: 80, imagen: 'BEBIDAS/agua-saborizada.png' },
-          { nombre: 'Agua 5L', descripcion: 'Para hogar', precio: 7000, stock: 60, imagen: 'BEBIDAS/agua-5l.png' },
-          { nombre: 'Agua premium 750ml', descripcion: 'Mineral', precio: 4000, stock: 50, imagen: 'BEBIDAS/agua-premium.png' }
+          { nombre: 'Agua Cristal 600ml', descripcion: 'Sin gas', precio: 1500, stock: 200, imagen: 'BEBIDAS/AGUA-CRISTAL-600ML.webp' },
+          { nombre: 'Agua con gas 1L', descripcion: 'Carbonatada', precio: 2500, stock: 100, imagen: 'BEBIDAS/AGUA-CON-GAS-1L.webp' },
+          { nombre: 'Agua saborizada', descripcion: 'Frutos rojos', precio: 3000, stock: 80, imagen: 'BEBIDAS/AGUA-SABORIZADA.webp' },
+          { nombre: 'Agua 5L', descripcion: 'Para hogar', precio: 7000, stock: 60, imagen: 'BEBIDAS/AGUA-5L.webp' },
+          { nombre: 'Agua premium 750ml', descripcion: 'Mineral', precio: 4000, stock: 50, imagen: 'BEBIDAS/AGUA-PREMIUM-750ML.webp' }
         ],
 
         // LIMPIEZA
         'Detergentes': [
-          { nombre: 'Ariel 1kg', descripcion: 'Detergente en polvo', precio: 12000, stock: 70, imagen: 'LIMPIEZA Y HOGAR/ariel.png' },
-          { nombre: 'Fab líquido 1L', descripcion: 'Ropa', precio: 10000, stock: 60, imagen: 'LIMPIEZA Y HOGAR/fab.png' },
-          { nombre: 'Detergente económico', descripcion: 'Uso diario', precio: 8000, stock: 80, imagen: 'LIMPIEZA Y HOGAR/detergente-economico.png' },
-          { nombre: 'Suavizante 1L', descripcion: 'Aroma floral', precio: 7000, stock: 50, imagen: 'LIMPIEZA Y HOGAR/suavizante.png' },
-          { nombre: 'Detergente cápsulas', descripcion: 'Alta eficiencia', precio: 15000, stock: 40, imagen: 'LIMPIEZA Y HOGAR/detergente-capsulas.png' }
+          { nombre: 'Ariel 1kg', descripcion: 'Detergente en polvo', precio: 12000, stock: 70, imagen: 'LIMPIEZA Y HOGAR/ARIEL-1KG.webp' },
+          { nombre: 'Fab líquido 1L', descripcion: 'Ropa', precio: 10000, stock: 60, imagen: 'LIMPIEZA Y HOGAR/FAB-LIQUIDO-1L.jpg' },
+          { nombre: 'Detergente económico', descripcion: 'Uso diario', precio: 8000, stock: 80, imagen: 'LIMPIEZA Y HOGAR/DETERGENTE-ECONOMICO.webp' },
+          { nombre: 'Suavizante 1L', descripcion: 'Aroma floral', precio: 7000, stock: 50, imagen: 'LIMPIEZA Y HOGAR/SUAVIZANTE-1L.webp' },
+          { nombre: 'Detergente cápsulas', descripcion: 'Alta eficiencia', precio: 15000, stock: 40, imagen: 'LIMPIEZA Y HOGAR/DETERGENTE-CAPSULAS.webp' }
         ],
 
         'Jabones': [
-          { nombre: 'Jabón Dove', descripcion: 'Hidratante', precio: 4000, stock: 100, imagen: 'LIMPIEZA Y HOGAR/jabon-dove.png' },
-          { nombre: 'Jabón Protex', descripcion: 'Antibacterial', precio: 3500, stock: 90, imagen: 'LIMPIEZA Y HOGAR/jabon-protex.png' },
-          { nombre: 'Jabón Rey', descripcion: 'Multiusos', precio: 2500, stock: 120, imagen: 'LIMPIEZA Y HOGAR/jabon-rey.png' },
-          { nombre: 'Jabón líquido manos', descripcion: '500ml', precio: 6000, stock: 70, imagen: 'LIMPIEZA Y HOGAR/jabon-manos.png' },
-          { nombre: 'Jabón infantil', descripcion: 'Suave', precio: 4500, stock: 60, imagen: 'LIMPIEZA Y HOGAR/jabon-infantil.png' }
+          { nombre: 'Jabón Dove', descripcion: 'Hidratante', precio: 4000, stock: 100, imagen: 'LIMPIEZA Y HOGAR/JABON-DOVE.webp' },
+          { nombre: 'Jabón Protex', descripcion: 'Antibacterial', precio: 3500, stock: 90, imagen: 'LIMPIEZA Y HOGAR/JABON-PROTEX.jpg' },
+          { nombre: 'Jabón Rey', descripcion: 'Multiusos', precio: 2500, stock: 120, imagen: 'LIMPIEZA Y HOGAR/JABON-REY.jpg' },
+          { nombre: 'Jabón líquido manos', descripcion: '500ml', precio: 6000, stock: 70, imagen: 'LIMPIEZA Y HOGAR/JABON-LIQUIDO-MANOS.webp' },
+          { nombre: 'Jabón infantil', descripcion: 'Suave', precio: 4500, stock: 60, imagen: 'LIMPIEZA Y HOGAR/JABON-LIQUIDO-BEBES.avif' }
         ],
 
         'Lavaloza': [
-          { nombre: 'Axion limón', descripcion: 'Lavaplatos', precio: 5000, stock: 80, imagen: 'LIMPIEZA Y HOGAR/axion.png' },
-          { nombre: 'Lavaloza líquido 1L', descripcion: 'Desengrasante', precio: 6000, stock: 70, imagen: 'LIMPIEZA Y HOGAR/lavaloza.png'},
-          { nombre: 'Esponjas x3', descripcion: 'Multiuso', precio: 3000, stock: 100, imagen: 'LIMPIEZA Y HOGAR/esponja.png' },
-          { nombre: 'Lavaloza antibacterial', descripcion: 'Extra limpieza', precio: 6500, stock: 60, imagen: 'LIMPIEZA Y HOGAR/lavaloza-antibacterial.png' },
-          { nombre: 'Cepillo cocina', descripcion: 'Plástico', precio: 4000, stock: 50 , imagen: 'LIMPIEZA Y HOGAR/cepillo.png' }
+          { nombre: 'Axion limón', descripcion: 'Lavaplatos', precio: 5000, stock: 80, imagen: 'LIMPIEZA Y HOGAR/AXION-LIMON.webp' },
+          { nombre: 'Lavaloza líquido 1L', descripcion: 'Desengrasante', precio: 6000, stock: 70, imagen: 'LIMPIEZA Y HOGAR/LAVALOZA-ANTIBACTERIAL.webp'},
+          { nombre: 'Esponjas x3', descripcion: 'Multiuso', precio: 3000, stock: 100, imagen: 'LIMPIEZA Y HOGAR/ESPONJAS_x3.webp' },
+          { nombre: 'Lavaloza antibacterial', descripcion: 'Extra limpieza', precio: 6500, stock: 60, imagen: 'LIMPIEZA Y HOGAR/LAVALOZA-ANTIBACTERIAL.webp' },
+          { nombre: 'Cepillo cocina', descripcion: 'Plástico', precio: 4000, stock: 50 , imagen: 'LIMPIEZA Y HOGAR/CEPILLO-COCINA.jpg' }
         ],
               // FRUTAS Y VERDURAS
         'Frutas': [
-          { nombre: 'Banano 1kg', descripcion: 'Fresco', precio: 2500, stock: 120, imagen: 'FRUTAS Y VERDURAS/banano.png' },
-          { nombre: 'Manzana roja 1kg', descripcion: 'Importada', precio: 6000, stock: 90, imagen: 'FRUTAS Y VERDURAS/manzana.png' },
-          { nombre: 'Naranja 1kg', descripcion: 'Jugosa', precio: 3000, stock: 100, imagen: 'FRUTAS Y VERDURAS/naranja.png' },
-          { nombre: 'Piña entera', descripcion: 'Dulce', precio: 5000, stock: 70 , imagen: 'FRUTAS Y VERDURAS/pina.png'},
-          { nombre: 'Uva 500g', descripcion: 'Sin semillas', precio: 7000, stock: 60 , imagen: 'FRUTAS Y VERDURAS/uva.png'}
+          { nombre: 'Banano 1kg', descripcion: 'Fresco', precio: 2500, stock: 120, imagen: 'FRUTAS Y VERDURAS/BANANO-1KG.jpg' },
+          { nombre: 'Manzana roja 1kg', descripcion: 'Importada', precio: 6000, stock: 90, imagen: 'FRUTAS Y VERDURAS/MANZANA-ROJA-1KG.jpg' },
+          { nombre: 'Naranja 1kg', descripcion: 'Jugosa', precio: 3000, stock: 100, imagen: 'FRUTAS Y VERDURAS/NARANJA-1K.webp' },
+          { nombre: 'Piña entera', descripcion: 'Dulce', precio: 5000, stock: 70 , imagen: 'FRUTAS Y VERDURAS/PIÑA-ENTERA.webp'},
+          { nombre: 'Uva 500g', descripcion: 'Sin semillas', precio: 7000, stock: 60 , imagen: 'FRUTAS Y VERDURAS/UVA-500G.webp'}
         ],
 
         'Verduras': [
-          { nombre: 'Papa 1kg', descripcion: 'Pastusa', precio: 2000, stock: 150, imagen: 'FRUTAS Y VERDURAS/papa.png' },
-          { nombre: 'Tomate 1kg', descripcion: 'Chonto', precio: 3500, stock: 120, imagen: 'FRUTAS Y VERDURAS/tomate.png' },
-          { nombre: 'Cebolla cabezona', descripcion: '1kg', precio: 3000, stock: 100, imagen: 'FRUTAS Y VERDURAS/cebolla.png' },
-          { nombre: 'Zanahoria 1kg', descripcion: 'Fresca', precio: 2500, stock: 110, imagen: 'FRUTAS Y VERDURAS/zanahoria.png' },
-          { nombre: 'Lechuga', descripcion: 'Unidad', precio: 2000, stock: 80, imagen: 'FRUTAS Y VERDURAS/lechuga.png' }
+          { nombre: 'Papa 1kg', descripcion: 'Pastusa', precio: 2000, stock: 150, imagen: 'FRUTAS Y VERDURAS/PAPA-PASTUSA-1KG.jpg' },
+          { nombre: 'Tomate 1kg', descripcion: 'Chonto', precio: 3500, stock: 120, imagen: 'FRUTAS Y VERDURAS/TOMATE-1KG.jpg' },
+          { nombre: 'Cebolla cabezona', descripcion: '1kg', precio: 3000, stock: 100, imagen: 'FRUTAS Y VERDURAS/CEBOLLA-CABEZONA.jpg' },
+          { nombre: 'Zanahoria 1kg', descripcion: 'Fresca', precio: 2500, stock: 110, imagen: 'FRUTAS Y VERDURAS/ZANAHORIA-1KG.webp' },
+          { nombre: 'Lechuga', descripcion: 'Unidad', precio: 2000, stock: 80, imagen: 'FRUTAS Y VERDURAS/LECHUGA.jpg' }
         ],
 
         'Hortalizas': [
-          { nombre: 'Brócoli', descripcion: 'Fresco', precio: 4000, stock: 70, imagen: 'FRUTAS Y VERDURAS/brocoli.png' },
-          { nombre: 'Coliflor', descripcion: 'Unidad', precio: 4500, stock: 60, imagen: 'FRUTAS Y VERDURAS/coliflor.png' },
-          { nombre: 'Espinaca', descripcion: 'Bolsa', precio: 3000, stock: 80, imagen: 'FRUTAS Y VERDURAS/espinaca.png' },
-          { nombre: 'Pepino cohombro', descripcion: 'Unidad', precio: 2000, stock: 90, imagen: 'FRUTAS Y VERDURAS/pepino.png' },
-          { nombre: 'Ajo 250g', descripcion: 'Natural', precio: 3500, stock: 100, imagen: 'FRUTAS Y VERDURAS/ajo.png' }
+          { nombre: 'Brócoli', descripcion: 'Fresco', precio: 4000, stock: 70, imagen: 'FRUTAS Y VERDURAS/BROCOLI.webp' },
+          { nombre: 'Coliflor', descripcion: 'Unidad', precio: 4500, stock: 60, imagen: 'FRUTAS Y VERDURAS/COLIFLOR.webp' },
+          { nombre: 'Espinaca', descripcion: 'Bolsa', precio: 3000, stock: 80, imagen: 'FRUTAS Y VERDURAS/ESPINACA.webp' },
+          { nombre: 'Pepino cohombro', descripcion: 'Unidad', precio: 2000, stock: 90, imagen: 'FRUTAS Y VERDURAS/PEPINO-COHOMBRO.webp' },
+          { nombre: 'Ajo 250g', descripcion: 'Natural', precio: 3500, stock: 100, imagen: 'FRUTAS Y VERDURAS/AJO-250-GR.jpg' }
         ]
       };
 

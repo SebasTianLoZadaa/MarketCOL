@@ -11,6 +11,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import pedidoService from '../services/pedidoService';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { getImageUrl } from '../utils/helpers';
 
 const PedidoConfirmadoPage = () => {
   const [pedido, setPedido] = useState(null);
@@ -193,7 +194,7 @@ const PedidoConfirmadoPage = () => {
                       <td>
                         <div className="d-flex align-items-center">
                           <img
-                            src={detalle.producto?.imagen || '/images/producto-default.svg'}
+                            src={getImageUrl(detalle.producto?.imagen)}
                             alt={detalle.producto?.nombre}
                             style={{ width: '50px', height: '50px', objectFit: 'cover' }}
                             className="rounded me-3"

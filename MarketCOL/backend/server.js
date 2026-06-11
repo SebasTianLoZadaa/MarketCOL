@@ -119,7 +119,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Servir carpeta de imágenes estáticas del catálogo
 // Las imágenes se organizan por categoría: /images/BEBIDAS/agua.png, etc.
-app.use('/images', express.static(path.join(__dirname, '../frontend/frontend/public/images')));
+app.use('/images', express.static(path.join(__dirname, '../frontend/public/images')));
 
 // Middleware de logging → Muestra en consola cada petición HTTP que llega al servidor
 // Solo se activa en modo desarrollo (NODE_ENV=development en .env)
