@@ -53,7 +53,7 @@ export const formatDateTime = (dateString) => {
  */
 const normalizeImagePath = (imagePath) => {
   if (typeof imagePath !== 'string') return '';
-  return imagePath.trim().replace(/\\\\/g, '/');
+  return imagePath.trim().replace(/\\\\/g, '/').replace(/^\/+/, '');
 };
 
 const encodeImageUrl = (url) => {
@@ -88,6 +88,15 @@ export const getImageUrlCandidates = (imagePath) => {
   if (imagePath.startsWith('http')) return [encodeImageUrl(imagePath)];
 
   if (imagePath.startsWith('/images/')) return [encodeImageUrl(imagePath)];
+  if (imagePath.startsWith('/uploads/')) {
+    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+    try {
+      const u = new URL(apiUrl);
+      return [encodeImageUrl(`${u.origin}${imagePath}`)];
+    } catch (err) {
+      return [encodeImageUrl(`http://localhost:5000${imagePath}`)];
+    }
+  }
   if (imagePath.includes('/') && !imagePath.startsWith('uploads/')) {
     return buildStaticImageCandidates(imagePath);
   }

@@ -11,11 +11,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { getImageUrl } from '../utils/helpers';
 import { exportarProductosAPDF, exportarProductosAExcel } from '../utils/exportUtils';
 
 // Componente memoizado para imágenes de productos
 const ProductImage = memo(({ imagen, nombre }) => {
-  const [imgSrc, setImgSrc] = useState(imagen || '/images/producto-default.svg');
+  const [imgSrc, setImgSrc] = useState(imagen ? getImageUrl(imagen) : '/images/producto-default.svg');
   const hasError = useRef(false);
   
   const handleImageError = useCallback(() => {
