@@ -131,7 +131,7 @@ const PedidoDetail = () => {
     const mapping = {
       'pendiente': 'Pendiente',
       'preparando': 'Preparando',
-      'listo': 'Aliste y recoja',
+      'listo': 'Pedido listo',
       'entregado': 'Entregado',
       'cancelado': 'Cancelado'
     };
@@ -371,7 +371,7 @@ const PedidoDetail = () => {
                         onClick={() => handleCambiarEstado('listo')}
                         disabled={actionLoading}
                       >
-                        Marcar como Aliste y recoja
+                        Marcar como Pedido listo
                       </Button>
                     )}
                     {pedido.estado === 'listo' && (

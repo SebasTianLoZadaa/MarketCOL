@@ -60,7 +60,7 @@ const StatsCards = ({ stats, loading }) => {
       </Col>
       <Col md={6} lg={3}>
         <StatCard
-          title="Aliste y recoja"
+          title="Pedido listo"
           value={stats.pedidosListos || 0}
           icon="📦"
           color="success"

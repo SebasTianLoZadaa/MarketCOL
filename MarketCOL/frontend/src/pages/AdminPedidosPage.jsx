@@ -155,7 +155,7 @@ const AdminPedidosPage = () => {
     const mapping = {
       'pendiente': 'Pendiente',
       'preparando': 'Preparando',
-      'listo': 'Aliste y recoja',
+      'listo': 'Pedido listo',
       'entregado': 'Entregado',
       'cancelado': 'Cancelado'
     };
@@ -227,7 +227,7 @@ const AdminPedidosPage = () => {
                   <option value="">Todos</option>
                   <option value="pendiente">Pendientes</option>
                   <option value="preparando">Preparando</option>
-                  <option value="listo">Aliste y recoja</option>
+                  <option value="listo">Pedido listo</option>
                   <option value="entregado">Entregados</option>
                   <option value="cancelado">Cancelados</option>
                 </Form.Select>
@@ -477,7 +477,7 @@ const AdminPedidosPage = () => {
                   )}
                   {pedidoSeleccionado.estado === 'preparando' && (
                     <Button variant="primary" onClick={() => handleCambiarEstado(pedidoSeleccionado.id, 'listo')} disabled={actionLoading}>
-                      Marcar como Aliste y recoja
+                      Marcar como Pedido listo
                     </Button>
                   )}
                   {pedidoSeleccionado.estado === 'listo' && (

@@ -78,7 +78,7 @@ const MisPedidosPage = () => {
     const textos = {
       'pendiente': 'Pendiente',
       'preparando': 'Preparando',
-      'listo': 'Aliste y recoja',
+      'listo': 'Pedido listo',
       'entregado': 'Entregado',
       'cancelado': 'Cancelado'
     };
