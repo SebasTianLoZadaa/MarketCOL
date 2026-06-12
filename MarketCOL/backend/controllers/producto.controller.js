@@ -248,7 +248,8 @@ const crearProducto = async (req, res) => {
     
     // Si se subió una imagen, Multer la guarda en uploads/ y pone los datos en req.file.
     // req.file.filename es el nombre generado por Multer (ej: "producto_1719344567890_abc12.jpg")
-    const imagen = req.file ? req.file.filename : null;
+    // Si no hay archivo, acepta también una URL o ruta de imagen enviada en el body.
+    const imagen = req.file ? req.file.filename : (req.body.imagen ? req.body.imagen.trim() : null);
     
     // Crea el registro en la tabla Producto (INSERT INTO Producto ...)
     const nuevoProducto = await Producto.create({
@@ -258,7 +259,7 @@ const crearProducto = async (req, res) => {
       stock: parseInt(stock) || 0,                  // Convierte a entero, default 0
       categoriaId: parseInt(categoriaId),           // FK a la tabla Categoria
       subcategoriaId: parseInt(subcategoriaId),     // FK a la tabla Subcategoria
-      imagen,                                       // Nombre del archivo o null
+      imagen,                                       // Nombre del archivo, URL o null
       activo: true                                   // Se crea activo por defecto
     });
     
@@ -391,8 +392,9 @@ const actualizarProducto = async (req, res) => {
           console.error('Error al eliminar imagen anterior:', err);
         }
       }
-      // Asigna el nombre de la nueva imagen
       producto.imagen = req.file.filename;
+    } else if (Object.prototype.hasOwnProperty.call(req.body, 'imagen')) {
+      producto.imagen = req.body.imagen ? req.body.imagen.trim() : null;
     }
     
     // Actualiza SOLO los campos que se enviaron (si no se envían, no cambian)

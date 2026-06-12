@@ -20,6 +20,7 @@ const ProductoForm = ({ show, onHide, producto, onSave }) => {
     categoriaId: '',
     subcategoriaId: '',
     proveedorId: '',
+    imagen: '',
   });
   const [imagen, setImagen] = useState(null);
   const [preview, setPreview] = useState('');
@@ -46,8 +47,15 @@ const ProductoForm = ({ show, onHide, producto, onSave }) => {
         categoriaId: producto.categoriaId || '',
         subcategoriaId: producto.subcategoriaId || '',
         proveedorId: producto.proveedorId || '',
+        imagen: producto.imagen || '',
       });
-      setPreview(producto.imagen ? `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${producto.imagen}` : '');
+      if (producto.imagen) {
+        setPreview(producto.imagen.startsWith('http')
+          ? producto.imagen
+          : `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${producto.imagen}`);
+      } else {
+        setPreview('');
+      }
     } else {
       setFormData({
         nombre: '',
@@ -57,6 +65,7 @@ const ProductoForm = ({ show, onHide, producto, onSave }) => {
         categoriaId: '',
         subcategoriaId: '',
         proveedorId: '',
+        imagen: '',
       });
       setPreview('');
       setImagen(null);
@@ -125,7 +134,11 @@ const ProductoForm = ({ show, onHide, producto, onSave }) => {
       data.append('categoriaId', formData.categoriaId);
       data.append('subcategoriaId', formData.subcategoriaId);
       if (formData.proveedorId) data.append('proveedorId', formData.proveedorId);
-      if (imagen) data.append('imagen', imagen);
+      if (imagen) {
+        data.append('imagen', imagen);
+      } else if (formData.imagen) {
+        data.append('imagen', formData.imagen.trim());
+      }
 
       let response;
       if (isEditing) {
@@ -264,7 +277,21 @@ const ProductoForm = ({ show, onHide, producto, onSave }) => {
           </Row>
 
           <Form.Group className="mb-3">
-            <Form.Label>Imagen</Form.Label>
+            <Form.Label>URL de Imagen</Form.Label>
+            <Form.Control
+              type="text"
+              name="imagen"
+              value={formData.imagen}
+              onChange={handleChange}
+              placeholder="https://example.com/imagen.jpg"
+            />
+            <Form.Text className="text-muted">
+              Ingresa una URL de imagen si no vas a subir un archivo.
+            </Form.Text>
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Archivo de Imagen</Form.Label>
             <Form.Control
               type="file"
               accept="image/*"

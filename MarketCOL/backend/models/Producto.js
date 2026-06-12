@@ -92,12 +92,17 @@ const Producto = sequelize.define('Producto', {
   // La ruta completa es: uploads/1709578800000-producto.jpg (servida por Express como estático)
   // Multer está configurado en config/multer.js
   imagen: {
-    type: DataTypes.STRING(255),       // VARCHAR(255) → nombre del archivo
+    type: DataTypes.STRING(255),       // VARCHAR(255) → nombre del archivo o URL
     allowNull: true,                   // Opcional: un producto puede no tener imagen
     validate: {
-      is: {                            // Valida con expresión regular (regex)
-        args: /\.(jpg|jpeg|png|gif|webp|avif)$/i,  // Solo extensiones de imagen permitidas
-        msg: 'La imagen debe ser un archivo JPG, PNG, GIF, WebP o AVIF'
+      isValidImageOrUrl(value) {
+        if (value === null || value === undefined || value === '') return;
+        const safeValue = String(value).trim();
+        const filePattern = /\.(jpg|jpeg|png|gif|webp|avif)$/i;
+        const urlPattern = /^https?:\/\/.*\.(jpg|jpeg|png|gif|webp|avif)(\?.*)?$/i;
+        if (!filePattern.test(safeValue) && !urlPattern.test(safeValue)) {
+          throw new Error('La imagen debe ser un archivo JPG, PNG, GIF, WebP o AVIF, o una URL válida');
+        }
       }
     }
   },

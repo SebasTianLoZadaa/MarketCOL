@@ -18,6 +18,17 @@ import { exportarProductosAPDF, exportarProductosAExcel } from '../utils/exportU
 const ProductImage = memo(({ imagen, nombre }) => {
   const [imgSrc, setImgSrc] = useState(imagen ? getImageUrl(imagen) : '/images/producto-default.svg');
   const hasError = useRef(false);
+
+  useEffect(() => {
+    if (!imagen) {
+      setImgSrc('/images/producto-default.svg');
+      hasError.current = false;
+      return;
+    }
+
+    setImgSrc(getImageUrl(imagen));
+    hasError.current = false;
+  }, [imagen]);
   
   const handleImageError = useCallback(() => {
     if (!hasError.current) {
@@ -209,31 +220,37 @@ const AdminProductosPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
-      const dataToSend = {
-        ...formData,
-        precio: parseFloat(formData.precio),
-        stock: parseInt(formData.stock),
-        subcategoriaId: formData.subcategoriaId || null,
-        proveedorId: formData.proveedorId || null
-      };
+      const formDataToSend = new FormData();
+      formDataToSend.append('nombre', formData.nombre);
+      formDataToSend.append('descripcion', formData.descripcion);
+      formDataToSend.append('precio', formData.precio);
+      formDataToSend.append('stock', formData.stock);
+      formDataToSend.append('categoriaId', formData.categoriaId);
+      formDataToSend.append('subcategoriaId', formData.subcategoriaId || '');
+      if (formData.proveedorId) formDataToSend.append('proveedorId', formData.proveedorId);
+      if (formData.imagen) formDataToSend.append('imagen', formData.imagen.trim());
 
       if (editando) {
-        await api.put(`/admin/productos/${editando.id}`, dataToSend);
+        await api.put(`/admin/productos/${editando.id}`, formDataToSend, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
         setMensaje({ tipo: 'success', texto: 'Producto actualizado exitosamente' });
       } else {
-        await api.post('/admin/productos', dataToSend);
+        await api.post('/admin/productos', formDataToSend, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
         setMensaje({ tipo: 'success', texto: 'Producto creado exitosamente' });
       }
-      
+
       handleCloseModal();
       loadData();
     } catch (error) {
       console.error('Error al guardar producto:', error);
-      setMensaje({ 
-        tipo: 'danger', 
-        texto: error.response?.data?.message || 'Error al guardar el producto' 
+      setMensaje({
+        tipo: 'danger',
+        texto: error.response?.data?.message || 'Error al guardar el producto'
       });
     }
   };

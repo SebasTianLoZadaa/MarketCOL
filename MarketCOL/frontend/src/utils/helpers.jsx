@@ -84,7 +84,7 @@ const buildStaticImageCandidates = (imagePath) => {
 };
 
 export const getImageUrlCandidates = (imagePath) => {
-  if (!imagePath) return ['https://via.placeholder.com/200x200?text=No+Image'];
+  if (!imagePath) return ['/images/producto-default.svg'];
   if (imagePath.startsWith('http')) return [encodeImageUrl(imagePath)];
 
   if (imagePath.startsWith('/images/')) return [encodeImageUrl(imagePath)];
