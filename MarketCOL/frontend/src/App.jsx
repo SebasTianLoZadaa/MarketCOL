@@ -21,6 +21,7 @@ import ProductoDetallePage from './pages/ProductoDetallePage';
 import CarritoPage from './pages/CarritoPage';
 import CheckoutPage from './pages/CheckoutPage';
 import PedidoConfirmadoPage from './pages/PedidoConfirmadoPage';
+import ProfilePage from './pages/ProfilePage';
 
 // Páginas de administración (están en pages/)
 import AdminDashboardPage from './pages/AdminDashboardPage'; // ← usar este
@@ -60,6 +61,11 @@ function App() {
               <Route path="/pedido/:id" element={<PedidoDetail />} />
               <Route path="/pedido-confirmado/:id" element={<PedidoConfirmadoPage />} />
               <Route path="/mis-pedidos" element={<MisPedidosPage />} />
+              <Route path="/perfil" element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              } />
               
               {/* ========== RUTAS DE ADMINISTRACIÓN (PROTEGIDAS) ========== */}
               <Route path="/admin" element={
