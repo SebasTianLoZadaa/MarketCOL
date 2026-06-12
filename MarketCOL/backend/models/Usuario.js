@@ -56,6 +56,18 @@ const Usuario = sequelize.define('Usuario', {
     }
   },
 
+  // Columna 'apellido' → Apellido del usuario
+  apellido: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    validate: {
+      len: {
+        args: [2, 100],
+        msg: 'El apellido debe tener entre 2 y 100 caracteres'
+      }
+    }
+  },
+
   // Columna 'cedula', identificador de usuarios
   cedula: {
     type: DataTypes.STRING(20),
