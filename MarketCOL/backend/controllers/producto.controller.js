@@ -551,7 +551,7 @@ const actualizarStock = async (req, res) => {
     const { cantidad, operacion } = req.body;   // Datos del body JSON
     
     // Valida que se enviaron ambos campos
-    if (!cantidad || !operacion) {
+    if (cantidad === undefined || operacion === undefined) {
       return res.status(400).json({
         success: false,
         message: 'Se requiere cantidad y operación'
@@ -560,10 +560,10 @@ const actualizarStock = async (req, res) => {
     
     // Convierte la cantidad a número entero
     const cantidadNum = parseInt(cantidad);
-    if (cantidadNum < 0) {
+    if (Number.isNaN(cantidadNum) || cantidadNum < 0) {
       return res.status(400).json({
         success: false,
-        message: 'La cantidad no puede ser negativa'
+        message: 'La cantidad debe ser un número entero no negativo'
       });
     }
     
@@ -577,13 +577,15 @@ const actualizarStock = async (req, res) => {
       });
     }
     
-    let nuevoStock;   // Variable para almacenar el stock resultante
+    const stockAnterior = producto.stock; // mantiene el stock antes de aplicar el cambio
+    let nuevoStock;
     
     // Según la operación, calcula el nuevo stock
     switch (operacion) {
       case 'aumentar':
-        // aumentarStock() es un método del modelo Producto que suma cantidades
-        nuevoStock = producto.aumentarStock(cantidadNum);
+        // aumentarStock() es un método async del modelo Producto que suma cantidades y guarda
+        await producto.aumentarStock(cantidadNum);
+        nuevoStock = producto.stock;
         break;
       case 'reducir':
         // Verifica que haya suficiente stock antes de reducir
@@ -593,12 +595,15 @@ const actualizarStock = async (req, res) => {
             message: `No hay suficiente stock. Stock actual: ${producto.stock}`
           });
         }
-        // reducirStock() es un método del modelo Producto que resta cantidades
-        nuevoStock = producto.reducirStock(cantidadNum);
+        // reducirStock() es un método async del modelo Producto que resta cantidades y guarda
+        await producto.reducirStock(cantidadNum);
+        nuevoStock = producto.stock;
         break;
       case 'establecer':
         // Simplemente establece el valor directamente
-        nuevoStock = cantidadNum;
+        producto.stock = cantidadNum;
+        await producto.save();
+        nuevoStock = producto.stock;
         break;
       default:
         // Si la operación no es válida
@@ -607,10 +612,13 @@ const actualizarStock = async (req, res) => {
           message: 'Operación inválida. Usa: aumentar, reducir o establecer'
         });
     }
-    
-    // Asigna el nuevo stock y guarda en la BD
-    producto.stock = nuevoStock;
-    await producto.save();
+
+    if (Number.isNaN(nuevoStock)) {
+      return res.status(500).json({
+        success: false,
+        message: 'Error al calcular el nuevo stock'
+      });
+    }
     
     // Responde con el resultado de la operación
     res.json({
@@ -620,8 +628,7 @@ const actualizarStock = async (req, res) => {
       data: {
         productoId: producto.id,
         nombre: producto.nombre,
-        // Calcula el stock anterior según la operación realizada (null para 'establecer')
-        stockAnterior: operacion === 'establecer' ? null : (operacion === 'aumentar' ? producto.stock - cantidadNum : producto.stock + cantidadNum),
+        stockAnterior: operacion === 'establecer' ? null : stockAnterior,
         stockNuevo: producto.stock
       }
     });
