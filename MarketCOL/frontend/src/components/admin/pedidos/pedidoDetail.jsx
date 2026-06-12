@@ -13,6 +13,7 @@ import {
 } from 'react-bootstrap';
 import api from '../../../services/api';
 import { useAuth } from '../../../context/AuthContext';
+import { getImageUrl } from '../../../utils/helpers';
 
 const PedidoDetail = () => {
   const { id } = useParams();
@@ -209,10 +210,13 @@ const PedidoDetail = () => {
                         <div className="d-flex align-items-center">
                           {item.producto?.imagen && (
                             <img
-                              src={`${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${item.producto.imagen}`}
+                              src={getImageUrl(item.producto.imagen)}
                               alt={item.producto.nombre}
-                              style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                              style={{ width: '56px', height: '56px', objectFit: 'cover', flexShrink: 0 }}
                               className="me-3 rounded"
+                              onError={(e) => {
+                                e.target.src = '/images/producto-default.svg';
+                              }}
                             />
                           )}
                           <div>

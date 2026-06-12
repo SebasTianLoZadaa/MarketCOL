@@ -17,6 +17,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import CatalogoPage from './pages/CatalogoPage';
+import ProductoDetallePage from './pages/ProductoDetallePage';
 import CarritoPage from './pages/CarritoPage';
 import CheckoutPage from './pages/CheckoutPage';
 import PedidoConfirmadoPage from './pages/PedidoConfirmadoPage';
@@ -53,6 +54,7 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/catalogo" element={<CatalogoPage />} />
+              <Route path="/producto/:id" element={<ProductoDetallePage />} />
               <Route path="/carrito" element={<CarritoPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/pedido/:id" element={<PedidoDetail />} />
