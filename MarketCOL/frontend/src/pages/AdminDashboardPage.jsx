@@ -191,7 +191,7 @@ const AdminDashboardPage = () => {
               accent="var(--warning)" link="/admin/pedidos?estado=pendiente" loading={loading} />
           </div>
           <div className="fade-up fade-up-d2">
-            <StatCard title="Listos para recoger" value={stats.pedidosListos} icon="📦"
+            <StatCard title="Aliste y recoja" value={stats.pedidosListos} icon="📦"
               accent="var(--red)" link="/admin/pedidos?estado=listo" loading={loading} />
           </div>
           <div className="fade-up fade-up-d3">
@@ -220,7 +220,7 @@ const AdminDashboardPage = () => {
               desc: 'Revisa pedidos pendientes, confirma pagos y actualiza estados.',
               links: [
                 { to: '/admin/pedidos', label: `Pedidos pendientes (${stats.pedidosPendientes})`, primary: true },
-                { to: '/admin/pedidos?estado=listo', label: `Listos (${stats.pedidosListos})` },
+                { to: '/admin/pedidos?estado=listo', label: `Aliste y recoja (${stats.pedidosListos})` },
               ],
             },
             {

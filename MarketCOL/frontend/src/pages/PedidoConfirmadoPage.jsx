@@ -81,7 +81,7 @@ const PedidoConfirmadoPage = () => {
     const textos = {
       'pendiente': 'Pendiente',
       'preparando': 'Preparando',
-      'listo': 'Listo para recoger',
+      'listo': 'Aliste y recoja',
       'entregado': 'Entregado',
       'cancelado': 'Cancelado'
     };

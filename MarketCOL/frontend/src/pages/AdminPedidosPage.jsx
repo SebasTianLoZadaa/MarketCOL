@@ -6,7 +6,7 @@
  * Incluye confirmación de pago (estadoPago)
  */
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Card, Table, Button, Badge, Form, Pagination, Alert, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
@@ -155,7 +155,7 @@ const AdminPedidosPage = () => {
     const mapping = {
       'pendiente': 'Pendiente',
       'preparando': 'Preparando',
-      'listo': 'Listo para recoger',
+      'listo': 'Aliste y recoja',
       'entregado': 'Entregado',
       'cancelado': 'Cancelado'
     };
@@ -227,7 +227,7 @@ const AdminPedidosPage = () => {
                   <option value="">Todos</option>
                   <option value="pendiente">Pendientes</option>
                   <option value="preparando">Preparando</option>
-                  <option value="listo">Listos para recoger</option>
+                  <option value="listo">Aliste y recoja</option>
                   <option value="entregado">Entregados</option>
                   <option value="cancelado">Cancelados</option>
                 </Form.Select>
@@ -477,7 +477,7 @@ const AdminPedidosPage = () => {
                   )}
                   {pedidoSeleccionado.estado === 'preparando' && (
                     <Button variant="primary" onClick={() => handleCambiarEstado(pedidoSeleccionado.id, 'listo')} disabled={actionLoading}>
-                      Marcar como Listo
+                      Marcar como Aliste y recoja
                     </Button>
                   )}
                   {pedidoSeleccionado.estado === 'listo' && (

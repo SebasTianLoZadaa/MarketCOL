@@ -101,7 +101,7 @@ const AdminDashboardPage = () => {
                   Ver Pedidos Pendientes ({stats.pedidosPendientes})
                 </Button>
                 <Button as={Link} to="/admin/pedidos?estado=listo" variant="outline-success">
-                  Listos para Recoger ({stats.pedidosListos})
+                  Aliste y recoja ({stats.pedidosListos})
                 </Button>
               </div>
             </Card.Body>

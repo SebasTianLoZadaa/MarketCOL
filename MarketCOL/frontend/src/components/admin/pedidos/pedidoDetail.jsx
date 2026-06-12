@@ -18,7 +18,7 @@ import { getImageUrl } from '../../../utils/helpers';
 const PedidoDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user, isAdmin } = useAuth();
+  const { isAdmin } = useAuth();
 
   const [pedido, setPedido] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -131,7 +131,7 @@ const PedidoDetail = () => {
     const mapping = {
       'pendiente': 'Pendiente',
       'preparando': 'Preparando',
-      'listo': 'Listo para recoger',
+      'listo': 'Aliste y recoja',
       'entregado': 'Entregado',
       'cancelado': 'Cancelado'
     };
@@ -371,7 +371,7 @@ const PedidoDetail = () => {
                         onClick={() => handleCambiarEstado('listo')}
                         disabled={actionLoading}
                       >
-                        Marcar como Listo
+                        Marcar como Aliste y recoja
                       </Button>
                     )}
                     {pedido.estado === 'listo' && (

@@ -550,7 +550,7 @@ const getAllPedidos = async (req, res) => {
  * 
  * Ruta: PUT /api/admin/pedidos/:id/estado
  * Body JSON: { estado }
- * Estados válidos: 'pendiente' | 'en_proceso' | 'enviado' | 'entregado' | 'cancelado'
+ * Estados válidos: 'pendiente' | 'preparando' | 'listo' | 'entregado' | 'cancelado'
  */
 const actualizarEstadoPedido = async (req, res) => {
   try {
@@ -558,11 +558,11 @@ const actualizarEstadoPedido = async (req, res) => {
     const { estado } = req.body;      // Nuevo estado desde el body JSON
     
     // Valida que el estado sea uno de los permitidos
-    const estadosValidos = ['pendiente', 'en_proceso', 'enviado', 'entregado', 'cancelado'];
+    const estadosValidos = ['pendiente', 'preparando', 'listo', 'entregado', 'cancelado'];
     if (!estadosValidos.includes(estado)) {
       return res.status(400).json({
         success: false,
-        // .join(', ') une los elementos del array con coma: "pendiente, en_proceso, ..."
+        // .join(', ') une los elementos del array con coma: "pendiente, preparando, ..."
         message: `Estado inválido. Opciones: ${estadosValidos.join(', ')}`
       });
     }

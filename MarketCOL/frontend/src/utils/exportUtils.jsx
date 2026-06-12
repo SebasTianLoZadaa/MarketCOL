@@ -177,7 +177,7 @@ export const exportarPedidosAPDF = (pedidos) => {
     const textos = {
       'pendiente': 'Pendiente',
       'preparando': 'Preparando',
-      'listo': 'Listo para recoger',
+      'listo': 'Aliste y recoja',
       'entregado': 'Entregado',
       'cancelado': 'Cancelado'
     };
@@ -210,7 +210,7 @@ export const exportarPedidosAPDF = (pedidos) => {
   const totalVentas = pedidos.reduce((sum, p) => sum + Number(p.total), 0);
   doc.text(`Total de pedidos: ${pedidos.length}`, 14, finalY);
   doc.text(`Pendientes: ${pedidos.filter(p => p.estado === 'pendiente').length}`, 14, finalY + 7);
-  doc.text(`Listos para recoger: ${pedidos.filter(p => p.estado === 'listo').length}`, 14, finalY + 14);
+  doc.text(`Aliste y recoja: ${pedidos.filter(p => p.estado === 'listo').length}`, 14, finalY + 14);
   doc.text(`Ventas totales: $${totalVentas.toLocaleString('es-CO')}`, 14, finalY + 21);
   
   doc.save(`pedidos_${Date.now()}.pdf`);
@@ -476,7 +476,7 @@ export const exportarPedidosAExcel = async (pedidos) => {
   worksheet.getRow(2).height = 20;
   
   const getEstadoTexto = (estado) => {
-    const textos = { 'pendiente': 'Pendiente', 'preparando': 'Preparando', 'listo': 'Listo', 'entregado': 'Entregado', 'cancelado': 'Cancelado' };
+    const textos = { 'pendiente': 'Pendiente', 'preparando': 'Preparando', 'listo': 'Aliste y recoja', 'entregado': 'Entregado', 'cancelado': 'Cancelado' };
     return textos[estado] || estado;
   };
   
