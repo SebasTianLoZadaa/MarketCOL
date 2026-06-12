@@ -99,10 +99,18 @@ const Producto = sequelize.define('Producto', {
         if (value === null || value === undefined || value === '') return;
         const safeValue = String(value).trim();
         const filePattern = /\.(jpg|jpeg|png|gif|webp|avif)$/i;
-        const urlPattern = /^https?:\/\/.*\.(jpg|jpeg|png|gif|webp|avif)(\?.*)?$/i;
-        if (!filePattern.test(safeValue) && !urlPattern.test(safeValue)) {
-          throw new Error('La imagen debe ser un archivo JPG, PNG, GIF, WebP o AVIF, o una URL válida');
+        const httpUrlPattern = /^https?:\/\/.+$/i;
+        const relativePathPattern = /^\/[\w\-./]+$/i;
+
+        if (
+          httpUrlPattern.test(safeValue) ||
+          filePattern.test(safeValue) ||
+          relativePathPattern.test(safeValue)
+        ) {
+          return;
         }
+
+        throw new Error('La imagen debe ser una URL válida o una ruta de imagen local con extensión aceptada');
       }
     }
   },

@@ -233,14 +233,10 @@ const AdminProductosPage = () => {
       if (formData.imagen) formDataToSend.append('imagen', formData.imagen.trim());
 
       if (editando) {
-        await api.put(`/admin/productos/${editando.id}`, formDataToSend, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        await api.put(`/admin/productos/${editando.id}`, formDataToSend);
         setMensaje({ tipo: 'success', texto: 'Producto actualizado exitosamente' });
       } else {
-        await api.post('/admin/productos', formDataToSend, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        await api.post('/admin/productos', formDataToSend);
         setMensaje({ tipo: 'success', texto: 'Producto creado exitosamente' });
       }
 

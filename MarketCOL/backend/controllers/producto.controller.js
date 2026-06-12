@@ -25,6 +25,16 @@ const path = require('path');
 // Se usa para eliminar imágenes del disco (unlink).
 const fs = require('fs').promises;
 
+const getImagenFromBody = (body = {}) => {
+  const rawValue = body.imagen ?? body.image ?? body.imagenUrl ?? body.imageUrl;
+  if (rawValue === null || rawValue === undefined) return null;
+  if (typeof rawValue !== 'string') return null;
+
+  const trimmed = rawValue.trim();
+  if (!trimmed || ['null', 'undefined'].includes(trimmed.toLowerCase())) return null;
+  return trimmed;
+};
+
 /**
  * Obtener todos los productos (admin)
  * 
@@ -38,6 +48,9 @@ const fs = require('fs').promises;
  */
 const getProductos = async (req, res) => {
   try {
+    console.log('crearProducto - Content-Type:', req.headers['content-type']);
+    console.log('crearProducto - req.file present:', !!req.file);
+    console.log('crearProducto - req.body keys:', Object.keys(req.body));
     // Extrae todos los filtros y datos de paginación de los query params
     const { 
       categoriaId, 
@@ -249,7 +262,8 @@ const crearProducto = async (req, res) => {
     // Si se subió una imagen, Multer la guarda en uploads/ y pone los datos en req.file.
     // req.file.filename es el nombre generado por Multer (ej: "producto_1719344567890_abc12.jpg")
     // Si no hay archivo, acepta también una URL o ruta de imagen enviada en el body.
-    const imagen = req.file ? req.file.filename : (req.body.imagen ? req.body.imagen.trim() : null);
+    const imagen = req.file ? req.file.filename : getImagenFromBody(req.body);
+    console.log('crearProducto - imagen resolved:', imagen);
     
     // Crea el registro en la tabla Producto (INSERT INTO Producto ...)
     const nuevoProducto = await Producto.create({
@@ -322,6 +336,9 @@ const crearProducto = async (req, res) => {
  */
 const actualizarProducto = async (req, res) => {
   try {
+    console.log('actualizarProducto - Content-Type:', req.headers['content-type']);
+    console.log('actualizarProducto - req.file present:', !!req.file);
+    console.log('actualizarProducto - req.body keys:', Object.keys(req.body));
     const { id } = req.params;   // ID del producto desde la URL
     const { nombre, descripcion, precio, stock, categoriaId, subcategoriaId, activo } = req.body;
     
@@ -393,31 +410,38 @@ const actualizarProducto = async (req, res) => {
         }
       }
       producto.imagen = req.file.filename;
-    } else if (Object.prototype.hasOwnProperty.call(req.body, 'imagen')) {
-      producto.imagen = req.body.imagen ? req.body.imagen.trim() : null;
+    } else if (Object.prototype.hasOwnProperty.call(req.body, 'imagen') ||
+               Object.prototype.hasOwnProperty.call(req.body, 'image') ||
+               Object.prototype.hasOwnProperty.call(req.body, 'imagenUrl') ||
+               Object.prototype.hasOwnProperty.call(req.body, 'imageUrl')) {
+      producto.imagen = getImagenFromBody(req.body);
+      console.log('actualizarProducto - imagen from body:', producto.imagen);
     }
-    
+
     // Actualiza SOLO los campos que se enviaron (si no se envían, no cambian)
     if (nombre !== undefined) producto.nombre = nombre;
     if (descripcion !== undefined) producto.descripcion = descripcion;
-    if (precio !== undefined) producto.precio = parseFloat(precio);
-    if (stock !== undefined) producto.stock = parseInt(stock);
-    if (categoriaId !== undefined) producto.categoriaId = parseInt(categoriaId);
-    if (subcategoriaId !== undefined) producto.subcategoriaId = parseInt(subcategoriaId);
-    if (activo !== undefined) producto.activo = activo;
-    
-    // save() ejecuta UPDATE en la BD
+    if (precio !== undefined && precio !== '') producto.precio = parseFloat(precio);
+    if (stock !== undefined && stock !== '') producto.stock = parseInt(stock, 10);
+    if (categoriaId !== undefined && categoriaId !== '') producto.categoriaId = parseInt(categoriaId, 10);
+    if (subcategoriaId !== undefined && subcategoriaId !== '') producto.subcategoriaId = parseInt(subcategoriaId, 10);
+    if (activo !== undefined) {
+      if (typeof activo === 'string') {
+        producto.activo = ['true', '1', 'on'].includes(activo.toLowerCase());
+      } else {
+        producto.activo = Boolean(activo);
+      }
+    }
+
     await producto.save();
-    
-    // Recarga el producto con sus relaciones actualizadas
+
     await producto.reload({
       include: [
         { model: Categoria, as: 'categoria', attributes: ['id', 'nombre'] },
         { model: Subcategoria, as: 'subcategoria', attributes: ['id', 'nombre'] }
       ]
     });
-    
-    // Responde con el producto actualizado
+
     res.json({
       success: true,
       message: 'Producto actualizado exitosamente',
@@ -425,7 +449,7 @@ const actualizarProducto = async (req, res) => {
         producto
       }
     });
-    
+
   } catch (error) {
     console.error('Error en actualizarProducto:', error);
     

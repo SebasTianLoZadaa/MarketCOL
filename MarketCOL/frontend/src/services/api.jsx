@@ -23,9 +23,6 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 const apiClient = axios.create({
   baseURL: API_URL,              // URL base del backend
   timeout: 30000,                // Timeout aumentado a 30 segundos
-  headers: {
-    'Content-Type': 'application/json', // Tipo de contenido por defecto
-  },
 });
 
 /**
@@ -37,12 +34,20 @@ apiClient.interceptors.request.use(
   (config) => {
     // Obtener el token del localStorage
     const token = localStorage.getItem('token');
-    
+
     // Si existe un token, agregarlo al header Authorization
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
+    // Si enviamos FormData, dejamos que Axios fije el Content-Type con el boundary correcto.
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+      delete config.headers['content-type'];
+    } else {
+      config.headers['Content-Type'] = 'application/json';
+    }
+
     return config;
   },
   (error) => {

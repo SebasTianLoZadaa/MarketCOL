@@ -144,9 +144,7 @@ const ProductoForm = ({ show, onHide, producto, onSave }) => {
       if (isEditing) {
        response = await api.put(`/admin/productos/${producto.id}`, data);
       } else {
-        response = await api.post('/admin/productos', data, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        response = await api.post('/admin/productos', data);
       }
 
       if (response.data.success) {
