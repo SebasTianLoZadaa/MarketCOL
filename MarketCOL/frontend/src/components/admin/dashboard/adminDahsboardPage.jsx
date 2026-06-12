@@ -39,7 +39,10 @@ const AdminDashboardPage = () => {
           ventasHoy: parseFloat(pedidosRes.data.data.ventasHoy || 0),
           stockBajo: stockBajo,
           totalProductos: productosRes.data.data.total || productosRes.data.data.productos.length,
-          totalClientes: usuariosRes.data.data.totalClientes || 0,
+          totalClientes: usuariosRes.data.data.totalClientes
+            || usuariosRes.data.data.porRol?.clientes
+            || usuariosRes.data.data.total
+            || 0,
         });
       } catch (err) {
         console.error('Error al cargar estadísticas:', err);
