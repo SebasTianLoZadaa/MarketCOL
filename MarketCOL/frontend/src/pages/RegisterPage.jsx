@@ -9,6 +9,21 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { isValidEmail, isValidPhone } from '../utils/helpers';
 
+const Field = ({ label, name, type = 'text', placeholder, hint, value, onChange }) => (
+  <div className="mk-field">
+    <label className="mk-label">{label}</label>
+    <input
+      className="mk-input"
+      type={type}
+      name={name}
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+    />
+    {hint && <div style={{ fontSize: 11, color: 'var(--gray)', marginTop: 4 }}>{hint}</div>}
+  </div>
+);
+
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
     nombre: '', apellido: '', email: '',
@@ -62,18 +77,6 @@ const RegisterPage = () => {
     }
   };
 
-  const Field = ({ label, name, type = 'text', placeholder, hint }) => (
-    <div className="mk-field">
-      <label className="mk-label">{label}</label>
-      <input
-        className="mk-input"
-        type={type} name={name} placeholder={placeholder}
-        value={formData[name]} onChange={handleChange}
-      />
-      {hint && <div style={{ fontSize: 11, color: 'var(--gray)', marginTop: 4 }}>{hint}</div>}
-    </div>
-  );
-
   return (
     <div style={{
       minHeight: 'calc(100vh - 60px)', background: 'var(--gray-light)',
@@ -117,15 +120,15 @@ const RegisterPage = () => {
 
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
-            <Field label="Nombre *" name="nombre" placeholder="Tu nombre" />
-            <Field label="Apellido *" name="apellido" placeholder="Tu apellido" />
-            <Field label="Email *" name="email" type="email" placeholder="tu@correo.com" />
-            <Field label="Cédula" name="cedula" placeholder="Solo números" hint="Sin puntos ni guiones" />
-            <Field label="Contraseña *" name="password" type="password" placeholder="Mín. 6 caracteres" />
-            <Field label="Confirmar contraseña *" name="confirmPassword" type="password" placeholder="Repite la contraseña" />
+            <Field label="Nombre *" name="nombre" placeholder="Tu nombre" value={formData.nombre} onChange={handleChange} />
+            <Field label="Apellido *" name="apellido" placeholder="Tu apellido" value={formData.apellido} onChange={handleChange} />
+            <Field label="Email *" name="email" type="email" placeholder="tu@correo.com" value={formData.email} onChange={handleChange} />
+            <Field label="Cédula" name="cedula" placeholder="Solo números" hint="Sin puntos ni guiones" value={formData.cedula} onChange={handleChange} />
+            <Field label="Contraseña *" name="password" type="password" placeholder="Mín. 6 caracteres" value={formData.password} onChange={handleChange} />
+            <Field label="Confirmar contraseña *" name="confirmPassword" type="password" placeholder="Repite la contraseña" value={formData.confirmPassword} onChange={handleChange} />
           </div>
 
-          <Field label="Teléfono" name="telefono" placeholder="3001234567" hint="10 dígitos, iniciando con 3" />
+          <Field label="Teléfono" name="telefono" placeholder="3001234567" hint="10 dígitos, iniciando con 3" value={formData.telefono} onChange={handleChange} />
 
           <div className="mk-field">
             <label className="mk-label">Dirección (opcional)</label>
