@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Table, Button, Badge, Form, Pagination, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Card, Table, Button, Badge, Form, Pagination, Alert, Dropdown } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import api from '../../../services/api';
 import ProveedorForm from './proveedorForm';
 import { useAuth } from '../../../context/AuthContext';
+import { exportarProveedoresAPDF, exportarProveedoresAExcel } from '../../../utils/exportUtils';
 
 const ProveedorList = () => {
   const { isAdmin } = useAuth();
+  const navigate = useNavigate();
   const [proveedores, setProveedores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -90,21 +93,59 @@ const ProveedorList = () => {
   };
 
   return (
-    <Container fluid className="py-4">
+    <Container className="py-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1>Gestión de Proveedores</h1>
-        {isAdmin && (
-          <Button variant="primary" onClick={handleCreate}>
-            <i className="bi bi-plus-circle me-2"></i>
-            Nuevo Proveedor
+        <div>
+          <h1>
+            <i className="bi bi-truck me-2"></i>
+            Gestión de Proveedores
+          </h1>
+          <p className="text-muted mb-0">
+            Administra los proveedores del sistema
+          </p>
+        </div>
+        <div>
+          <Dropdown className="d-inline-block me-2">
+            <Dropdown.Toggle variant="success" id="dropdown-exportar-proveedores">
+              <i className="bi bi-download me-1"></i>
+              Exportar
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={() => exportarProveedoresAPDF(proveedores)}>
+                <i className="bi bi-file-earmark-pdf me-2"></i>
+                Exportar a PDF
+              </Dropdown.Item>
+              <Dropdown.Item onClick={async () => exportarProveedoresAExcel(proveedores)}>
+                <i className="bi bi-file-earmark-excel me-2"></i>
+                Exportar a Excel
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+          <Button variant="outline-secondary" onClick={() => navigate('/admin')} className="me-2">
+            <i className="bi bi-arrow-left me-1"></i>
+            Volver
           </Button>
-        )}
+          {isAdmin && (
+            <Button variant="primary" onClick={handleCreate}>
+              <i className="bi bi-plus-circle me-2"></i>
+              Nuevo Proveedor
+            </Button>
+          )}
+        </div>
       </div>
+
+      <p className="text-muted mb-3">
+        Total: {paginacion.total} proveedor{paginacion.total !== 1 ? 'es' : ''}
+      </p>
 
       {error && <Alert variant="danger">{error}</Alert>}
 
       {/* Filtros */}
       <Card className="mb-4 shadow-sm">
+        <Card.Header className="bg-light">
+          <i className="bi bi-funnel me-2"></i>
+          <strong>Filtros</strong>
+        </Card.Header>
         <Card.Body>
           <Row>
             <Col md={6}>

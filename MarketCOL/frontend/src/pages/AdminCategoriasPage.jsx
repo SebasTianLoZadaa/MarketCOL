@@ -6,7 +6,7 @@
  */
 
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { Container, Card, Table, Button, Modal, Form, Alert, Badge, Dropdown, ButtonGroup, Row, Col, InputGroup } from 'react-bootstrap';
+import { Container, Card, Table, Button, Modal, Form, Alert, Badge, Dropdown, Row, Col, InputGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -33,8 +33,6 @@ const AdminCategoriasPage = () => {
     descripcion: '',
     activo: true
   });
-  
-  const [tipoExportacion, setTipoExportacion] = useState('pdf');
   
   // Paginación
   const [paginaActual, setPaginaActual] = useState(1);
@@ -206,25 +204,14 @@ const AdminCategoriasPage = () => {
           <p className="text-muted mb-0">Administra las categorías de productos</p>
         </div>
         <div>
-          <Dropdown as={ButtonGroup} className="me-2">
-            <Button 
-              variant="success" 
-              onClick={async () => {
-                if (tipoExportacion === 'pdf') {
-                  exportarCategoriasAPDF(categoriasFiltradas);
-                } else {
-                  await exportarCategoriasAExcel(categoriasFiltradas);
-                }
-              }}
-            >
-              <i className={`bi bi-file-earmark-${tipoExportacion === 'pdf' ? 'pdf' : 'excel'} me-1`}></i>
-              Exportar a {tipoExportacion === 'pdf' ? 'PDF' : 'Excel'}
-            </Button>
-            <Dropdown.Toggle split variant="success" />
+          <Dropdown className="d-inline-block me-2">
+            <Dropdown.Toggle variant="success" id="dropdown-exportar-categorias">
+              <i className="bi bi-download me-1"></i>
+              Exportar
+            </Dropdown.Toggle>
             <Dropdown.Menu>
               <Dropdown.Item 
                 onClick={() => {
-                  setTipoExportacion('pdf');
                   exportarCategoriasAPDF(categoriasFiltradas);
                 }}
               >
@@ -233,7 +220,6 @@ const AdminCategoriasPage = () => {
               </Dropdown.Item>
               <Dropdown.Item 
                 onClick={async () => {
-                  setTipoExportacion('excel');
                   await exportarCategoriasAExcel(categoriasFiltradas);
                 }}
               >
