@@ -5,7 +5,8 @@
  * Define la estructura de la tabla 'productos' en MySQL usando Sequelize ORM.
  * Cada fila representa un producto del e-commerce con nombre, precio, stock, imagen, etc.
  * Un producto pertenece a UNA categoría y UNA subcategoría (relaciones belongsTo en models/index.js).
- * La imagen se guarda como nombre de archivo; el archivo físico está en la carpeta uploads/.
+ * La imagen puede guardarse como URL pública completa o como nombre de archivo.
+ * El archivo físico, cuando existe, está en la carpeta uploads/.
  * Hooks validan consistencia categoría-subcategoría y eliminan la imagen al borrar el producto.
  */
 
@@ -87,9 +88,8 @@ const Producto = sequelize.define('Producto', {
     }
   },
 
-  // Columna 'imagen' → Nombre del archivo de imagen subido por Multer
-  // Solo guarda el nombre del archivo: "1709578800000-producto.jpg"
-  // La ruta completa es: uploads/1709578800000-producto.jpg (servida por Express como estático)
+  // Columna 'imagen' → URL pública o nombre de archivo de la imagen del producto
+  // Puede guardar una URL completa (http://...) o un nombre de archivo subido por Multer
   // Multer está configurado en config/multer.js
   imagen: {
     type: DataTypes.STRING(255),       // VARCHAR(255) → nombre del archivo o URL
@@ -288,18 +288,26 @@ const Producto = sequelize.define('Producto', {
 // Se llaman sobre UN producto: producto.hayStock(5)
 
 /**
- * obtenerUrlImagen() → Construye la URL completa de la imagen del producto
- * Combina la URL base del servidor + la ruta de uploads + el nombre del archivo
- * @returns {string|null} URL completa o null si no tiene imagen
- * Ejemplo: "http://localhost:5000/uploads/1709578800000-producto.jpg"
+ * obtenerUrlImagen() → Devuelve la URL pública de la imagen del producto
+ * Si la BD ya guarda una URL completa, la retorna tal cual.
+ * Si solo guarda el nombre del archivo, construye la URL del backend.
+ * @returns {string|null} URL pública o null si no tiene imagen
  */
 Producto.prototype.obtenerUrlImagen = function() {
   if (!this.imagen) {                      // Si no tiene imagen → retorna null
     return null;
   }
+
+  if (/^https?:\/\//i.test(this.imagen)) {
+    return this.imagen;
+  }
+
+  if (this.imagen.startsWith('/')) {
+    return this.imagen;
+  }
   
-  // Toma la URL base de la variable de entorno o usa localhost por defecto
-  const baseUrl = process.env.FRONTEND_URL || 'http://localhost:5000';
+  // Toma la URL base del backend de la variable de entorno o usa localhost por defecto
+  const baseUrl = process.env.BACKEND_URL || process.env.API_URL || 'http://localhost:5000';
   return `${baseUrl}/uploads/${this.imagen}`;  // Construye la URL completa
 };
 

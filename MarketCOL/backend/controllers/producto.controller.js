@@ -17,13 +17,7 @@ const Categoria = require('../models/Categoria');
 // Importa el modelo Subcategoria desde models/Subcategoria.js → tabla 'Subcategoria'
 const Subcategoria = require('../models/Subcategoria');
 
-// 'path' es un módulo nativo de Node.js para manejar rutas de archivos.
-// Se usa para construir la ruta completa de las imágenes en el disco.
-const path = require('path');
-
-// 'fs.promises' es el módulo nativo de Node.js para manejar archivos de forma asíncrona.
-// Se usa para eliminar imágenes del disco (unlink).
-const fs = require('fs').promises;
+const { deleteFile } = require('../config/multer');
 
 const getImagenFromBody = (body = {}) => {
   const rawValue = body.imagen ?? body.image ?? body.imagenUrl ?? body.imageUrl;
@@ -33,6 +27,36 @@ const getImagenFromBody = (body = {}) => {
   const trimmed = rawValue.trim();
   if (!trimmed || ['null', 'undefined'].includes(trimmed.toLowerCase())) return null;
   return trimmed;
+};
+
+const getPublicBaseUrl = (req) => {
+  const protocol = req.protocol || 'http';
+  const host = req.get?.('host') || req.headers?.host || 'localhost:5000';
+  return `${protocol}://${host}`;
+};
+
+const getStoredImageUrl = (req, imageValue) => {
+  if (imageValue === null || imageValue === undefined) return null;
+
+  const trimmed = String(imageValue).trim();
+  if (!trimmed || ['null', 'undefined'].includes(trimmed.toLowerCase())) return null;
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+
+  const baseUrl = getPublicBaseUrl(req);
+  const normalizedPath = trimmed.replace(/\\/g, '/').replace(/^\/+/, '');
+
+  if (normalizedPath.startsWith('uploads/') || normalizedPath.startsWith('images/')) {
+    return `${baseUrl}/${normalizedPath}`;
+  }
+
+  if (trimmed.startsWith('/')) {
+    return `${baseUrl}${trimmed}`;
+  }
+
+  return `${baseUrl}/uploads/${normalizedPath}`;
 };
 
 /**
@@ -262,7 +286,9 @@ const crearProducto = async (req, res) => {
     // Si se subió una imagen, Multer la guarda en uploads/ y pone los datos en req.file.
     // req.file.filename es el nombre generado por Multer (ej: "producto_1719344567890_abc12.jpg")
     // Si no hay archivo, acepta también una URL o ruta de imagen enviada en el body.
-    const imagen = req.file ? req.file.filename : getImagenFromBody(req.body);
+    const imagen = req.file
+      ? getStoredImageUrl(req, req.file.filename)
+      : getStoredImageUrl(req, getImagenFromBody(req.body));
     console.log('crearProducto - imagen resolved:', imagen);
     
     // Crea el registro en la tabla Producto (INSERT INTO Producto ...)
@@ -300,13 +326,7 @@ const crearProducto = async (req, res) => {
     // Si ocurrió un error y se había subido una imagen, la elimina del disco
     // para no dejar archivos huérfanos.
     if (req.file) {
-      // path.join() construye la ruta completa: __dirname (directorio actual) + ../uploads + nombre
-      const rutaImagen = path.join(__dirname, '../uploads', req.file.filename);
-      try {
-        await fs.unlink(rutaImagen);    // Elimina el archivo del disco
-      } catch (err) {
-        console.error('Error al eliminar imagen:', err);
-      }
+      deleteFile(req.file.filename);
     }
     
     // Captura errores de validación del modelo Sequelize
@@ -402,19 +422,14 @@ const actualizarProducto = async (req, res) => {
     if (req.file) {
       // Si el producto ya tenía una imagen, la elimina del disco
       if (producto.imagen) {
-        const rutaImagenAnterior = path.join(__dirname, '../uploads', producto.imagen);
-        try {
-          await fs.unlink(rutaImagenAnterior);   // Elimina el archivo anterior
-        } catch (err) {
-          console.error('Error al eliminar imagen anterior:', err);
-        }
+        deleteFile(producto.imagen);
       }
-      producto.imagen = req.file.filename;
+      producto.imagen = getStoredImageUrl(req, req.file.filename);
     } else if (Object.prototype.hasOwnProperty.call(req.body, 'imagen') ||
                Object.prototype.hasOwnProperty.call(req.body, 'image') ||
                Object.prototype.hasOwnProperty.call(req.body, 'imagenUrl') ||
                Object.prototype.hasOwnProperty.call(req.body, 'imageUrl')) {
-      producto.imagen = getImagenFromBody(req.body);
+      producto.imagen = getStoredImageUrl(req, getImagenFromBody(req.body));
       console.log('actualizarProducto - imagen from body:', producto.imagen);
     }
 
@@ -455,12 +470,7 @@ const actualizarProducto = async (req, res) => {
     
     // Si hubo error y se subió una nueva imagen, la elimina para no dejar archivos huérfanos
     if (req.file) {
-      const rutaImagen = path.join(__dirname, '../uploads', req.file.filename);
-      try {
-        await fs.unlink(rutaImagen);
-      } catch (err) {
-        console.error('Error al eliminar imagen:', err);
-      }
+      deleteFile(req.file.filename);
     }
     
     if (error.name === 'SequelizeValidationError') {

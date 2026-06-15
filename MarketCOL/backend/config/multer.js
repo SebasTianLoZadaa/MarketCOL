@@ -127,22 +127,62 @@ const upload = multer({
  * @param {String} filename - Solo el nombre del archivo a eliminar (ej: '1709578800000-foto.jpg')
  * @returns {Boolean} - true si se eliminó correctamente, false si hubo error o no existía
  */
+const getUploadFilename = (imageValue) => {
+  if (!imageValue || typeof imageValue !== 'string') return null;
+
+  const trimmed = imageValue.trim();
+  if (!trimmed) return null;
+
+  const normalized = trimmed.replace(/\\/g, '/');
+
+  if (/^https?:\/\//i.test(normalized)) {
+    try {
+      const url = new URL(normalized);
+      if (!url.pathname.startsWith('/uploads/')) {
+        return null;
+      }
+
+      return path.basename(url.pathname);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  const localPath = normalized.replace(/^\/+/, '');
+
+  if (localPath.startsWith('uploads/')) {
+    return path.basename(localPath);
+  }
+
+  if (!localPath.includes('/')) {
+    return localPath;
+  }
+
+  return null;
+};
+
 const deleteFile = (filename) => {
   try {
+    const resolvedFilename = getUploadFilename(filename);
+
+    if (!resolvedFilename) {
+      return false;
+    }
+
     // path.join() une la ruta de la carpeta uploads con el nombre del archivo.
     // Ejemplo: path.join('./uploads', '1709578800000-foto.jpg') = './uploads/1709578800000-foto.jpg'
     // Usa el separador correcto según el sistema operativo (/ en Linux, \ en Windows)
-    const filePath = path.join(uploadPath, filename);
+    const filePath = path.join(uploadPath, resolvedFilename);
     
     // Verifica si el archivo existe antes de intentar eliminarlo
     if (fs.existsSync(filePath)) {
       // fs.unlinkSync() elimina el archivo del disco de forma síncrona (espera a que termine)
       fs.unlinkSync(filePath);
-      console.log(`🗑️ Archivo eliminado: ${filename}`);
+      console.log(`🗑️ Archivo eliminado: ${resolvedFilename}`);
       return true;
     } else {
       // Si el archivo no existe, avisa pero no lanza error
-      console.log(`⚠️ Archivo no encontrado: ${filename}`);
+      console.log(`⚠️ Archivo no encontrado: ${resolvedFilename}`);
       return false;
     }
   } catch (error) {
