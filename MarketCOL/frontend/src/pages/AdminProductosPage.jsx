@@ -61,7 +61,6 @@ const AdminProductosPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [editando, setEditando] = useState(null);
   const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });
-  const [tipoExportacion, setTipoExportacion] = useState('pdf');
   
   // Estados para filtros
   const [busqueda, setBusqueda] = useState('');
@@ -327,25 +326,14 @@ const AdminProductosPage = () => {
           </p>
         </div>
         <div>
-          <Dropdown as={ButtonGroup} className="me-2">
-            <Button 
-              variant="success" 
-              onClick={async () => {
-                if (tipoExportacion === 'pdf') {
-                  exportarProductosAPDF(productosFiltrados);
-                } else {
-                  await exportarProductosAExcel(productosFiltrados);
-                }
-              }}
-            >
-              <i className={`bi bi-file-earmark-${tipoExportacion === 'pdf' ? 'pdf' : 'excel'} me-1`}></i>
-              Exportar a {tipoExportacion === 'pdf' ? 'PDF' : 'Excel'}
-            </Button>
-            <Dropdown.Toggle split variant="success" />
+          <Dropdown className="d-inline-block me-2">
+            <Dropdown.Toggle variant="success" id="dropdown-exportar-productos">
+              <i className="bi bi-download me-1"></i>
+              Exportar
+            </Dropdown.Toggle>
             <Dropdown.Menu>
               <Dropdown.Item 
                 onClick={() => {
-                  setTipoExportacion('pdf');
                   exportarProductosAPDF(productosFiltrados);
                 }}
               >
@@ -354,7 +342,6 @@ const AdminProductosPage = () => {
               </Dropdown.Item>
               <Dropdown.Item 
                 onClick={async () => {
-                  setTipoExportacion('excel');
                   await exportarProductosAExcel(productosFiltrados);
                 }}
               >
