@@ -20,7 +20,7 @@ const FEATURES = [
 ];
 
 const STATS = [
-  { label: 'Productos disponibles', value: '70+', icon: '📦' },
+  { label: 'Productos disponibles', value: '75+', icon: '📦' },
   { label: 'Pedidos diarios',       value: '50+',  icon: '🛒' },
   { label: 'Satisfacción',          value: '98%',  icon: '⭐' },
 ];

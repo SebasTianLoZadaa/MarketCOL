@@ -20,10 +20,10 @@ const ProductoForm = ({ show, onHide, producto, onSave }) => {
     categoriaId: '',
     subcategoriaId: '',
     proveedorId: '',
-    imagen: '',
   });
   const [imagen, setImagen] = useState(null);
   const [preview, setPreview] = useState('');
+  const [fileInputKey, setFileInputKey] = useState(0);
   const [categorias, setCategorias] = useState([]);
   const [subcategorias, setSubcategorias] = useState([]);
   const [proveedores, setProveedores] = useState([]);
@@ -47,7 +47,6 @@ const ProductoForm = ({ show, onHide, producto, onSave }) => {
         categoriaId: producto.categoriaId || '',
         subcategoriaId: producto.subcategoriaId || '',
         proveedorId: producto.proveedorId || '',
-        imagen: producto.imagen || '',
       });
       if (producto.imagen) {
         setPreview(producto.imagen.startsWith('http')
@@ -65,10 +64,10 @@ const ProductoForm = ({ show, onHide, producto, onSave }) => {
         categoriaId: '',
         subcategoriaId: '',
         proveedorId: '',
-        imagen: '',
       });
       setPreview('');
       setImagen(null);
+      setFileInputKey(prev => prev + 1);
     }
   }, [producto]);
 
@@ -79,6 +78,14 @@ const ProductoForm = ({ show, onHide, producto, onSave }) => {
       setSubcategorias([]);
     }
   }, [formData.categoriaId]);
+
+  useEffect(() => {
+    if (!show) {
+      setImagen(null);
+      setPreview('');
+      setFileInputKey(prev => prev + 1);
+    }
+  }, [show]);
 
   const fetchCategorias = async () => {
     try {
@@ -136,8 +143,6 @@ const ProductoForm = ({ show, onHide, producto, onSave }) => {
       if (formData.proveedorId) data.append('proveedorId', formData.proveedorId);
       if (imagen) {
         data.append('imagen', imagen);
-      } else if (formData.imagen) {
-        data.append('imagen', formData.imagen.trim());
       }
 
       let response;
@@ -205,6 +210,7 @@ const ProductoForm = ({ show, onHide, producto, onSave }) => {
               as="textarea"
               rows={2}
               name="descripcion"
+              placeholder="Ingrese descripción, ingredientes o detalles del producto"
               value={formData.descripcion}
               onChange={handleChange}
             />
@@ -277,22 +283,9 @@ const ProductoForm = ({ show, onHide, producto, onSave }) => {
           </Row>
 
           <Form.Group className="mb-3">
-            <Form.Label>URL de Imagen</Form.Label>
-            <Form.Control
-              type="text"
-              name="imagen"
-              value={formData.imagen}
-              onChange={handleChange}
-              placeholder="https://example.com/imagen.jpg"
-            />
-            <Form.Text className="text-muted">
-              Ingresa una URL de imagen si no vas a subir un archivo.
-            </Form.Text>
-          </Form.Group>
-
-          <Form.Group className="mb-3">
             <Form.Label>Archivo de Imagen</Form.Label>
             <Form.Control
+              key={fileInputKey}
               type="file"
               accept="image/*"
               onChange={handleImagenChange}
