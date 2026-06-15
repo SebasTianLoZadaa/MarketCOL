@@ -176,6 +176,8 @@ const ProductoForm = ({ show, onHide, producto, onSave }) => {
                   name="nombre"
                   value={formData.nombre}
                   onChange={handleChange}
+                  placeholder="Ingrese el nombre de su producto"
+                  autoComplete="off"
                   required
                 />
               </Form.Group>

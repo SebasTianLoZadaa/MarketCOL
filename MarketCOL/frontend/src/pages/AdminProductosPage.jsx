@@ -606,7 +606,8 @@ const AdminProductosPage = () => {
                     value={formData.nombre}
                     onChange={handleChange}
                     required
-                    placeholder="Ej: Laptop HP"
+                    placeholder="Ingrese el nombre de su producto"
+                    autoComplete="off"
                   />
                 </Form.Group>
               </Col>
