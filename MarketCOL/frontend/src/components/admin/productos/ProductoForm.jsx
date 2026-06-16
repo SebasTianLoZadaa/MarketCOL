@@ -287,7 +287,7 @@ const ProductoForm = ({ show, onHide, producto, onSave }) => {
             <Form.Control
               key={fileInputKey}
               type="file"
-              accept="image/*"
+              accept="image/*,.webp"
               onChange={handleImagenChange}
             />
             {preview && (
