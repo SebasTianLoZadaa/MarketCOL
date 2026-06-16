@@ -679,33 +679,6 @@ const actualizarStock = async (req, res) => {
   }
 };
 
-/**
- * Subir imagen suelta (solo archivo) y devolver la URL pública.
- * Ruta: POST /api/admin/upload
- * Middleware multer: upload.single('file')
- */
-const uploadImage = async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ success: false, message: 'No se subió ningún archivo' });
-    }
-
-    const url = getStoredImageUrl(req, req.file.filename);
-
-    res.json({
-      success: true,
-      data: {
-        path: url
-      }
-    });
-  } catch (error) {
-    console.error('Error en uploadImage:', error);
-    // Si hubo error, intentar eliminar el archivo subido para no dejar huérfanos
-    if (req.file) deleteFile(req.file.filename);
-    res.status(500).json({ success: false, message: 'Error al subir archivo', error: error.message });
-  }
-};
-
 // Exporta todas las funciones del controlador para usarlas en las rutas de admin.
 module.exports = {
   getProductos,          // GET    /api/admin/productos - Listar todos
@@ -714,6 +687,5 @@ module.exports = {
   actualizarProducto,    // PUT    /api/admin/productos/:id - Actualizar
   toggleProducto,        // PATCH  /api/admin/productos/:id/toggle - Activar/Desactivar
   eliminarProducto,      // DELETE /api/admin/productos/:id - Eliminar
-  actualizarStock,       // PATCH  /api/admin/productos/:id/stock - Gestionar stock
-  uploadImage            // POST   /api/admin/upload - Subir archivo y devolver URL
+  actualizarStock        // PATCH  /api/admin/productos/:id/stock - Gestionar stock
 };
