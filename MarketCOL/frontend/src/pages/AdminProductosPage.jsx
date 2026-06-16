@@ -6,11 +6,12 @@
  */
 
 import React, { useEffect, useState, useMemo, useCallback, memo, useRef } from 'react';
-import { Container, Card, Table, Button, Modal, Form, Alert, Badge, Row, Col, Dropdown, ButtonGroup, InputGroup } from 'react-bootstrap';
+import { Container, Card, Table, Button, Form, Alert, Badge, Row, Col, Dropdown, ButtonGroup, InputGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import ProductoForm from '../components/admin/productos/ProductoForm';
 import { getImageUrl } from '../utils/helpers';
 import { exportarProductosAPDF, exportarProductosAExcel } from '../utils/exportUtils';
 
@@ -587,161 +588,15 @@ const AdminProductosPage = () => {
         </Card.Footer>
       </Card>
 
-      {/* Modal para crear/editar */}
-      <Modal show={showModal} onHide={handleCloseModal} size="lg">
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {editando ? 'Editar Producto' : 'Nuevo Producto'}
-          </Modal.Title>
-        </Modal.Header>
-        <Form onSubmit={handleSubmit}>
-          <Modal.Body>
-            <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Nombre <span className="text-danger">*</span></Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="nombre"
-                    value={formData.nombre}
-                    onChange={handleChange}
-                    required
-                    placeholder="Ingrese el nombre de su producto"
-                    autoComplete="off"
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Precio <span className="text-danger">*</span></Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="precio"
-                    value={formData.precio}
-                    onChange={handleChange}
-                    required
-                    min="0"
-                    step="0.01"
-                    placeholder="0.00"
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Categoría <span className="text-danger">*</span></Form.Label>
-                  <Form.Select
-                    name="categoriaId"
-                    value={formData.categoriaId}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Seleccionar categoría...</option>
-                    {categorias.filter(c => c.activo).map((cat) => (
-                      <option key={cat.id} value={cat.id}>{cat.nombre}</option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Subcategoría</Form.Label>
-                  <Form.Select
-                    name="subcategoriaId"
-                    value={formData.subcategoriaId}
-                    onChange={handleChange}
-                    disabled={!formData.categoriaId}
-                  >
-                    <option value="">Seleccionar subcategoría...</option>
-                    {subcategoriasFiltradas.filter(s => s.activo).map((sub) => (
-                      <option key={sub.id} value={sub.id}>{sub.nombre}</option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Stock <span className="text-danger">*</span></Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="stock"
-                    value={formData.stock}
-                    onChange={handleChange}
-                    required
-                    min="0"
-                    placeholder="0"
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Proveedor</Form.Label>
-                  <Form.Select
-                    name="proveedorId"
-                    value={formData.proveedorId}
-                    onChange={handleChange}
-                  >
-                    <option value="">Sin proveedor</option>
-                    {proveedores.map(prov => (
-                      <option key={prov.id} value={prov.id}>{prov.nombre}</option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col md={12}>
-                <Form.Group className="mb-3">
-                  <Form.Label>URL de Imagen</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="imagen"
-                    value={formData.imagen}
-                    onChange={handleChange}
-                    placeholder="https://ejemplo.com/imagen.jpg"
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Descripción</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                name="descripcion"
-                value={formData.descripcion}
-                onChange={handleChange}
-                placeholder="Descripción del producto (opcional)"
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Check
-                type="checkbox"
-                name="activo"
-                label="Producto activo"
-                checked={formData.activo}
-                onChange={handleChange}
-              />
-            </Form.Group>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
-              Cancelar
-            </Button>
-            <Button variant="primary" type="submit">
-              {editando ? 'Actualizar' : 'Crear'}
-            </Button>
-          </Modal.Footer>
-        </Form>
-      </Modal>
+      <ProductoForm
+        show={showModal}
+        onHide={handleCloseModal}
+        producto={editando}
+        onSave={() => {
+          handleCloseModal();
+          loadData();
+        }}
+      />
     </Container>
   );
 };

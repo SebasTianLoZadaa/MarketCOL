@@ -85,19 +85,19 @@ const storage = multer.diskStorage({
  */
 const fileFilter = (req, file, cb) => {
   // Array con los tipos MIME permitidos (solo formatos de imagen)
-  // MIME type es un estándar que identifica el tipo de contenido de un archivo
-  const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-  
-  // Verifica si el tipo MIME del archivo subido está en la lista de permitidos
-  // includes() retorna true si el elemento está en el array
-  if (allowedMimeTypes.includes(file.mimetype)) {
-    // Si el tipo es permitido, acepta el archivo: cb(null, true)
-    // null = sin error, true = aceptar archivo
+  const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+  const allowedExtensions = ['.jpeg', '.jpg', '.png', '.gif', '.webp'];
+  const fileExtension = path.extname(file.originalname).toLowerCase();
+
+  // Verifica si el tipo MIME es de imagen o si la extensión es una imagen conocida
+  const isMimeAllowed = allowedMimeTypes.includes(file.mimetype);
+  const isImageMime = typeof file.mimetype === 'string' && file.mimetype.startsWith('image/');
+  const isExtensionAllowed = allowedExtensions.includes(fileExtension);
+
+  if (isMimeAllowed || isImageMime || isExtensionAllowed) {
     cb(null, true);
   } else {
-    // Si el tipo NO es permitido, rechaza el archivo con un mensaje de error
-    // El error será capturado por Express y enviado como respuesta al cliente
-    cb(new Error('Solo se permiten imágenes (JPG, JPEG, PNG, GIF)'), false);
+    cb(new Error('Solo se permiten imágenes (JPG, JPEG, PNG, GIF, WEBP)'), false);
   }
 };
 
