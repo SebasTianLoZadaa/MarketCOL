@@ -53,8 +53,9 @@ const ProveedorForm = ({ show, onHide, proveedor, onSave }) => {
         response = await api.post('/admin/proveedores', formData);
       }
 
-      if (response.data.success) {
-        onSave();
+      const success = response?.status >= 200 && response?.status < 300;
+      if (success) {
+        onSave?.();
         onHide();
       }
     } catch (err) {

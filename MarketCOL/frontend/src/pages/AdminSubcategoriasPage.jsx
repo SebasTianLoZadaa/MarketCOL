@@ -76,6 +76,13 @@ const AdminSubcategoriasPage = () => {
     return subcategoriasFiltradas.slice(inicio, fin);
   }, [subcategoriasFiltradas, paginaActual, registrosPorPagina]);
 
+  const categoriaNombreMap = useMemo(() => {
+    return categorias.reduce((map, categoria) => {
+      map[categoria.id] = categoria.nombre;
+      return map;
+    }, {});
+  }, [categorias]);
+
   // Resetear página cuando cambian los filtros
   useEffect(() => {
     setPaginaActual(1);
@@ -351,7 +358,7 @@ const AdminSubcategoriasPage = () => {
                     <td className="align-middle">{sub.id}</td>
                     <td className="align-middle fw-bold">{sub.nombre}</td>
                     <td className="align-middle">
-                      <Badge bg="info">{sub.categoria?.nombre || 'N/A'}</Badge>
+                      <Badge bg="info">{categoriaNombreMap[sub.categoriaId] || 'N/A'}</Badge>
                     </td>
                     <td className="align-middle">{sub.descripcion || '-'}</td>
                     <td className="align-middle">
