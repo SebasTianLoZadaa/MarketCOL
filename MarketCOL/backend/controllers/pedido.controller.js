@@ -482,30 +482,56 @@ const cancelarPedido = async (req, res) => {
  * Obtener todos los pedidos - ADMIN
  * 
  * Ruta: GET /api/admin/pedidos
- * Query params: ?estado=pendiente&usuarioId=1&pagina=1&limite=20
+ * Query params: ?estado=pendiente&usuarioId=1&buscar=texto&estadoPago=confirmado&fechaInicio=2026-01-01&fechaFin=2026-06-30&pagina=1&limite=20
  * El admin puede ver pedidos de todos los usuarios.
  */
 const getAllPedidos = async (req, res) => {
   try {
     // Extrae filtros y paginación de los query params
-    const { estado, usuarioId, pagina = 1, limite = 20 } = req.query;
+    const { estado, estadoPago, usuarioId, buscar, fechaInicio, fechaFin, pagina = 1, limite = 20 } = req.query;
     
     // Construye filtros dinámicamente según lo que se envíe
     const where = {};
     if (estado) where.estado = estado;           // Filtro por estado
+    if (estadoPago) where.estadoPago = estadoPago; // Filtro por estado de pago
     if (usuarioId) where.usuarioId = usuarioId;  // Filtro por usuario específico
+    if (fechaInicio || fechaFin) {
+      const { Op } = require('sequelize');
+      where.createdAt = {};
+      if (fechaInicio) {
+        where.createdAt[Op.gte] = new Date(fechaInicio);
+      }
+      if (fechaFin) {
+        const fin = new Date(fechaFin);
+        fin.setHours(23, 59, 59, 999);
+        where.createdAt[Op.lte] = fin;
+      }
+    }
     
-    const offset = (parseInt(pagina) - 1) * parseInt(limite);
+    const offset = (parseInt(pagina, 10) - 1) * parseInt(limite, 10);
+    
+    // Construye el include del usuario con posible filtro de búsqueda
+    const usuarioInclude = {
+      model: Usuario,
+      as: 'usuario',
+      attributes: ['id', 'nombre', 'email'],    // Datos del usuario que hizo el pedido
+      required: !!buscar
+    };
+    if (buscar) {
+      const { Op } = require('sequelize');
+      usuarioInclude.where = {
+        [Op.or]: [
+          { nombre: { [Op.like]: `%${buscar}%` } },
+          { email: { [Op.like]: `%${buscar}%` } }
+        ]
+      };
+    }
     
     // Consulta todos los pedidos con datos del usuario y detalles
     const { count, rows: pedidos } = await Pedido.findAndCountAll({
       where,
       include: [
-        {
-          model: Usuario,
-          as: 'usuario',
-          attributes: ['id', 'nombre', 'email']    // Datos del usuario que hizo el pedido
-        },
+        usuarioInclude,
         {
           model: DetallePedido,
           as: 'detalles',
@@ -516,7 +542,7 @@ const getAllPedidos = async (req, res) => {
           }]
         }
       ],
-      limit: parseInt(limite),
+      limit: parseInt(limite, 10),
       offset,
       order: [['createdAt', 'DESC']]     // Más recientes primero
     });

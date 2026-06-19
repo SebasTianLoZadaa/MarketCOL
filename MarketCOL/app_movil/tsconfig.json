@@ -24,5 +24,6 @@
   "exclude": [
     "components/parallax-scroll-view.tsx",
     "components/ui/collapsible.tsx"
-  ]
+  ],
+  "extends": "expo/tsconfig.base"
 }

@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Container, Card, Table, Button, Modal, Form, Alert, Badge, Row, Col, InputGroup, Pagination } from 'react-bootstrap';
+import { Container, Card, Table, Button, Modal, Form, Alert, Badge, Row, Col, InputGroup, Pagination, Dropdown } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -215,17 +215,22 @@ const AdminUsuariosPage = () => {
             <i className="bi bi-arrow-left me-1"></i>
             Volver
           </Button>
-          <div className="btn-group me-2">
-            <Button variant="success" onClick={() => exportarUsuariosAPDF(usuariosFiltrados)}>
-              <i className="bi bi-file-earmark-pdf me-1"></i>
+          <Dropdown className="d-inline-block me-2">
+            <Dropdown.Toggle variant="success" id="dropdown-exportar-usuarios">
+              <i className="bi bi-download me-1"></i>
               Exportar
-            </Button>
-            <Button variant="success" className="dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" />
-            <ul className="dropdown-menu">
-              <li><button className="dropdown-item" onClick={() => exportarUsuariosAPDF(usuariosFiltrados)}>PDF</button></li>
-              <li><button className="dropdown-item" onClick={() => exportarUsuariosAExcel(usuariosFiltrados)}>Excel</button></li>
-            </ul>
-          </div>
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={() => exportarUsuariosAPDF(usuariosFiltrados)}>
+                <i className="bi bi-file-earmark-pdf me-2"></i>
+                Exportar a PDF
+              </Dropdown.Item>
+              <Dropdown.Item onClick={async () => exportarUsuariosAExcel(usuariosFiltrados)}>
+                <i className="bi bi-file-earmark-excel me-2"></i>
+                Exportar a Excel
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
           {isAdmin && (
             <Button variant="primary" onClick={() => { limpiarFormulario(); setShowModal(true); }}>
               <i className="bi bi-plus-circle me-1"></i>

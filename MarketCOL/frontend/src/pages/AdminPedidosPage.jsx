@@ -7,7 +7,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Container, Row, Col, Card, Table, Button, Badge, Form, Pagination, Alert, Modal } from 'react-bootstrap';
+import { Container, Row, Col, Card, Table, Button, Badge, Form, Pagination, Alert, Modal, Dropdown } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -186,31 +186,22 @@ const AdminPedidosPage = () => {
             <i className="bi bi-arrow-left me-1"></i>
             Volver
           </Button>
-          <div className="btn-group">
-            <Button 
-              variant="success" 
-              onClick={() => tipoExportacion === 'pdf' 
-                ? exportarPedidosAPDF(pedidos) 
-                : exportarPedidosAExcel(pedidos)
-              }
-            >
-              <i className={`bi bi-file-earmark-${tipoExportacion === 'pdf' ? 'pdf' : 'excel'} me-1`}></i>
+          <Dropdown className="d-inline-block">
+            <Dropdown.Toggle variant="success" id="dropdown-exportar-pedidos">
+              <i className="bi bi-download me-1"></i>
               Exportar
-            </Button>
-            <Button variant="success" className="dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" />
-            <ul className="dropdown-menu">
-              <li>
-                <button className="dropdown-item" onClick={() => { setTipoExportacion('pdf'); exportarPedidosAPDF(pedidos); }}>
-                  <i className="bi bi-file-earmark-pdf me-2"></i>PDF
-                </button>
-              </li>
-              <li>
-                <button className="dropdown-item" onClick={() => { setTipoExportacion('excel'); exportarPedidosAExcel(pedidos); }}>
-                  <i className="bi bi-file-earmark-excel me-2"></i>Excel
-                </button>
-              </li>
-            </ul>
-          </div>
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={() => exportarPedidosAPDF(pedidos)}>
+                <i className="bi bi-file-earmark-pdf me-2"></i>
+                Exportar a PDF
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => exportarPedidosAExcel(pedidos)}>
+                <i className="bi bi-file-earmark-excel me-2"></i>
+                Exportar a Excel
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
         </div>
       </div>
 

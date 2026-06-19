@@ -23,8 +23,8 @@ const Producto = require('../models/Producto');
  */
 const getProveedores = async (req, res) => {
   try {
-    // Extrae filtros de los query params (opcionales)
-    const { activo, buscar } = req.query;
+    // Extrae filtros y paginación de los query params (opcionales)
+    const { activo, buscar, pagina = 1, limite = 10 } = req.query;
     
     // Construye el objeto where dinámicamente
     const where = {};
@@ -45,14 +45,14 @@ const getProveedores = async (req, res) => {
       ];
     }
     
-    // Consulta todos los proveedores que coinciden con los filtros
-    const proveedores = await Proveedor.findAll({
+    // Calcula el offset para paginación
+    const offset = (parseInt(pagina, 10) - 1) * parseInt(limite, 10);
+    
+    // Consulta los proveedores paginados con el total de registros
+    const { count, rows: proveedores } = await Proveedor.findAndCountAll({
       where,
-      // attributes: permite incluir campos calculados (virtuales)
       attributes: {
         include: [
-          // Subconsulta para contar productos asociados a cada proveedor
-          // NOTA: Esto requiere que la relación esté definida en los modelos
           [
             require('sequelize').literal(`(
               SELECT COUNT(*)
@@ -63,14 +63,21 @@ const getProveedores = async (req, res) => {
           ]
         ]
       },
-      order: [['nombre', 'ASC']]  // Orden alfabético por nombre
+      limit: parseInt(limite, 10),
+      offset,
+      order: [['nombre', 'ASC']]
     });
     
     res.json({
       success: true,
       data: {
         proveedores,
-        total: proveedores.length
+        paginacion: {
+          total: count,
+          pagina: parseInt(pagina, 10),
+          limite: parseInt(limite, 10),
+          totalPaginas: Math.ceil(count / parseInt(limite, 10))
+        }
       }
     });
     
