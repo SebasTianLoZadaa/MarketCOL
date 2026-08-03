@@ -17,6 +17,7 @@ const Usuario = require('../models/Usuario');
 const Categoria = require('../models/Categoria');
 const Subcategoria = require('../models/Subcategoria');
 const Producto = require('../models/Producto');
+const Proveedor = require('../models/Proveedor');
 
 /**
  * Función principal del seeder
@@ -96,9 +97,65 @@ const seedDatosCompletos = async () => {
     console.log(`\n✅ Total: ${usuariosCreados} usuarios en la base de datos\n`);
 
     // ==========================================
-    // 2. CREAR CATEGORÍAS
+    // 2. CREAR PROVEEDORES BASE
     // ==========================================
-    console.log('📁 2. CREANDO CATEGORÍAS...\n');
+    console.log('🏭 2. CREANDO PROVEEDORES BASE...\n');
+
+    const proveedoresData = [
+      {
+        nombre: 'Distribuidora El Sol',
+        contacto: 'Carlos Méndez',
+        telefono: '3001112233',
+        email: 'ventas@elsol.com',
+        direccion: 'Calle 10 # 15-20, Bogotá'
+      },
+      {
+        nombre: 'Alimentos Andina',
+        contacto: 'María Torres',
+        telefono: '3002223344',
+        email: 'contacto@andina.com',
+        direccion: 'Carrera 7 # 45-12, Medellín'
+      },
+      {
+        nombre: 'Grupo Fresco SAS',
+        contacto: 'Luis Ramírez',
+        telefono: '3003334455',
+        email: 'compras@fresco.com',
+        direccion: 'Avenida 68 # 90-30, Cali'
+      },
+      {
+        nombre: 'Limpieza Total',
+        contacto: 'Ana Gómez',
+        telefono: '3004445566',
+        email: 'ventas@limpiezatotal.com',
+        direccion: 'Diagonal 25 # 12-40, Bucaramanga'
+      },
+      {
+        nombre: 'Bebidas del Valle',
+        contacto: 'Jorge Silva',
+        telefono: '3005556677',
+        email: 'pedidos@bebidasdelvalle.com',
+        direccion: 'Transversal 15 # 20-10, Barranquilla'
+      }
+    ];
+
+    const proveedoresCreados = [];
+    for (const proveedorData of proveedoresData) {
+      const [proveedor, created] = await Proveedor.findOrCreate({
+        where: { nombre: proveedorData.nombre },
+        defaults: proveedorData
+      });
+
+      proveedoresCreados.push(proveedor);
+      console.log(`   ${created ? '✅' : 'ℹ️'} ${proveedor.nombre}`);
+    }
+
+    console.log(`\n✅ Total: ${proveedoresCreados.length} proveedores base disponibles\n`);
+
+    // ==========================================
+    // 3. CREAR CATEGORÍAS
+    // ==========================================
+    console.log('📁 3. CREANDO CATEGORÍAS...\n');
 
     const categoriasExistentes = await Categoria.count();
     
@@ -137,9 +194,9 @@ const seedDatosCompletos = async () => {
       console.log('\n✅ Total: 5 categorías creadas\n');
 
       // ==========================================
-      // 3. CREAR SUBCATEGORÍAS (3 por categoría)
+      // 4. CREAR SUBCATEGORÍAS (3 por categoría)
       // ==========================================
-      console.log('📂 3. CREANDO SUBCATEGORÍAS...\n');
+      console.log('📂 4. CREANDO SUBCATEGORÍAS...\n');
 
       const subcategoriasData = {
         'Despensa': [
@@ -189,9 +246,9 @@ const seedDatosCompletos = async () => {
       console.log('✅ Total: 15 subcategorías creadas\n');
 
       // ==========================================
-      // 4. CREAR PRODUCTOS (5 por subcategoría)
+      // 5. CREAR PRODUCTOS (5 por subcategoría)
       // ==========================================
-      console.log('📦 4. CREANDO PRODUCTOS...\n');
+      console.log('📦 5. CREANDO PRODUCTOS...\n');
 
       const productosData = {
         // DESPENSA
@@ -327,6 +384,9 @@ const seedDatosCompletos = async () => {
           
           for (const prodData of productos) {
             const nombreImagen = prodData.imagen || null;
+            const proveedorId = proveedoresCreados.length > 0
+              ? proveedoresCreados[totalProductos % proveedoresCreados.length].id
+              : null;
             
             await Producto.create({
               nombre: prodData.nombre,
@@ -335,6 +395,7 @@ const seedDatosCompletos = async () => {
               stock: prodData.stock,
               categoriaId: subcategoria.categoriaId,
               subcategoriaId: subcategoria.id,
+              proveedorId,
               imagen: nombreImagen, // Imagen definida manualmente en el seeder
               activo: true
             });
