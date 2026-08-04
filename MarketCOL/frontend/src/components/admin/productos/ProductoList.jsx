@@ -229,9 +229,11 @@ const ProductoList = () => {
                     </td>
                     <td>
                       <strong>{prod.nombre}</strong>
-                      {prod.proveedor && (
-                        <div className="small text-muted">{prod.proveedor.nombre}</div>
-                      )}
+                      <div className="small text-muted">
+                        {prod.proveedor?.nombre || prod.proveedorId && ( // fallback si no está la relación
+                          (typeof proveedores !== 'undefined' && proveedores.find?.(p => p.id === prod.proveedorId)?.nombre) || '—'
+                        )}
+                      </div>
                     </td>
                     <td>{prod.Categoria?.nombre || '—'}</td>
                     <td>{formatearPrecio(prod.precio)}</td>

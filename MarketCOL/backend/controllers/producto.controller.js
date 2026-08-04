@@ -16,6 +16,8 @@ const Categoria = require('../models/Categoria');
 
 // Importa el modelo Subcategoria desde models/Subcategoria.js → tabla 'Subcategoria'
 const Subcategoria = require('../models/Subcategoria');
+// Importa el modelo Proveedor
+const Proveedor = require('../models/Proveedor');
 
 const { deleteFile } = require('../config/multer');
 
@@ -121,6 +123,11 @@ const getProductos = async (req, res) => {
           model: Subcategoria,
           as: 'subcategoria',
           attributes: ['id', 'nombre']     // Solo trae id y nombre de la subcategoría
+        },
+        {
+          model: Proveedor,
+          as: 'proveedor',
+          attributes: ['id', 'nombre']
         }
       ],
       limit: parseInt(limite),  // Máximo de registros
@@ -178,6 +185,11 @@ const getProductoById = async (req, res) => {
           model: Subcategoria,
           as: 'subcategoria',
           attributes: ['id', 'nombre', 'activo']
+        },
+        {
+          model: Proveedor,
+          as: 'proveedor',
+          attributes: ['id','nombre','contacto']
         }
       ]
     });
@@ -221,7 +233,7 @@ const crearProducto = async (req, res) => {
   try {
     // Extrae los campos del body. Con multipart/form-data (por Multer), los campos
     // de texto vienen en req.body y el archivo en req.file.
-    const { nombre, descripcion, precio, stock, categoriaId, subcategoriaId } = req.body;
+    const { nombre, descripcion, precio, stock, categoriaId, subcategoriaId, proveedorId } = req.body;
     
     // VALIDACIÓN 1: Verifica que todos los campos obligatorios estén presentes
     if (!nombre || !precio || !categoriaId || !subcategoriaId) {
@@ -299,6 +311,7 @@ const crearProducto = async (req, res) => {
       stock: parseInt(stock) || 0,                  // Convierte a entero, default 0
       categoriaId: parseInt(categoriaId),           // FK a la tabla Categoria
       subcategoriaId: parseInt(subcategoriaId),     // FK a la tabla Subcategoria
+      proveedorId: proveedorId ? parseInt(proveedorId, 10) : null,
       imagen,                                       // Nombre del archivo, URL o null
       activo: true                                   // Se crea activo por defecto
     });
@@ -307,7 +320,8 @@ const crearProducto = async (req, res) => {
     await nuevoProducto.reload({
       include: [
         { model: Categoria, as: 'categoria', attributes: ['id', 'nombre'] },
-        { model: Subcategoria, as: 'subcategoria', attributes: ['id', 'nombre'] }
+        { model: Subcategoria, as: 'subcategoria', attributes: ['id', 'nombre'] },
+        { model: Proveedor, as: 'proveedor', attributes: ['id','nombre'] }
       ]
     });
     
@@ -360,7 +374,7 @@ const actualizarProducto = async (req, res) => {
     console.log('actualizarProducto - req.file present:', !!req.file);
     console.log('actualizarProducto - req.body keys:', Object.keys(req.body));
     const { id } = req.params;   // ID del producto desde la URL
-    const { nombre, descripcion, precio, stock, categoriaId, subcategoriaId, activo } = req.body;
+    const { nombre, descripcion, precio, stock, categoriaId, subcategoriaId, proveedorId, activo } = req.body;
     
     // Busca el producto existente por su ID
     const producto = await Producto.findByPk(id);
@@ -440,6 +454,9 @@ const actualizarProducto = async (req, res) => {
     if (stock !== undefined && stock !== '') producto.stock = parseInt(stock, 10);
     if (categoriaId !== undefined && categoriaId !== '') producto.categoriaId = parseInt(categoriaId, 10);
     if (subcategoriaId !== undefined && subcategoriaId !== '') producto.subcategoriaId = parseInt(subcategoriaId, 10);
+    if (proveedorId !== undefined) {
+      producto.proveedorId = proveedorId === '' ? null : parseInt(proveedorId, 10);
+    }
     if (activo !== undefined) {
       if (typeof activo === 'string') {
         producto.activo = ['true', '1', 'on'].includes(activo.toLowerCase());
@@ -453,7 +470,8 @@ const actualizarProducto = async (req, res) => {
     await producto.reload({
       include: [
         { model: Categoria, as: 'categoria', attributes: ['id', 'nombre'] },
-        { model: Subcategoria, as: 'subcategoria', attributes: ['id', 'nombre'] }
+        { model: Subcategoria, as: 'subcategoria', attributes: ['id', 'nombre'] },
+        { model: Proveedor, as: 'proveedor', attributes: ['id','nombre'] }
       ]
     });
 

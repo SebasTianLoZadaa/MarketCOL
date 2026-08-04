@@ -510,7 +510,7 @@ const AdminProductosPage = () => {
                       )}
                     </td>
                     <td className="align-middle">
-                      {prod.proveedor?.nombre || '—'}
+                      {prod.proveedor?.nombre || proveedores.find(p => p.id === prod.proveedorId)?.nombre || '—'}
                     </td>
                     <td className="align-middle">{formatearPrecio(prod.precio)}</td>
                     <td className="align-middle">

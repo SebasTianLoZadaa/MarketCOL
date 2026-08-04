@@ -157,98 +157,100 @@ const seedDatosCompletos = async () => {
     // ==========================================
     console.log('📁 3. CREANDO CATEGORÍAS...\n');
 
-    const categoriasExistentes = await Categoria.count();
-    
-    if (categoriasExistentes > 0) {
-      console.log('⚠️  Ya existen categorías en la base de datos.\n');
-    } else {
-      const categoriasData = [
-        {
-          nombre: 'Despensa',
-          descripcion: 'Productos de primera necesidad y alimentos'
-        },
-        {
-          nombre: 'Lacteos y Huevos',
-          descripcion: 'Productos lácteos y huevos frescos'
-        },
-        {
-          nombre: 'Bebidas',
-          descripcion: 'Bebidas para el hogar y decoración'
-        },
-        {
-          nombre: 'Limpieza y Hogar',
-          descripcion: 'Productos de limpieza y artículos para el hogar'
-        },
-        {
-          nombre: 'Frutas y Verduras',
-          descripcion: 'Frutas y verduras frescas'
-        }
-      ];
-
-      const categorias = [];
-      for (const catData of categoriasData) {
-        const categoria = await Categoria.create(catData);
-        categorias.push(categoria);
-        console.log(`   ✅ ${categoria.nombre}`);
+    const categoriasData = [
+      {
+        nombre: 'Despensa',
+        descripcion: 'Productos de primera necesidad y alimentos'
+      },
+      {
+        nombre: 'Lacteos y Huevos',
+        descripcion: 'Productos lácteos y huevos frescos'
+      },
+      {
+        nombre: 'Bebidas',
+        descripcion: 'Bebidas para el hogar y decoración'
+      },
+      {
+        nombre: 'Limpieza y Hogar',
+        descripcion: 'Productos de limpieza y artículos para el hogar'
+      },
+      {
+        nombre: 'Frutas y Verduras',
+        descripcion: 'Frutas y verduras frescas'
       }
-      console.log('\n✅ Total: 5 categorías creadas\n');
+    ];
 
-      // ==========================================
-      // 4. CREAR SUBCATEGORÍAS (3 por categoría)
-      // ==========================================
-      console.log('📂 4. CREANDO SUBCATEGORÍAS...\n');
+    const categorias = [];
+    for (const catData of categoriasData) {
+      const [categoria, created] = await Categoria.findOrCreate({
+        where: { nombre: catData.nombre },
+        defaults: catData
+      });
+      categorias.push(categoria);
+      console.log(`   ${created ? '✅' : 'ℹ️'} ${categoria.nombre}`);
+    }
+    console.log(`\n✅ Total: ${categorias.length} categorías disponibles\n`);
 
-      const subcategoriasData = {
-        'Despensa': [
-          { nombre: 'Arroz y granos', descripcion: 'Arroz, frijoles, lentejas y otros granos' },
-          { nombre: 'Aceites y vinagres', descripcion: 'Aceites vegetales y vinagres' },
-          { nombre: 'Azucar y endulzantes', descripcion: 'Azúcar, miel y otros endulzantes' }
-        ],
-        'Lacteos y Huevos': [
-          { nombre: 'Leches', descripcion: 'Leches frescas y procesadas' },
-          { nombre: 'Quesos', descripcion: 'Quesos de diferentes tipos y sabores' },
-          { nombre: 'Huevos', descripcion: 'Huevos frescos y orgánicos' }
-        ],
-        'Bebidas': [
-          { nombre: 'Gaseosas', descripcion: 'Bebidas carbonatadas' },
-          { nombre: 'Jugos', descripcion: 'Jugos naturales y procesados' },
-          { nombre: 'Aguas', descripcion: 'Agua embotellada y mineral' }
-        ],
-        'Limpieza y Hogar': [
-          { nombre: 'Detergentes', descripcion: 'Detergentes para el lavado de ropa' },
-          { nombre: 'Jabones', descripcion: 'Jabones para el baño y la limpieza' },
-          { nombre: 'Lavaloza', descripcion: 'Productos para la limpieza de utensilios de cocina' }
-        ],
-        'Frutas y Verduras': [
-          { nombre: 'Frutas', descripcion: 'Frutas frescas y secas' },
-          { nombre: 'Verduras', descripcion: 'Verduras frescas y procesadas' },
-          { nombre: 'Hortalizas', descripcion: 'Hortalizas de temporada' }
-        ]
-      };
+    // ==========================================
+    // 4. CREAR SUBCATEGORÍAS (3 por categoría)
+    // ==========================================
+    console.log('📂 4. CREANDO SUBCATEGORÍAS...\n');
 
-      const subcategorias = [];
-      for (const categoria of categorias) {
-        console.log(`📁 ${categoria.nombre}:`);
-        const subsData = subcategoriasData[categoria.nombre];
-        
-        for (const subData of subsData) {
-          const subcategoria = await Subcategoria.create({
+    const subcategoriasData = {
+      'Despensa': [
+        { nombre: 'Arroz y granos', descripcion: 'Arroz, frijoles, lentejas y otros granos' },
+        { nombre: 'Aceites y vinagres', descripcion: 'Aceites vegetales y vinagres' },
+        { nombre: 'Azucar y endulzantes', descripcion: 'Azúcar, miel y otros endulzantes' }
+      ],
+      'Lacteos y Huevos': [
+        { nombre: 'Leches', descripcion: 'Leches frescas y procesadas' },
+        { nombre: 'Quesos', descripcion: 'Quesos de diferentes tipos y sabores' },
+        { nombre: 'Huevos', descripcion: 'Huevos frescos y orgánicos' }
+      ],
+      'Bebidas': [
+        { nombre: 'Gaseosas', descripcion: 'Bebidas carbonatadas' },
+        { nombre: 'Jugos', descripcion: 'Jugos naturales y procesados' },
+        { nombre: 'Aguas', descripcion: 'Agua embotellada y mineral' }
+      ],
+      'Limpieza y Hogar': [
+        { nombre: 'Detergentes', descripcion: 'Detergentes para el lavado de ropa' },
+        { nombre: 'Jabones', descripcion: 'Jabones para el baño y la limpieza' },
+        { nombre: 'Lavaloza', descripcion: 'Productos para la limpieza de utensilios de cocina' }
+      ],
+      'Frutas y Verduras': [
+        { nombre: 'Frutas', descripcion: 'Frutas frescas y secas' },
+        { nombre: 'Verduras', descripcion: 'Verduras frescas y procesadas' },
+        { nombre: 'Hortalizas', descripcion: 'Hortalizas de temporada' }
+      ]
+    };
+
+    const subcategorias = [];
+    for (const categoria of categorias) {
+      console.log(`📁 ${categoria.nombre}:`);
+      const subsData = subcategoriasData[categoria.nombre];
+      if (!subsData) continue;
+      
+      for (const subData of subsData) {
+        const [subcategoria, created] = await Subcategoria.findOrCreate({
+          where: { nombre: subData.nombre, categoriaId: categoria.id },
+          defaults: {
             nombre: subData.nombre,
             descripcion: subData.descripcion,
             categoriaId: categoria.id,
             activo: true
-          });
-          subcategorias.push(subcategoria);
-          console.log(`   ✅ ${subcategoria.nombre}`);
-        }
-        console.log('');
+          }
+        });
+        subcategorias.push(subcategoria);
+        console.log(`   ${created ? '✅' : 'ℹ️'} ${subcategoria.nombre}`);
       }
-      console.log('✅ Total: 15 subcategorías creadas\n');
+      console.log('');
+    }
+    console.log(`✅ Total: ${subcategorias.length} subcategorías disponibles\n`);
 
-      // ==========================================
-      // 5. CREAR PRODUCTOS (5 por subcategoría)
-      // ==========================================
-      console.log('📦 5. CREANDO PRODUCTOS...\n');
+    // ==========================================
+    // 5. CREAR PRODUCTOS (5 por subcategoría)
+    // ==========================================
+    console.log('📦 5. CREANDO PRODUCTOS...\n');
 
       const productosData = {
         // DESPENSA
@@ -374,21 +376,41 @@ const seedDatosCompletos = async () => {
         ]
       };
 
+      const categoriasDisponibles = await Categoria.findAll({ where: { activo: true } });
+      const categoriaPorId = new Map(categoriasDisponibles.map(categoria => [categoria.id, categoria]));
+
+      const proveedorIdPorCategoriaNombre = {
+        'Despensa': proveedoresCreados.find(proveedor => proveedor.nombre === 'Distribuidora El Sol')?.id ?? null,
+        'Lacteos y Huevos': proveedoresCreados.find(proveedor => proveedor.nombre === 'Alimentos Andina')?.id ?? null,
+        'Bebidas': proveedoresCreados.find(proveedor => proveedor.nombre === 'Bebidas del Valle')?.id ?? null,
+        'Limpieza y Hogar': proveedoresCreados.find(proveedor => proveedor.nombre === 'Limpieza Total')?.id ?? null,
+        'Frutas y Verduras': proveedoresCreados.find(proveedor => proveedor.nombre === 'Grupo Fresco SAS')?.id ?? null
+      };
+
       let totalProductos = 0;
 
       for (const subcategoria of subcategorias) {
         const productos = productosData[subcategoria.nombre];
         
         if (productos) {
-          console.log(`📦 ${subcategoria.nombre} (${subcategoria.categoria?.nombre || 'Sin categoría'}):`);
+          const categoria = categoriaPorId.get(subcategoria.categoriaId);
+          console.log(`📦 ${subcategoria.nombre} (${categoria?.nombre || 'Sin categoría'}):`);
           
           for (const prodData of productos) {
             const nombreImagen = prodData.imagen || null;
-            const proveedorId = proveedoresCreados.length > 0
-              ? proveedoresCreados[totalProductos % proveedoresCreados.length].id
+            const proveedorId = categoria
+              ? proveedorIdPorCategoriaNombre[categoria.nombre] ?? null
               : null;
-            
-            await Producto.create({
+
+            const productoExistente = await Producto.findOne({
+              where: {
+                nombre: prodData.nombre,
+                subcategoriaId: subcategoria.id,
+                categoriaId: subcategoria.categoriaId
+              }
+            });
+
+            const productoData = {
               nombre: prodData.nombre,
               descripcion: prodData.descripcion,
               precio: prodData.precio,
@@ -396,10 +418,17 @@ const seedDatosCompletos = async () => {
               categoriaId: subcategoria.categoriaId,
               subcategoriaId: subcategoria.id,
               proveedorId,
-              imagen: nombreImagen, // Imagen definida manualmente en el seeder
+              imagen: nombreImagen,
               activo: true
-            });
-            console.log(`   ✅ ${prodData.nombre} - $${prodData.precio.toLocaleString()}`);
+            };
+
+            if (productoExistente) {
+              await productoExistente.update(productoData);
+              console.log(`   ℹ️ ${prodData.nombre} - $${prodData.precio.toLocaleString()} (actualizado)`);
+            } else {
+              await Producto.create(productoData);
+              console.log(`   ✅ ${prodData.nombre} - $${prodData.precio.toLocaleString()}`);
+            }
             totalProductos++;
           }
           console.log('');
@@ -407,7 +436,6 @@ const seedDatosCompletos = async () => {
       }
       
       console.log(`✅ Total: ${totalProductos} productos creados\n`);
-    }
 
     // ==========================================
     // RESUMEN FINAL
@@ -419,13 +447,13 @@ const seedDatosCompletos = async () => {
     const totalUsuarios = await Usuario.count();
     const totalCategorias = await Categoria.count();
     const totalSubcategorias = await Subcategoria.count();
-    const totalProductos = await Producto.count();
+    const totalProductosDb = await Producto.count();
 
     console.log('📊 RESUMEN:');
     console.log(`   👥 Usuarios: ${totalUsuarios}`);
     console.log(`   📁 Categorías: ${totalCategorias}`);
     console.log(`   📂 Subcategorías: ${totalSubcategorias}`);
-    console.log(`   📦 Productos: ${totalProductos}\n`);
+    console.log(`   📦 Productos: ${totalProductosDb}\n`);
 
     console.log('🔑 CREDENCIALES DE ACCESO:\n');
     console.log('   👨‍💼 ADMINISTRADOR');
