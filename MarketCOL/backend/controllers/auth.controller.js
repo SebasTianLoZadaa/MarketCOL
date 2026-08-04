@@ -160,11 +160,10 @@ const login = async (req, res) => {
     // Si no encontró ningún usuario con ese email
     if (!usuario) {
       // Status 401 = Unauthorized (no autorizado)
-      // Mensaje genérico "Credenciales inválidas" por seguridad
-      // (no revela si el email existe o no)
+      // Mensaje genérico por seguridad, pero con texto amigable para el usuario
       return res.status(401).json({
         success: false,
-        message: 'Credenciales inválidas'
+        message: 'Usuario o contraseña incorrectos'
       });
     }
     
@@ -187,7 +186,7 @@ const login = async (req, res) => {
     if (!passwordValida) {
       return res.status(401).json({
         success: false,
-        message: 'Credenciales inválidas'
+        message: 'Usuario o contraseña incorrectos'
       });
     }
     

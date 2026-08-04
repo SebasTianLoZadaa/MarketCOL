@@ -174,17 +174,18 @@ const LoginPage = () => {
             Crear cuenta gratis
           </Link>
 
-          {/* Cuentas de prueba */}
+          {/* Mensaje de supermercado */}
           <div style={{
             marginTop: 24, background: 'var(--gray-light)',
             borderRadius: 'var(--radius)', padding: '12px 14px',
             border: '1px solid var(--gray-border)',
           }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--carbon)', marginBottom: 4 }}>
-              Cuentas de prueba:
+              El supermercado más cerca de ti
             </div>
-            <div style={{ fontSize: 11, color: 'var(--gray)' }}>Admin: admin@ecommerce.com / admin1234</div>
-            <div style={{ fontSize: 11, color: 'var(--gray)' }}>Cliente: cliente1@ecommerce.com / cliente1</div>
+            <div style={{ fontSize: 11, color: 'var(--gray)' }}>
+              Compra productos frescos de tu barrio y recibe ofertas exclusivas todas las semanas.
+            </div>
           </div>
         </div>
       </div>
