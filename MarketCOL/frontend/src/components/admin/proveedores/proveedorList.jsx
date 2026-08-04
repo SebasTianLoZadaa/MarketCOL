@@ -59,6 +59,10 @@ const ProveedorList = () => {
     setFiltros(prev => ({ ...prev, pagina: page }));
   };
 
+  const handleClearFilters = () => {
+    setFiltros({ buscar: '', activo: '', pagina: 1, limite: 10 });
+  };
+
   const handleToggle = async (id) => {
     try {
       await api.patch(`/admin/proveedores/${id}/toggle`);
@@ -173,6 +177,14 @@ const ProveedorList = () => {
                   <option value="false">Inactivos</option>
                 </Form.Select>
               </Form.Group>
+            </Col>
+            <Col md={3} className="d-flex align-items-end">
+              <div>
+                <Button variant="outline-secondary" onClick={handleClearFilters}>
+                  <i className="bi bi-arrow-clockwise me-1"></i>
+                  Limpiar filtros
+                </Button>
+              </div>
             </Col>
           </Row>
         </Card.Body>
