@@ -16,8 +16,21 @@ import { getThemeColor } from '../../constants/theme';
 // useColorShema hook que detecta si el dispositivo está en modo claro u oscuro
 import { useColorScheme } from '../../hooks/use-color-scheme';
 
+// Funciones de los iconos de las pestañas
+const renderTiendaIcon = ({ color }: { color: string }) => (
+    <IconSymbol size={28} name="house.fill" color={color} />
+);
+
+const renderCarritoIcon = ({ color }: { color: string }) => (
+    <IconSymbol size={28} name="cart.fill" color={color} />
+);
+
+const renderCuentaIcon = ({ color }: { color: string }) => (
+    <IconSymbol size={28} name="person.fill" color={color} />
+);
+
 // TabLayout componente principal que configura toda la barra de navegacion
-//expo Router lo exporta como default y lo monta automaticamente 
+//expo Router lo exporta como default y lo monta automaticamente
 export default function TabLayout() {
     //ColorShema valor 'light' o 'dark' segun la preferencia del sistema
     const colorSheme = useColorScheme();
@@ -46,11 +59,11 @@ export default function TabLayout() {
                     title: 'Tienda',
                     //tabBarIcon funcion q recibe el color activo o incativo y devuelve el icono
                     //house.fill = icono de casa rellena (representa e icono de la tienda)
-                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color}/>,
+                    tabBarIcon: renderTiendaIcon,
                 }}
-                />
+            />
 
-                {/** pestaña 2 carrito
+            {/** pestaña 2 carrito
              * name=carrito -> apunta al archivo /carrito.tsx 
              */}
             <Tabs.Screen
@@ -60,11 +73,11 @@ export default function TabLayout() {
                     title: 'Carrito',
                     //tabBarIcon funcion q recibe el color activo o incativo y devuelve el icono
                     //house.fill = icono de casa rellena (representa e icono de la tienda)
-                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="cart.fill" color={color}/>,
+                    tabBarIcon: renderCarritoIcon,
                 }}
-                />
+            />
 
-                {/** pestaña 3 cuenta
+            {/** pestaña 3 cuenta
              * name=explore -> apunta al archivo /explore.tsx 
              */}
             <Tabs.Screen
@@ -74,11 +87,10 @@ export default function TabLayout() {
                     title: 'Cuenta',
                     //tabBarIcon funcion q recibe el color activo o incativo y devuelve el icono
                     //house.fill = icono de casa rellena (representa e icono de la tienda)
-                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color}/>,
+                    tabBarIcon: renderCuentaIcon,
                 }}
-                />
+            />
 
-
-            </Tabs>
-    )
+        </Tabs>
+    );
 }

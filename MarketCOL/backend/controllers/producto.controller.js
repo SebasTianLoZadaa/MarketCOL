@@ -2,55 +2,153 @@
  * ============================================
  * CONTROLADOR DE PRODUCTOS (Admin)
  * ============================================
+ *
  * CRUD completo de productos con subida de imágenes (Multer).
- * Incluye: listar, ver, crear, actualizar, toggle, eliminar, gestión de stock.
- * Solo accesible por administradores (protegido por middleware checkRole).
+ * Incluye:
+ * - Listar productos
+ * - Ver producto
+ * - Crear producto
+ * - Actualizar producto
+ * - Activar/desactivar producto
+ * - Eliminar producto
+ * - Gestión de stock
+ *
  * Las rutas están definidas en routes/admin.routes.js
  */
 
-// Importa el modelo Producto desde models/Producto.js → tabla 'Producto'
 const Producto = require('../models/Producto');
-
-// Importa el modelo Categoria desde models/Categoria.js → tabla 'Categoria'
 const Categoria = require('../models/Categoria');
-
-// Importa el modelo Subcategoria desde models/Subcategoria.js → tabla 'Subcategoria'
 const Subcategoria = require('../models/Subcategoria');
-// Importa el modelo Proveedor
 const Proveedor = require('../models/Proveedor');
 
+const { Op } = require('sequelize');
 const { deleteFile } = require('../config/multer');
 
+// ==========================================
+// FUNCIONES AUXILIARES
+// ==========================================
+
+/**
+ * Valida y convierte un ID a entero positivo seguro.
+ *
+ * Retorna null si el valor no es válido.
+ */
+const parsePositiveInteger = (value) => {
+  if (
+    value === undefined ||
+    value === null ||
+    value === ''
+  ) {
+    return null;
+  }
+
+  const stringValue = String(value).trim();
+
+  if (!/^\d+$/.test(stringValue)) {
+    return null;
+  }
+
+  const numberValue = Number(stringValue);
+
+  if (
+    !Number.isSafeInteger(numberValue) ||
+    numberValue <= 0
+  ) {
+    return null;
+  }
+
+  return numberValue;
+};
+
+/**
+ * Obtiene una imagen enviada desde el body.
+ */
 const getImagenFromBody = (body = {}) => {
-  const rawValue = body.imagen ?? body.image ?? body.imagenUrl ?? body.imageUrl;
-  if (rawValue === null || rawValue === undefined) return null;
-  if (typeof rawValue !== 'string') return null;
+  const rawValue =
+    body.imagen ??
+    body.image ??
+    body.imagenUrl ??
+    body.imageUrl;
+
+  if (
+    rawValue === null ||
+    rawValue === undefined
+  ) {
+    return null;
+  }
+
+  if (typeof rawValue !== 'string') {
+    return null;
+  }
 
   const trimmed = rawValue.trim();
-  if (!trimmed || ['null', 'undefined'].includes(trimmed.toLowerCase())) return null;
+
+  if (
+    !trimmed ||
+    ['null', 'undefined'].includes(
+      trimmed.toLowerCase()
+    )
+  ) {
+    return null;
+  }
+
   return trimmed;
 };
 
+/**
+ * Obtiene la URL pública base del servidor.
+ */
 const getPublicBaseUrl = (req) => {
   const protocol = req.protocol || 'http';
-  const host = req.get?.('host') || req.headers?.host || 'localhost:5000';
+
+  const host =
+    req.get?.('host') ||
+    req.headers?.host ||
+    'localhost:5000';
+
   return `${protocol}://${host}`;
 };
 
+/**
+ * Convierte una ruta de imagen almacenada
+ * en una URL pública.
+ */
 const getStoredImageUrl = (req, imageValue) => {
-  if (imageValue === null || imageValue === undefined) return null;
+  if (
+    imageValue === null ||
+    imageValue === undefined
+  ) {
+    return null;
+  }
 
   const trimmed = String(imageValue).trim();
-  if (!trimmed || ['null', 'undefined'].includes(trimmed.toLowerCase())) return null;
 
+  if (
+    !trimmed ||
+    ['null', 'undefined'].includes(
+      trimmed.toLowerCase()
+    )
+  ) {
+    return null;
+  }
+
+  /*
+   * Si ya es una URL absoluta se conserva.
+   */
   if (/^https?:\/\//i.test(trimmed)) {
     return trimmed;
   }
 
   const baseUrl = getPublicBaseUrl(req);
-  const normalizedPath = trimmed.replace(/\\/g, '/').replace(/^\/+/, '');
 
-  if (normalizedPath.startsWith('uploads/') || normalizedPath.startsWith('images/')) {
+  const normalizedPath = trimmed
+    .replace(/\\/g, '/')
+    .replace(/^\/+/, '');
+
+  if (
+    normalizedPath.startsWith('uploads/') ||
+    normalizedPath.startsWith('images/')
+  ) {
     return `${baseUrl}/${normalizedPath}`;
   }
 
@@ -61,649 +159,1548 @@ const getStoredImageUrl = (req, imageValue) => {
   return `${baseUrl}/uploads/${normalizedPath}`;
 };
 
+// ==========================================
+// GET PRODUCTOS
+// ==========================================
+
 /**
  * Obtener todos los productos (admin)
- * 
- * Ruta: GET /api/admin/productos
+ *
+ * Ruta:
+ * GET /api/admin/productos
+ *
  * Query params opcionales:
- * - categoriaId, subcategoriaId: Filtrar por categoría/subcategoría
- * - activo: 'true'/'false'
- * - conStock: 'true' → solo productos con stock > 0
- * - buscar: texto para buscar en nombre o descripción
- * - pagina, limite: Paginación
+ * - categoriaId
+ * - subcategoriaId
+ * - activo
+ * - conStock
+ * - buscar
+ * - pagina
+ * - limite
  */
 const getProductos = async (req, res) => {
   try {
-    console.log('crearProducto - Content-Type:', req.headers['content-type']);
-    console.log('crearProducto - req.file present:', !!req.file);
-    console.log('crearProducto - req.body keys:', Object.keys(req.body));
-    // Extrae todos los filtros y datos de paginación de los query params
-    const { 
-      categoriaId, 
-      subcategoriaId, 
-      activo, 
+    const {
+      categoriaId,
+      subcategoriaId,
+      activo,
       conStock,
       buscar,
-      pagina = 1,       // Página actual (default: 1)
-      limite = 100       // Registros por página (default: 100)
+      pagina = '1',
+      limite = '100'
     } = req.query;
-    
-    // Construye el objeto WHERE dinámicamente según los filtros recibidos
+
+    // ==========================================
+    // VALIDAR CATEGORÍA
+    // ==========================================
+
+    const categoriaIdNum =
+      categoriaId !== undefined
+        ? parsePositiveInteger(categoriaId)
+        : null;
+
+    if (
+      categoriaId !== undefined &&
+      categoriaIdNum === null
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'El ID de categoría no es válido'
+      });
+    }
+
+    // ==========================================
+    // VALIDAR SUBCATEGORÍA
+    // ==========================================
+
+    const subcategoriaIdNum =
+      subcategoriaId !== undefined
+        ? parsePositiveInteger(subcategoriaId)
+        : null;
+
+    if (
+      subcategoriaId !== undefined &&
+      subcategoriaIdNum === null
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'El ID de subcategoría no es válido'
+      });
+    }
+
+    // ==========================================
+    // VALIDAR ACTIVO
+    // ==========================================
+
+    let activoValue;
+
+    if (activo !== undefined) {
+      if (
+        activo !== 'true' &&
+        activo !== 'false'
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            'El parámetro activo debe ser true o false'
+        });
+      }
+
+      activoValue = activo === 'true';
+    }
+
+    // ==========================================
+    // VALIDAR STOCK
+    // ==========================================
+
+    if (
+      conStock !== undefined &&
+      conStock !== 'true' &&
+      conStock !== 'false'
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'El parámetro conStock debe ser true o false'
+      });
+    }
+
+    // ==========================================
+    // VALIDAR BÚSQUEDA
+    // ==========================================
+
+    let buscarValue = '';
+
+    if (buscar !== undefined) {
+      if (typeof buscar !== 'string') {
+        return res.status(400).json({
+          success: false,
+          message:
+            'El parámetro buscar no es válido'
+        });
+      }
+
+      buscarValue = buscar.trim();
+
+      if (buscarValue.length > 100) {
+        return res.status(400).json({
+          success: false,
+          message:
+            'El texto de búsqueda es demasiado largo'
+        });
+      }
+    }
+
+    // ==========================================
+    // VALIDAR PAGINACIÓN
+    // ==========================================
+
+    const paginaNum =
+      parsePositiveInteger(pagina);
+
+    const limiteNum =
+      parsePositiveInteger(limite);
+
+    if (paginaNum === null) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'El número de página no es válido'
+      });
+    }
+
+    if (
+      limiteNum === null ||
+      limiteNum > 100
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'El límite debe estar entre 1 y 100'
+      });
+    }
+
+    // ==========================================
+    // CONSTRUIR WHERE
+    // ==========================================
+
     const where = {};
-    if (categoriaId) where.categoriaId = categoriaId;           // Filtra por categoría
-    if (subcategoriaId) where.subcategoriaId = subcategoriaId;  // Filtra por subcategoría
-    if (activo !== undefined) where.activo = activo === 'true';  // Convierte string a boolean
-    // Op.gt = greater than (>). stock > 0
-    if (conStock === 'true') where.stock = { [require('sequelize').Op.gt]: 0 };
-    
-    // Búsqueda por texto en nombre o descripción
-    if (buscar) {
-      const { Op } = require('sequelize');
-      // Op.or: busca en nombre O descripción
-      // Op.like: equivale a LIKE en SQL
+
+    if (categoriaIdNum !== null) {
+      where.categoriaId = categoriaIdNum;
+    }
+
+    if (subcategoriaIdNum !== null) {
+      where.subcategoriaId =
+        subcategoriaIdNum;
+    }
+
+    if (activoValue !== undefined) {
+      where.activo = activoValue;
+    }
+
+    if (conStock === 'true') {
+      where.stock = {
+        [Op.gt]: 0
+      };
+    }
+
+    // ==========================================
+    // BÚSQUEDA POR TEXTO
+    // ==========================================
+
+    if (buscarValue) {
       where[Op.or] = [
-        { nombre: { [Op.like]: `%${buscar}%` } },
-        { descripcion: { [Op.like]: `%${buscar}%` } }
+        {
+          nombre: {
+            [Op.like]: `%${buscarValue}%`
+          }
+        },
+        {
+          descripcion: {
+            [Op.like]: `%${buscarValue}%`
+          }
+        }
       ];
     }
-    
-    // Calcula el offset para paginación (cuántos registros saltar)
-    const offset = (parseInt(pagina) - 1) * parseInt(limite);
-    
-    // Opciones completas de la consulta Sequelize
+
+    // ==========================================
+    // PAGINACIÓN
+    // ==========================================
+
+    const offset =
+      (paginaNum - 1) * limiteNum;
+
+    // ==========================================
+    // OPCIONES SEQUELIZE
+    // ==========================================
+
     const opciones = {
-      where,                    // Filtros construidos arriba
-      include: [                // JOINs con tablas relacionadas
+      where,
+
+      include: [
         {
           model: Categoria,
           as: 'categoria',
-          attributes: ['id', 'nombre']     // Solo trae id y nombre de la categoría
+          attributes: [
+            'id',
+            'nombre'
+          ]
         },
         {
           model: Subcategoria,
           as: 'subcategoria',
-          attributes: ['id', 'nombre']     // Solo trae id y nombre de la subcategoría
+          attributes: [
+            'id',
+            'nombre'
+          ]
         },
         {
           model: Proveedor,
           as: 'proveedor',
-          attributes: ['id', 'nombre']
+          attributes: [
+            'id',
+            'nombre'
+          ]
         }
       ],
-      limit: parseInt(limite),  // Máximo de registros
-      offset,                   // Registros a saltar
-      order: [['nombre', 'ASC']]  // Ordenar alfabéticamente A-Z
+
+      limit: limiteNum,
+      offset,
+
+      order: [
+        ['nombre', 'ASC']
+      ]
     };
-    
-    // findAndCountAll retorna { count: total, rows: registros de esta página }
-    const { count, rows: productos } = await Producto.findAndCountAll(opciones);
-    
-    // Responde con los productos y la información de paginación
+
+    const {
+      count,
+      rows: productos
+    } = await Producto.findAndCountAll(
+      opciones
+    );
+
+    // ==========================================
+    // RESPUESTA
+    // ==========================================
+
     res.json({
       success: true,
       data: {
         productos,
+
         paginacion: {
-          total: count,                     // Total de productos que coinciden
-          pagina: parseInt(pagina),
-          limite: parseInt(limite),
-          totalPaginas: Math.ceil(count / parseInt(limite))  // Redondea hacia arriba
+          total: count,
+          pagina: paginaNum,
+          limite: limiteNum,
+          totalPaginas:
+            Math.ceil(
+              count / limiteNum
+            )
         }
       }
     });
-    
+
   } catch (error) {
-    console.error('Error en getProductos:', error);
+    console.error(
+      'Error en getProductos:',
+      error
+    );
+
     res.status(500).json({
       success: false,
-      message: 'Error al obtener productos',
-      error: error.message
+      message:
+        'Error al obtener productos'
     });
   }
 };
 
+// ==========================================
+// GET PRODUCTO POR ID
+// ==========================================
+
 /**
- * Obtener un producto por ID (admin)
- * 
- * Ruta: GET /api/admin/productos/:id
- * Retorna el producto con su categoría y subcategoría.
+ * Obtener un producto por ID.
+ *
+ * Ruta:
+ * GET /api/admin/productos/:id
  */
 const getProductoById = async (req, res) => {
   try {
-    const { id } = req.params;  // ID del producto desde la URL
-    
-    // findByPk busca por Primary Key (clave primaria = id)
-    // include hace JOINs con Categoria y Subcategoria
-    const producto = await Producto.findByPk(id, {
+    const productoId =
+      parsePositiveInteger(
+        req.params.id
+      );
+
+    if (productoId === null) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'ID de producto inválido'
+      });
+    }
+
+    const producto =
+      await Producto.findByPk(
+        productoId,
+        {
+          include: [
+            {
+              model: Categoria,
+              as: 'categoria',
+              attributes: [
+                'id',
+                'nombre',
+                'activo'
+              ]
+            },
+            {
+              model: Subcategoria,
+              as: 'subcategoria',
+              attributes: [
+                'id',
+                'nombre',
+                'activo'
+              ]
+            },
+            {
+              model: Proveedor,
+              as: 'proveedor',
+              attributes: [
+                'id',
+                'nombre',
+                'contacto'
+              ]
+            }
+          ]
+        }
+      );
+
+    if (!producto) {
+      return res.status(404).json({
+        success: false,
+        message:
+          'Producto no encontrado'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        producto
+      }
+    });
+
+  } catch (error) {
+    console.error(
+      'Error en getProductoById:',
+      error
+    );
+
+    res.status(500).json({
+      success: false,
+      message:
+        'Error al obtener producto'
+    });
+  }
+};
+
+// ==========================================
+// CREAR PRODUCTO
+// ==========================================
+
+/**
+ * Crear nuevo producto.
+ *
+ * Ruta:
+ * POST /api/admin/productos
+ */
+const crearProducto = async (req, res) => {
+  try {
+
+    const {
+      nombre,
+      descripcion,
+      precio,
+      stock,
+      categoriaId,
+      subcategoriaId,
+      proveedorId
+    } = req.body;
+
+    // ==========================================
+    // VALIDAR CAMPOS OBLIGATORIOS
+    // ==========================================
+
+    if (
+      !nombre ||
+      !precio ||
+      !categoriaId ||
+      !subcategoriaId
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'Faltan campos requeridos: nombre, precio, categoriaId y subcategoriaId'
+      });
+    }
+
+    // ==========================================
+    // VALIDAR IDs
+    // ==========================================
+
+    const categoriaIdNum =
+      parsePositiveInteger(
+        categoriaId
+      );
+
+    const subcategoriaIdNum =
+      parsePositiveInteger(
+        subcategoriaId
+      );
+
+    if (categoriaIdNum === null) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'El ID de categoría no es válido'
+      });
+    }
+
+    if (subcategoriaIdNum === null) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'El ID de subcategoría no es válido'
+      });
+    }
+
+    // ==========================================
+    // VALIDAR PROVEEDOR
+    // ==========================================
+
+    let proveedorIdNum = null;
+
+    if (
+      proveedorId !== undefined &&
+      proveedorId !== null &&
+      proveedorId !== ''
+    ) {
+      proveedorIdNum =
+        parsePositiveInteger(
+          proveedorId
+        );
+
+      if (proveedorIdNum === null) {
+        return res.status(400).json({
+          success: false,
+          message:
+            'El ID de proveedor no es válido'
+        });
+      }
+    }
+
+    // ==========================================
+    // VALIDAR CATEGORÍA
+    // ==========================================
+
+    const categoria =
+      await Categoria.findByPk(
+        categoriaIdNum
+      );
+
+    if (!categoria) {
+      return res.status(404).json({
+        success: false,
+        message:
+          'No existe la categoría seleccionada'
+      });
+    }
+
+    if (!categoria.activo) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'La categoría está inactiva'
+      });
+    }
+
+    // ==========================================
+    // VALIDAR SUBCATEGORÍA
+    // ==========================================
+
+    const subcategoria =
+      await Subcategoria.findByPk(
+        subcategoriaIdNum
+      );
+
+    if (!subcategoria) {
+      return res.status(404).json({
+        success: false,
+        message:
+          'No existe la subcategoría seleccionada'
+      });
+    }
+
+    if (!subcategoria.activo) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'La subcategoría está inactiva'
+      });
+    }
+
+    if (
+      subcategoria.categoriaId !==
+      categoriaIdNum
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'La subcategoría no pertenece a la categoría seleccionada'
+      });
+    }
+
+    // ==========================================
+    // VALIDAR PRECIO
+    // ==========================================
+
+    const precioNum =
+      Number(precio);
+
+    if (
+      !Number.isFinite(precioNum) ||
+      precioNum <= 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'El precio debe ser mayor a 0'
+      });
+    }
+
+    // ==========================================
+    // VALIDAR STOCK
+    // ==========================================
+
+    const stockNum =
+      stock === undefined ||
+      stock === ''
+        ? 0
+        : Number(stock);
+
+    if (
+      !Number.isInteger(stockNum) ||
+      stockNum < 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'El stock debe ser un número entero no negativo'
+      });
+    }
+
+    // ==========================================
+    // IMAGEN
+    // ==========================================
+
+    const imagen = req.file
+      ? getStoredImageUrl(
+          req,
+          req.file.filename
+        )
+      : getStoredImageUrl(
+          req,
+          getImagenFromBody(req.body)
+        );
+
+    // ==========================================
+    // CREAR PRODUCTO
+    // ==========================================
+
+    const nuevoProducto =
+      await Producto.create({
+        nombre,
+        descripcion:
+          descripcion || null,
+
+        precio: precioNum,
+
+        stock: stockNum,
+
+        categoriaId:
+          categoriaIdNum,
+
+        subcategoriaId:
+          subcategoriaIdNum,
+
+        proveedorId:
+          proveedorIdNum,
+
+        imagen,
+
+        activo: true
+      });
+
+    // ==========================================
+    // RECARGAR RELACIONES
+    // ==========================================
+
+    await nuevoProducto.reload({
       include: [
         {
           model: Categoria,
           as: 'categoria',
-          attributes: ['id', 'nombre', 'activo']   // Incluye si está activa
+          attributes: [
+            'id',
+            'nombre'
+          ]
         },
         {
           model: Subcategoria,
           as: 'subcategoria',
-          attributes: ['id', 'nombre', 'activo']
+          attributes: [
+            'id',
+            'nombre'
+          ]
         },
         {
           model: Proveedor,
           as: 'proveedor',
-          attributes: ['id','nombre','contacto']
+          attributes: [
+            'id',
+            'nombre'
+          ]
         }
       ]
     });
-    
-    // Si no existe el producto
-    if (!producto) {
-      return res.status(404).json({
-        success: false,
-        message: 'Producto no encontrado'
-      });
-    }
-    
-    // Responde con el producto encontrado
-    res.json({
-      success: true,
-      data: {
-        producto
-      }
-    });
-    
-  } catch (error) {
-    console.error('Error en getProductoById:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error al obtener producto',
-      error: error.message
-    });
-  }
-};
 
-/**
- * Crear nuevo producto (admin)
- * 
- * Ruta: POST /api/admin/productos
- * Body (multipart/form-data) porque puede incluir imagen:
- * - nombre (requerido), descripcion, precio (requerido), stock (requerido)
- * - categoriaId (requerido), subcategoriaId (requerido)
- * - imagen (archivo opcional - procesado por Multer middleware)
- */
-const crearProducto = async (req, res) => {
-  try {
-    // Extrae los campos del body. Con multipart/form-data (por Multer), los campos
-    // de texto vienen en req.body y el archivo en req.file.
-    const { nombre, descripcion, precio, stock, categoriaId, subcategoriaId, proveedorId } = req.body;
-    
-    // VALIDACIÓN 1: Verifica que todos los campos obligatorios estén presentes
-    if (!nombre || !precio || !categoriaId || !subcategoriaId) {
-      return res.status(400).json({
-        success: false,
-        message: 'Faltan campos requeridos: nombre, precio, categoriaId y subcategoriaId'
-      });
-    }
-    
-    // VALIDACIÓN 2: Verifica que la categoría exista y esté activa
-    const categoria = await Categoria.findByPk(categoriaId);
-    if (!categoria) {
-      return res.status(404).json({
-        success: false,
-        message: `No existe una categoría con ID ${categoriaId}`
-      });
-    }
-    if (!categoria.activo) {
-      return res.status(400).json({
-        success: false,
-        message: `La categoría "${categoria.nombre}" está inactiva`
-      });
-    }
-    
-    // VALIDACIÓN 3: Verifica que la subcategoría exista, esté activa y pertenezca a la categoría
-    const subcategoria = await Subcategoria.findByPk(subcategoriaId);
-    if (!subcategoria) {
-      return res.status(404).json({
-        success: false,
-        message: `No existe una subcategoría con ID ${subcategoriaId}`
-      });
-    }
-    if (!subcategoria.activo) {
-      return res.status(400).json({
-        success: false,
-        message: `La subcategoría "${subcategoria.nombre}" está inactiva`
-      });
-    }
-    // Verifica que la subcategoría pertenezca a la categoría seleccionada
-    if (subcategoria.categoriaId !== parseInt(categoriaId)) {
-      return res.status(400).json({
-        success: false,
-        message: `La subcategoría "${subcategoria.nombre}" no pertenece a la categoría seleccionada`
-      });
-    }
-    
-    // VALIDACIÓN 4: Precio debe ser mayor a 0
-    if (parseFloat(precio) <= 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'El precio debe ser mayor a 0'
-      });
-    }
-    // Stock no puede ser negativo
-    if (parseInt(stock) < 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'El stock no puede ser negativo'
-      });
-    }
-    
-    // Si se subió una imagen, Multer la guarda en uploads/ y pone los datos en req.file.
-    // req.file.filename es el nombre generado por Multer (ej: "producto_1719344567890_abc12.jpg")
-    // Si no hay archivo, acepta también una URL o ruta de imagen enviada en el body.
-    const imagen = req.file
-      ? getStoredImageUrl(req, req.file.filename)
-      : getStoredImageUrl(req, getImagenFromBody(req.body));
-    console.log('crearProducto - imagen resolved:', imagen);
-    
-    // Crea el registro en la tabla Producto (INSERT INTO Producto ...)
-    const nuevoProducto = await Producto.create({
-      nombre,
-      descripcion: descripcion || null,            // Null si no se envía
-      precio: parseFloat(precio),                   // Convierte a número decimal
-      stock: parseInt(stock) || 0,                  // Convierte a entero, default 0
-      categoriaId: parseInt(categoriaId),           // FK a la tabla Categoria
-      subcategoriaId: parseInt(subcategoriaId),     // FK a la tabla Subcategoria
-      proveedorId: proveedorId ? parseInt(proveedorId, 10) : null,
-      imagen,                                       // Nombre del archivo, URL o null
-      activo: true                                   // Se crea activo por defecto
-    });
-    
-    // Recarga el producto con sus relaciones (categoría y subcategoría)
-    await nuevoProducto.reload({
-      include: [
-        { model: Categoria, as: 'categoria', attributes: ['id', 'nombre'] },
-        { model: Subcategoria, as: 'subcategoria', attributes: ['id', 'nombre'] },
-        { model: Proveedor, as: 'proveedor', attributes: ['id','nombre'] }
-      ]
-    });
-    
-    // 201 = Created
     res.status(201).json({
       success: true,
-      message: 'Producto creado exitosamente',
+      message:
+        'Producto creado exitosamente',
+
       data: {
         producto: nuevoProducto
       }
     });
-    
+
   } catch (error) {
-    console.error('Error en crearProducto:', error);
-    
-    // Si ocurrió un error y se había subido una imagen, la elimina del disco
-    // para no dejar archivos huérfanos.
+
+    console.error(
+      'Error en crearProducto:',
+      error
+    );
+
+    // Elimina archivo si falló la creación.
     if (req.file) {
-      deleteFile(req.file.filename);
+      deleteFile(
+        req.file.filename
+      );
     }
-    
-    // Captura errores de validación del modelo Sequelize
-    if (error.name === 'SequelizeValidationError') {
+
+    if (
+      error.name ===
+      'SequelizeValidationError'
+    ) {
       return res.status(400).json({
         success: false,
-        message: 'Errores de validación',
-        errors: error.errors.map(e => e.message)
+        message:
+          'Errores de validación',
+
+        errors:
+          error.errors.map(
+            (e) => e.message
+          )
       });
     }
-    
+
     res.status(500).json({
       success: false,
-      message: 'Error al crear producto',
-      error: error.message
+      message:
+        'Error al crear producto'
     });
   }
 };
 
+// ==========================================
+// ACTUALIZAR PRODUCTO
+// ==========================================
+
 /**
- * Actualizar producto existente (admin)
- * 
- * Ruta: PUT /api/admin/productos/:id
- * Body (multipart/form-data):
- * - nombre, descripcion, precio, stock, categoriaId, subcategoriaId, activo
- * - imagen (archivo opcional - si se envía, reemplaza la anterior)
+ * Actualizar producto existente.
+ *
+ * Ruta:
+ * PUT /api/admin/productos/:id
  */
-const actualizarProducto = async (req, res) => {
+const actualizarProducto = async (
+  req,
+  res
+) => {
   try {
-    console.log('actualizarProducto - Content-Type:', req.headers['content-type']);
-    console.log('actualizarProducto - req.file present:', !!req.file);
-    console.log('actualizarProducto - req.body keys:', Object.keys(req.body));
-    const { id } = req.params;   // ID del producto desde la URL
-    const { nombre, descripcion, precio, stock, categoriaId, subcategoriaId, proveedorId, activo } = req.body;
-    
-    // Busca el producto existente por su ID
-    const producto = await Producto.findByPk(id);
-    
+
+    const productoId =
+      parsePositiveInteger(
+        req.params.id
+      );
+
+    if (productoId === null) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'ID de producto inválido'
+      });
+    }
+
+    const {
+      nombre,
+      descripcion,
+      precio,
+      stock,
+      categoriaId,
+      subcategoriaId,
+      proveedorId,
+      activo
+    } = req.body;
+
+    // ==========================================
+    // BUSCAR PRODUCTO
+    // ==========================================
+
+    const producto =
+      await Producto.findByPk(
+        productoId
+      );
+
     if (!producto) {
       return res.status(404).json({
         success: false,
-        message: 'Producto no encontrado'
+        message:
+          'Producto no encontrado'
       });
-    }
-    
-    // VALIDACIÓN: Si se cambia la categoría, verifica que exista y esté activa
-    if (categoriaId && categoriaId !== producto.categoriaId) {
-      const categoria = await Categoria.findByPk(categoriaId);
-      if (!categoria || !categoria.activo) {
-        return res.status(400).json({
-          success: false,
-          message: 'Categoría inválida o inactiva'
-        });
-      }
-    }
-    
-    // VALIDACIÓN: Si se cambia la subcategoría, verifica que exista, esté activa
-    // y pertenezca a la categoría (nueva o actual)
-    if (subcategoriaId && subcategoriaId !== producto.subcategoriaId) {
-      const subcategoria = await Subcategoria.findByPk(subcategoriaId);
-      if (!subcategoria || !subcategoria.activo) {
-        return res.status(400).json({
-          success: false,
-          message: 'Subcategoría inválida o inactiva'
-        });
-      }
-      
-      // Usa la nueva categoría si se envió, o la actual del producto
-      const catId = categoriaId || producto.categoriaId;
-      if (subcategoria.categoriaId !== parseInt(catId)) {
-        return res.status(400).json({
-          success: false,
-          message: 'La subcategoría no pertenece a la categoría seleccionada'
-        });
-      }
-    }
-    
-    // Validaciones de precio y stock
-    if (precio && parseFloat(precio) <= 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'El precio debe ser mayor a 0'
-      });
-    }
-    if (stock && parseInt(stock) < 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'El stock no puede ser negativo'
-      });
-    }
-    
-    // Si se subió una nueva imagen, reemplaza la anterior
-    if (req.file) {
-      // Si el producto ya tenía una imagen, la elimina del disco
-      if (producto.imagen) {
-        deleteFile(producto.imagen);
-      }
-      producto.imagen = getStoredImageUrl(req, req.file.filename);
-    } else if (Object.prototype.hasOwnProperty.call(req.body, 'imagen') ||
-               Object.prototype.hasOwnProperty.call(req.body, 'image') ||
-               Object.prototype.hasOwnProperty.call(req.body, 'imagenUrl') ||
-               Object.prototype.hasOwnProperty.call(req.body, 'imageUrl')) {
-      producto.imagen = getStoredImageUrl(req, getImagenFromBody(req.body));
-      console.log('actualizarProducto - imagen from body:', producto.imagen);
     }
 
-    // Actualiza SOLO los campos que se enviaron (si no se envían, no cambian)
-    if (nombre !== undefined) producto.nombre = nombre;
-    if (descripcion !== undefined) producto.descripcion = descripcion;
-    if (precio !== undefined && precio !== '') producto.precio = parseFloat(precio);
-    if (stock !== undefined && stock !== '') producto.stock = parseInt(stock, 10);
-    if (categoriaId !== undefined && categoriaId !== '') producto.categoriaId = parseInt(categoriaId, 10);
-    if (subcategoriaId !== undefined && subcategoriaId !== '') producto.subcategoriaId = parseInt(subcategoriaId, 10);
-    if (proveedorId !== undefined) {
-      producto.proveedorId = proveedorId === '' ? null : parseInt(proveedorId, 10);
-    }
-    if (activo !== undefined) {
-      if (typeof activo === 'string') {
-        producto.activo = ['true', '1', 'on'].includes(activo.toLowerCase());
-      } else {
-        producto.activo = Boolean(activo);
+    // ==========================================
+    // VALIDAR CATEGORÍA
+    // ==========================================
+
+    let categoriaIdNum =
+      producto.categoriaId;
+
+    if (
+      categoriaId !== undefined &&
+      categoriaId !== ''
+    ) {
+      categoriaIdNum =
+        parsePositiveInteger(
+          categoriaId
+        );
+
+      if (categoriaIdNum === null) {
+        return res.status(400).json({
+          success: false,
+          message:
+            'El ID de categoría no es válido'
+        });
+      }
+
+      if (
+        categoriaIdNum !==
+        producto.categoriaId
+      ) {
+        const categoria =
+          await Categoria.findByPk(
+            categoriaIdNum
+          );
+
+        if (
+          !categoria ||
+          !categoria.activo
+        ) {
+          return res.status(400).json({
+            success: false,
+            message:
+              'Categoría inválida o inactiva'
+          });
+        }
       }
     }
+
+    // ==========================================
+    // VALIDAR SUBCATEGORÍA
+    // ==========================================
+
+    if (
+      subcategoriaId !== undefined &&
+      subcategoriaId !== ''
+    ) {
+
+      const subcategoriaIdNum =
+        parsePositiveInteger(
+          subcategoriaId
+        );
+
+      if (subcategoriaIdNum === null) {
+        return res.status(400).json({
+          success: false,
+          message:
+            'El ID de subcategoría no es válido'
+        });
+      }
+
+      if (
+        subcategoriaIdNum !==
+        producto.subcategoriaId
+      ) {
+
+        const subcategoria =
+          await Subcategoria.findByPk(
+            subcategoriaIdNum
+          );
+
+        if (
+          !subcategoria ||
+          !subcategoria.activo
+        ) {
+          return res.status(400).json({
+            success: false,
+            message:
+              'Subcategoría inválida o inactiva'
+          });
+        }
+
+        if (
+          subcategoria.categoriaId !==
+          categoriaIdNum
+        ) {
+          return res.status(400).json({
+            success: false,
+            message:
+              'La subcategoría no pertenece a la categoría seleccionada'
+          });
+        }
+      }
+    }
+
+    // ==========================================
+    // VALIDAR PRECIO
+    // ==========================================
+
+    if (
+      precio !== undefined &&
+      precio !== ''
+    ) {
+      const precioNum =
+        Number(precio);
+
+      if (
+        !Number.isFinite(precioNum) ||
+        precioNum <= 0
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            'El precio debe ser mayor a 0'
+        });
+      }
+
+      producto.precio =
+        precioNum;
+    }
+
+    // ==========================================
+    // VALIDAR STOCK
+    // ==========================================
+
+    if (
+      stock !== undefined &&
+      stock !== ''
+    ) {
+      const stockNum =
+        Number(stock);
+
+      if (
+        !Number.isInteger(stockNum) ||
+        stockNum < 0
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            'El stock debe ser un número entero no negativo'
+        });
+      }
+
+      producto.stock =
+        stockNum;
+    }
+
+    // ==========================================
+    // VALIDAR PROVEEDOR
+    // ==========================================
+
+    if (
+      proveedorId !== undefined
+    ) {
+
+      if (proveedorId === '') {
+
+        producto.proveedorId =
+          null;
+
+      } else {
+
+        const proveedorIdNum =
+          parsePositiveInteger(
+            proveedorId
+          );
+
+        if (
+          proveedorIdNum === null
+        ) {
+          return res.status(400).json({
+            success: false,
+            message:
+              'El ID de proveedor no es válido'
+          });
+        }
+
+        producto.proveedorId =
+          proveedorIdNum;
+      }
+    }
+
+    // ==========================================
+    // IMAGEN
+    // ==========================================
+
+    if (req.file) {
+
+      if (producto.imagen) {
+        deleteFile(
+          producto.imagen
+        );
+      }
+
+      producto.imagen =
+        getStoredImageUrl(
+          req,
+          req.file.filename
+        );
+
+    } else if (
+      Object.prototype.hasOwnProperty.call(
+        req.body,
+        'imagen'
+      ) ||
+      Object.prototype.hasOwnProperty.call(
+        req.body,
+        'image'
+      ) ||
+      Object.prototype.hasOwnProperty.call(
+        req.body,
+        'imagenUrl'
+      ) ||
+      Object.prototype.hasOwnProperty.call(
+        req.body,
+        'imageUrl'
+      )
+    ) {
+
+      producto.imagen =
+        getStoredImageUrl(
+          req,
+          getImagenFromBody(req.body)
+        );
+    }
+
+    // ==========================================
+    // ACTUALIZAR CAMPOS
+    // ==========================================
+
+    if (
+      nombre !== undefined
+    ) {
+      producto.nombre =
+        nombre;
+    }
+
+    if (
+      descripcion !== undefined
+    ) {
+      producto.descripcion =
+        descripcion;
+    }
+
+    if (
+      categoriaId !== undefined &&
+      categoriaId !== ''
+    ) {
+      producto.categoriaId =
+        categoriaIdNum;
+    }
+
+    if (
+      subcategoriaId !== undefined &&
+      subcategoriaId !== ''
+    ) {
+
+      producto.subcategoriaId =
+        parsePositiveInteger(
+          subcategoriaId
+        );
+    }
+
+    if (
+      activo !== undefined
+    ) {
+
+      if (
+        typeof activo === 'string'
+      ) {
+
+        producto.activo =
+          [
+            'true',
+            '1',
+            'on'
+          ].includes(
+            activo.toLowerCase()
+          );
+
+      } else {
+
+        producto.activo =
+          Boolean(activo);
+      }
+    }
+
+    // ==========================================
+    // GUARDAR
+    // ==========================================
 
     await producto.save();
 
+    // ==========================================
+    // RECARGAR RELACIONES
+    // ==========================================
+
     await producto.reload({
       include: [
-        { model: Categoria, as: 'categoria', attributes: ['id', 'nombre'] },
-        { model: Subcategoria, as: 'subcategoria', attributes: ['id', 'nombre'] },
-        { model: Proveedor, as: 'proveedor', attributes: ['id','nombre'] }
+        {
+          model: Categoria,
+          as: 'categoria',
+          attributes: [
+            'id',
+            'nombre'
+          ]
+        },
+        {
+          model: Subcategoria,
+          as: 'subcategoria',
+          attributes: [
+            'id',
+            'nombre'
+          ]
+        },
+        {
+          model: Proveedor,
+          as: 'proveedor',
+          attributes: [
+            'id',
+            'nombre'
+          ]
+        }
       ]
     });
 
     res.json({
       success: true,
-      message: 'Producto actualizado exitosamente',
+      message:
+        'Producto actualizado exitosamente',
+
       data: {
         producto
       }
     });
 
   } catch (error) {
-    console.error('Error en actualizarProducto:', error);
-    
-    // Si hubo error y se subió una nueva imagen, la elimina para no dejar archivos huérfanos
+
+    console.error(
+      'Error en actualizarProducto:',
+      error
+    );
+
     if (req.file) {
-      deleteFile(req.file.filename);
+      deleteFile(
+        req.file.filename
+      );
     }
-    
-    if (error.name === 'SequelizeValidationError') {
+
+    if (
+      error.name ===
+      'SequelizeValidationError'
+    ) {
       return res.status(400).json({
         success: false,
-        message: 'Errores de validación',
-        errors: error.errors.map(e => e.message)
+        message:
+          'Errores de validación',
+
+        errors:
+          error.errors.map(
+            (e) => e.message
+          )
       });
     }
-    
+
     res.status(500).json({
       success: false,
-      message: 'Error al actualizar producto',
-      error: error.message
+      message:
+        'Error al actualizar producto'
     });
   }
 };
 
+// ==========================================
+// TOGGLE PRODUCTO
+// ==========================================
+
 /**
- * Activar/Desactivar producto (toggle) (admin)
- * 
- * Ruta: PATCH /api/admin/productos/:id/toggle
- * Invierte el estado activo del producto.
+ * Activar/desactivar producto.
+ *
+ * Ruta:
+ * PATCH /api/admin/productos/:id/toggle
  */
-const toggleProducto = async (req, res) => {
+const toggleProducto = async (
+  req,
+  res
+) => {
   try {
-    const { id } = req.params;
-    
-    // Busca el producto por ID
-    const producto = await Producto.findByPk(id);
-    
+
+    const productoId =
+      parsePositiveInteger(
+        req.params.id
+      );
+
+    if (productoId === null) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'ID de producto inválido'
+      });
+    }
+
+    const producto =
+      await Producto.findByPk(
+        productoId
+      );
+
     if (!producto) {
       return res.status(404).json({
         success: false,
-        message: 'Producto no encontrado'
+        message:
+          'Producto no encontrado'
       });
     }
-    
-    // Invierte el estado: true → false, false → true
-    producto.activo = !producto.activo;
+
+    producto.activo =
+      !producto.activo;
+
     await producto.save();
-    
-    // Responde indicando el nuevo estado
+
     res.json({
       success: true,
-      message: `Producto ${producto.activo ? 'activado' : 'desactivado'} exitosamente`,
+      message:
+        `Producto ${
+          producto.activo
+            ? 'activado'
+            : 'desactivado'
+        } exitosamente`,
+
       data: {
         producto
       }
     });
-    
+
   } catch (error) {
-    console.error('Error en toggleProducto:', error);
+
+    console.error(
+      'Error en toggleProducto:',
+      error
+    );
+
     res.status(500).json({
       success: false,
-      message: 'Error al cambiar estado del producto',
-      error: error.message
+      message:
+        'Error al cambiar estado del producto'
     });
   }
 };
 
+// ==========================================
+// ELIMINAR PRODUCTO
+// ==========================================
+
 /**
- * Eliminar producto (admin)
- * 
- * Ruta: DELETE /api/admin/productos/:id
- * Elimina el producto de la BD. El hook beforeDestroy del modelo
- * se encarga de eliminar la imagen del disco automáticamente.
+ * Eliminar producto.
+ *
+ * Ruta:
+ * DELETE /api/admin/productos/:id
  */
-const eliminarProducto = async (req, res) => {
+const eliminarProducto = async (
+  req,
+  res
+) => {
   try {
-    const { id } = req.params;
-    
-    const producto = await Producto.findByPk(id);
-    
+
+    const productoId =
+      parsePositiveInteger(
+        req.params.id
+      );
+
+    if (productoId === null) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'ID de producto inválido'
+      });
+    }
+
+    const producto =
+      await Producto.findByPk(
+        productoId
+      );
+
     if (!producto) {
       return res.status(404).json({
         success: false,
-        message: 'Producto no encontrado'
+        message:
+          'Producto no encontrado'
       });
     }
-    
-    // destroy() ejecuta DELETE FROM Producto WHERE id = :id
-    // El hook beforeDestroy del modelo elimina la imagen del disco automáticamente.
+
     await producto.destroy();
-    
+
     res.json({
       success: true,
-      message: 'Producto eliminado exitosamente'
+      message:
+        'Producto eliminado exitosamente'
     });
-    
+
   } catch (error) {
-    console.error('Error en eliminarProducto:', error);
+
+    console.error(
+      'Error en eliminarProducto:',
+      error
+    );
+
     res.status(500).json({
       success: false,
-      message: 'Error al eliminar producto',
-      error: error.message
+      message:
+        'Error al eliminar producto'
     });
   }
 };
 
+// ==========================================
+// ACTUALIZAR STOCK
+// ==========================================
+
 /**
- * Actualizar stock de un producto (admin)
- * 
- * Ruta: PATCH /api/admin/productos/:id/stock
- * Body JSON: { cantidad, operacion: 'aumentar' | 'reducir' | 'establecer' }
- * 
- * - aumentar: suma la cantidad al stock actual
- * - reducir: resta la cantidad del stock actual
- * - establecer: reemplaza el stock con la cantidad dada
+ * Actualizar stock de un producto.
+ *
+ * Ruta:
+ * PATCH /api/admin/productos/:id/stock
+ *
+ * Body:
+ * {
+ *   cantidad,
+ *   operacion
+ * }
+ *
+ * Operaciones:
+ * - aumentar
+ * - reducir
+ * - establecer
  */
-const actualizarStock = async (req, res) => {
+const actualizarStock = async (
+  req,
+  res
+) => {
   try {
-    const { id } = req.params;
-    const { cantidad, operacion } = req.body;   // Datos del body JSON
-    
-    // Valida que se enviaron ambos campos
-    if (cantidad === undefined || operacion === undefined) {
+
+    const productoId =
+      parsePositiveInteger(
+        req.params.id
+      );
+
+    if (productoId === null) {
       return res.status(400).json({
         success: false,
-        message: 'Se requiere cantidad y operación'
+        message:
+          'ID de producto inválido'
       });
     }
-    
-    // Convierte la cantidad a número entero
-    const cantidadNum = parseInt(cantidad);
-    if (Number.isNaN(cantidadNum) || cantidadNum < 0) {
+
+    const {
+      cantidad,
+      operacion
+    } = req.body;
+
+    // ==========================================
+    // VALIDAR CAMPOS
+    // ==========================================
+
+    if (
+      cantidad === undefined ||
+      operacion === undefined
+    ) {
       return res.status(400).json({
         success: false,
-        message: 'La cantidad debe ser un número entero no negativo'
+        message:
+          'Se requiere cantidad y operación'
       });
     }
-    
-    // Busca el producto por ID
-    const producto = await Producto.findByPk(id);
-    
+
+    // ==========================================
+    // VALIDAR CANTIDAD
+    // ==========================================
+
+    const cantidadNum =
+      Number(cantidad);
+
+    if (
+      !Number.isInteger(
+        cantidadNum
+      ) ||
+      cantidadNum < 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'La cantidad debe ser un número entero no negativo'
+      });
+    }
+
+    // ==========================================
+    // VALIDAR OPERACIÓN
+    // ==========================================
+
+    const operacionesValidas = [
+      'aumentar',
+      'reducir',
+      'establecer'
+    ];
+
+    if (
+      typeof operacion !== 'string' ||
+      !operacionesValidas.includes(
+        operacion
+      )
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'Operación inválida. Usa: aumentar, reducir o establecer'
+      });
+    }
+
+    // ==========================================
+    // BUSCAR PRODUCTO
+    // ==========================================
+
+    const producto =
+      await Producto.findByPk(
+        productoId
+      );
+
     if (!producto) {
       return res.status(404).json({
         success: false,
-        message: 'Producto no encontrado'
+        message:
+          'Producto no encontrado'
       });
     }
-    
-    const stockAnterior = producto.stock; // mantiene el stock antes de aplicar el cambio
+
+    const stockAnterior =
+      producto.stock;
+
     let nuevoStock;
-    
-    // Según la operación, calcula el nuevo stock
+
+    // ==========================================
+    // APLICAR OPERACIÓN
+    // ==========================================
+
     switch (operacion) {
+
       case 'aumentar':
-        // aumentarStock() es un método async del modelo Producto que suma cantidades y guarda
-        await producto.aumentarStock(cantidadNum);
-        nuevoStock = producto.stock;
+
+        await producto.aumentarStock(
+          cantidadNum
+        );
+
+        nuevoStock =
+          producto.stock;
+
         break;
+
       case 'reducir':
-        // Verifica que haya suficiente stock antes de reducir
-        if (cantidadNum > producto.stock) {
+
+        if (
+          cantidadNum >
+          producto.stock
+        ) {
           return res.status(400).json({
             success: false,
-            message: `No hay suficiente stock. Stock actual: ${producto.stock}`
+            message:
+              `No hay suficiente stock. Stock actual: ${producto.stock}`
           });
         }
-        // reducirStock() es un método async del modelo Producto que resta cantidades y guarda
-        await producto.reducirStock(cantidadNum);
-        nuevoStock = producto.stock;
+
+        await producto.reducirStock(
+          cantidadNum
+        );
+
+        nuevoStock =
+          producto.stock;
+
         break;
+
       case 'establecer':
-        // Simplemente establece el valor directamente
-        producto.stock = cantidadNum;
+
+        producto.stock =
+          cantidadNum;
+
         await producto.save();
-        nuevoStock = producto.stock;
+
+        nuevoStock =
+          producto.stock;
+
         break;
+
       default:
-        // Si la operación no es válida
+
         return res.status(400).json({
           success: false,
-          message: 'Operación inválida. Usa: aumentar, reducir o establecer'
+          message:
+            'Operación inválida'
         });
     }
 
-    if (Number.isNaN(nuevoStock)) {
+    // ==========================================
+    // VALIDAR RESULTADO
+    // ==========================================
+
+    if (
+      !Number.isInteger(
+        nuevoStock
+      ) ||
+      nuevoStock < 0
+    ) {
       return res.status(500).json({
         success: false,
-        message: 'Error al calcular el nuevo stock'
+        message:
+          'Error al calcular el nuevo stock'
       });
     }
-    
-    // Responde con el resultado de la operación
+
+    // ==========================================
+    // RESPUESTA
+    // ==========================================
+
     res.json({
       success: true,
-      // Ternario anidado para personalizar el mensaje según la operación
-      message: `Stock ${operacion === 'aumentar' ? 'aumentado' : operacion === 'reducir' ? 'reducido' : 'establecido'} exitosamente`,
+
+      message:
+        `Stock ${
+          operacion === 'aumentar'
+            ? 'aumentado'
+            : operacion === 'reducir'
+              ? 'reducido'
+              : 'establecido'
+        } exitosamente`,
+
       data: {
-        productoId: producto.id,
-        nombre: producto.nombre,
-        stockAnterior: operacion === 'establecer' ? null : stockAnterior,
-        stockNuevo: producto.stock
+        productoId:
+          producto.id,
+
+        nombre:
+          producto.nombre,
+
+        stockAnterior:
+          operacion === 'establecer'
+            ? null
+            : stockAnterior,
+
+        stockNuevo:
+          producto.stock
       }
     });
-    
+
   } catch (error) {
-    console.error('Error en actualizarStock:', error);
+
+    console.error(
+      'Error en actualizarStock:',
+      error
+    );
+
     res.status(500).json({
       success: false,
-      message: 'Error al actualizar stock',
-      error: error.message
+      message:
+        'Error al actualizar stock'
     });
   }
 };
 
-// Exporta todas las funciones del controlador para usarlas en las rutas de admin.
+// ==========================================
+// EXPORTAR CONTROLADORES
+// ==========================================
+
 module.exports = {
-  getProductos,          // GET    /api/admin/productos - Listar todos
-  getProductoById,       // GET    /api/admin/productos/:id - Ver uno
-  crearProducto,         // POST   /api/admin/productos - Crear nuevo
-  actualizarProducto,    // PUT    /api/admin/productos/:id - Actualizar
-  toggleProducto,        // PATCH  /api/admin/productos/:id/toggle - Activar/Desactivar
-  eliminarProducto,      // DELETE /api/admin/productos/:id - Eliminar
-  actualizarStock        // PATCH  /api/admin/productos/:id/stock - Gestionar stock
+  getProductos,
+  getProductoById,
+  crearProducto,
+  actualizarProducto,
+  toggleProducto,
+  eliminarProducto,
+  actualizarStock
 };
