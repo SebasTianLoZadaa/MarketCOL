@@ -11,7 +11,7 @@
 // Este modelo representa la tabla 'Usuario' en la BD y permite hacer operaciones CRUD.
 const Usuario = require('../models/Usuario');
 
-// Importa la función generateToken desde config/jwt.js.
+// Importa la función generateToken desde config/jwt.js.  
 // Se usa para crear un token JWT después de un registro o login exitoso.
 const { generateToken } = require('../config/jwt');
 
