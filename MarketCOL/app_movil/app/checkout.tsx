@@ -34,7 +34,7 @@ const routerReplace = (path: string) => (router as unknown as { replace: (p: str
 // Métodos de pago de MarketCOL
 const PAYMENT_METHODS = [
   { key: 'whatsapp',  label: 'WhatsApp', icon: 'logo-whatsapp', color: '#25D366' },
-  { key: 'efectivo',  label: 'Efectivo', icon: 'cash-outline', color: '#28a745' },
+  { key: 'efectivo',  label: 'Efectivo', icon: 'cash-outline', color: '#B01F1F' },
 ];
 
 const fmt = (n: number) => `$${Number(n).toLocaleString('es-CO')}`;
@@ -57,10 +57,10 @@ export default function CheckoutScreen() {
   if (!isAuthenticated) {
     return (
       <View style={styles.centered}>
-        <Ionicons name="lock-closed" size={60} color="#28a745" />
+        <Ionicons name="lock-closed" size={60} color="#D92B2B" />
         <ThemedText type="title">Inicia Sesión</ThemedText>
         <ThemedText style={styles.subtitle}>Debes iniciar sesión para finalizar tu pedido.</ThemedText>
-        <Pressable style={styles.primaryButton} onPress={() => routerReplace('/(tabs)/explore')}>
+        <Pressable style={styles.primaryButton} onPress={() => routerReplace('/tabs')}>
           <ThemedText style={styles.primaryButtonText}>Ir a Cuenta</ThemedText>
         </Pressable>
       </View>
@@ -71,10 +71,10 @@ export default function CheckoutScreen() {
   if (!loading && items.length === 0) {
     return (
       <View style={styles.centered}>
-        <Ionicons name="cart-outline" size={60} color="#28a745" />
+        <Ionicons name="cart-outline" size={60} color="#D92B2B" />
         <ThemedText type="title">Carrito Vacío</ThemedText>
         <ThemedText style={styles.subtitle}>Agrega productos antes de continuar.</ThemedText>
-        <Pressable style={styles.primaryButton} onPress={() => routerReplace('/(tabs)/')}>
+        <Pressable style={styles.primaryButton} onPress={() => routerReplace('/tabs')}>
           <ThemedText style={styles.primaryButtonText}>Volver a la Tienda</ThemedText>
         </Pressable>
       </View>
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
   content: { padding: 16, gap: 12 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10, padding: 16 },
   subtitle: { color: '#666' },
-  verde: { color: '#28a745', fontWeight: '600' },
+  verde: { color: '#D92B2B', fontWeight: '600' },
   label: { marginTop: 6, fontWeight: '600' },
   required: { color: '#e74c3c' },
   section: { borderRadius: 12, padding: 12, gap: 6 },
@@ -264,15 +264,15 @@ const styles = StyleSheet.create({
   infoText: { color: '#25D366', fontSize: 12, fontStyle: 'italic', marginTop: 4 },
   summary: {
     borderWidth: 1,
-    borderColor: '#dceeff',
-    backgroundColor: '#f6fbff',
+    borderColor: 'rgba(217,43,43,0.18)',
+    backgroundColor: 'rgba(217,43,43,0.08)',
     borderRadius: 12,
     padding: 12,
     gap: 8,
   },
   summaryRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   summaryLabel: { color: '#555' },
-  total: { fontSize: 18, fontWeight: '700', color: '#28a745', marginTop: 4 },
+  total: { fontSize: 18, fontWeight: '700', color: '#D92B2B', marginTop: 4 },
   primaryButton: {
     flexDirection: 'row',
     borderRadius: 10,
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: '#28a745',
+    backgroundColor: '#D92B2B',
   },
   primaryButtonDisabled: { opacity: 0.45 },
   primaryButtonText: { color: '#fff', fontWeight: '700', fontSize: 16 },

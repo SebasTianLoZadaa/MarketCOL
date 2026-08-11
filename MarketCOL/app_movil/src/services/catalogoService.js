@@ -7,6 +7,20 @@
  */
 
 import apiClient from '../api/apiClient';
+import { API_BASE_URL } from '../utils/constants';
+
+const normalizeImagePath = (imagePath = '') => {
+    if (typeof imagePath !== 'string') return '';
+    return imagePath.trim().replace(/\\/g, '/').replace(/^\/+/, '');
+};
+
+const getBackendOrigin = () => {
+    try {
+        return new URL(API_BASE_URL).origin;
+    } catch (error) {
+        return 'http://10.0.2.2:5000';
+    }
+};
 
 const catalogoService = {
     /**
@@ -69,9 +83,9 @@ const catalogoService = {
      * 
      * - Si no hay ruta, devuelve un placeholder gris.
      * - Si ya es una URL absoluta (http/https), la devuelve tal cual.
-     * - Si es una ruta relativa, la prefija con la URL del backend en /images/ (catálogo estático).
+    * - Si es una ruta relativa, la prefija con la URL del backend.
      * 
-     * @param {string} path - Ruta de imagen (ej: 'BEBIDAS/AGUA.png' o '/images/BEBIDAS/AGUA.png')
+     * @param {string} path - Ruta de la imagen (ej: '/images/productos/DESPENSA/ARROZ.webp')
      * @returns {string} URL completa de la imagen
      */
     buildImageUrl: (path) => {
@@ -83,16 +97,17 @@ const catalogoService = {
             return path;
         }
 
-        // URL base del backend (emulador Android)
-        const origin = 'http://10.0.2.2:5000';
-        
-        // Si ya tiene la ruta /images/, devolverla tal cual
-        if (path.startsWith('/images/')) {
-            return `${origin}${path}`;
+        const normalizedPath = normalizeImagePath(path);
+        if (!normalizedPath) {
+            return 'https://via.placeholder.com/300/200.png?text=Producto';
         }
-        
-        // Si es una ruta relativa, agregarlo a /images/
-        return `${origin}/images/${path.replace(/^\//, '')}`;
+
+        const origin = getBackendOrigin();
+        if (normalizedPath.startsWith('uploads/') || normalizedPath.startsWith('images/')) {
+            return `${origin}/${normalizedPath}`;
+        }
+
+        return `${origin}/images/${normalizedPath}`;
     },
 };
 

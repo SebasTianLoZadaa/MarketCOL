@@ -8,6 +8,16 @@ import axios from 'axios';
 import { API_BASE_URL, API_TIMEOUT_MS, STORAGE_KEYS } from '../utils/constants';
 import { storageGetItem } from '../utils/storage';
 
+const normalizeErrorMessage = (message = '') => {
+    const normalized = `${message}`.toLowerCase().trim();
+
+    if (normalized.includes('stock') && normalized.includes('insuficiente')) {
+        return 'error. stock insuficiente';
+    }
+
+    return message || 'Error conexion';
+};
+
 // instancias de axios
 const apiClient = axios.create({
     baseURL: API_BASE_URL, // la base de url q se conecta con el backend con puerto
@@ -44,7 +54,7 @@ apiClient.interceptors.response.use(
     (response) => response,
     (error) => {
         const backendMessage = error.response?.data?.message;// mensaje del backend si existe, ? permite campo opcional
-        const message = backendMessage || error.message || 'Error conexion';
+        const message = normalizeErrorMessage(backendMessage || error.message);
         return Promise.reject(new Error(message));
     }
 );

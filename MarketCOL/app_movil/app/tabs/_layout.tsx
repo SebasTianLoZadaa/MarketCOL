@@ -24,14 +24,15 @@ export default function TabLayout() {
     const isDark = colorSheme === 'dark';
 
     return (
-        // tabs renderiza la barra de pestañas inferior y gestiona que la pantalla este activa en cada momento
         <Tabs
             screenOptions={{
-                //tabbarActiveTintColor color del icono y texto de la pestaña activa
                 tabBarActiveTintColor: getThemeColor('tint', isDark),
-                //headerShown false oculta el encabezado superior en todas las pantallas 
+                tabBarInactiveTintColor: '#6B7280',
+                tabBarStyle: {
+                    backgroundColor: getThemeColor('background', isDark),
+                    borderTopColor: isDark ? '#111827' : '#E5E5E5',
+                },
                 headerShown: false,
-                //tabBarButton remplaza el boton estandar por hapticTab con vibracion
                 tabBarButton: HapticTab,
             }}>
 
@@ -42,7 +43,7 @@ export default function TabLayout() {
                 name="index"
                 options={{
                     // texto que aparece debajo del icono de la barra
-                    title: 'Tienda Adso',
+                    title: 'Tienda',
                     //tabBarIcon funcion q recibe el color activo o incativo y devuelve el icono
                     //house.fill = icono de casa rellena (representa e icono de la tienda)
                     tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color}/>,

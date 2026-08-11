@@ -43,7 +43,7 @@ export default function CarritoScreen() {
     if (loading) {
         return (
             <View style={styles.centered}>
-                <ActivityIndicator size="large" color="#28a745" />
+                <ActivityIndicator size="large" color="#D92B2B" />
                 <Text style={styles.loadingText}>Cargando Carrito...</Text>
             </View>
         );
@@ -75,18 +75,27 @@ export default function CarritoScreen() {
         );
     };
 
+    const handleCambiarCantidad = async (item: { id: string; stock?: number }, nuevaCantidad: number) => {
+        try {
+            await cambiarCantidad(item.id, nuevaCantidad);
+        } catch (error: unknown) {
+            const msg = (error as { message?: string })?.message;
+            Alert.alert('Stock insuficiente', msg || 'No hay suficiente stock disponible para esa cantidad.');
+        }
+    };
+
     return (
         <ScrollView style={styles.container} contentContainerStyle={styles.content}>
             {/* Encabezado */}
             <View style={styles.header}>
-                <Ionicons name="cart" size={28} color="#28a745" />
+                <Ionicons name="cart" size={28} color="#D92B2B" />
                 <Text style={styles.headerTitle}>Mi Carrito</Text>
             </View>
 
             {/* Banner informativo para no autenticados */}
             {!isAuthenticated && (
                 <View style={styles.infoBanner}>
-                    <Ionicons name="information-circle" size={18} color="#1d4ed8" />
+                    <Ionicons name="information-circle" size={18} color="#D92B2B" />
                     <Text style={styles.infoBannerText}>
                         Puedes agregar productos sin iniciar sesión. Al momento de pagar deberás iniciar sesión.
                     </Text>
@@ -95,10 +104,10 @@ export default function CarritoScreen() {
 
             {safeItems.length === 0 ? (
                 <View style={styles.emptyContainer}>
-                    <Ionicons name="cart-outline" size={90} color="#ccc" />
+                    <Ionicons name="cart-outline" size={90} color="#D92B2B" />
                     <Text style={styles.emptyTitle}>Tu carrito está vacío</Text>
                     <Text style={styles.empty}>Agrega productos para comenzar tu compra</Text>
-                    <Pressable style={styles.catalogBtn} onPress={() => routerReplace('/')}>
+                    <Pressable style={styles.catalogBtn} onPress={() => routerReplace('/tabs')}>
                         <Ionicons name="storefront-outline" size={16} color="#fff" />
                         <Text style={styles.catalogBtnText}>Ir al Catálogo</Text>
                     </Pressable>
@@ -143,11 +152,11 @@ export default function CarritoScreen() {
                                             <Text style={styles.stockAgotado}>Producto agotado</Text>
                                         )}
                                         <View style={styles.qtyRow}>
-                                            <Pressable style={styles.qtyBtn} onPress={() => cambiarCantidad(item.id, Math.max(1, item.cantidad - 1))}>
+                                            <Pressable style={styles.qtyBtn} onPress={() => handleCambiarCantidad(item, Math.max(1, item.cantidad - 1))}>
                                                 <Ionicons name="remove" size={14} color="#555" />
                                             </Pressable>
                                             <Text style={styles.qtyText}>{item.cantidad}</Text>
-                                            <Pressable style={styles.qtyBtn} onPress={() => cambiarCantidad(item.id, item.cantidad + 1)}>
+                                            <Pressable style={styles.qtyBtn} onPress={() => handleCambiarCantidad(item, item.cantidad + 1)}>
                                                 <Ionicons name="add" size={14} color="#555" />
                                             </Pressable>
                                             <Text style={styles.subtotalItem}>{fmt((item.precio || 0) * item.cantidad)}</Text>
@@ -185,10 +194,6 @@ export default function CarritoScreen() {
                                 {isAuthenticated ? 'Finalizar Pedido' : 'Iniciar Sesión para Pedir'}
                             </Text>
                         </Pressable>
-                        <Pressable style={styles.continueBtn} onPress={() => routerReplace('/')}>
-                            <Ionicons name="arrow-back-outline" size={16} color="#555" />
-                            <Text style={styles.continueBtnText}>Seguir Comprando</Text>
-                        </Pressable>
                     </View>
                 </>
             )}
@@ -205,16 +210,16 @@ const styles = StyleSheet.create({
     headerTitle: { fontSize: 26, fontWeight: '800', color: '#1a1a2e' },
     infoBanner: {
         flexDirection: 'row', alignItems: 'flex-start', gap: 8,
-        backgroundColor: '#dbeafe', borderRadius: 10, padding: 12,
-        borderLeftWidth: 4, borderLeftColor: '#3b82f6',
+        backgroundColor: 'rgba(217,43,43,0.12)', borderRadius: 10, padding: 12,
+        borderLeftWidth: 4, borderLeftColor: '#D92B2B',
     },
-    infoBannerText: { flex: 1, color: '#1e40af', fontSize: 13, lineHeight: 19 },
+    infoBannerText: { flex: 1, color: '#262626', fontSize: 13, lineHeight: 19 },
     emptyContainer: { alignItems: 'center', paddingVertical: 48, gap: 12 },
     emptyTitle: { fontSize: 22, fontWeight: '700', color: '#333' },
     empty: { color: '#888', textAlign: 'center', fontSize: 14, lineHeight: 22 },
     catalogBtn: {
         flexDirection: 'row', alignItems: 'center', gap: 8,
-        borderRadius: 10, backgroundColor: '#28a745',
+        borderRadius: 10, backgroundColor: '#D92B2B',
         paddingHorizontal: 22, paddingVertical: 13, marginTop: 4,
     },
     catalogBtnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
@@ -229,14 +234,14 @@ const styles = StyleSheet.create({
     },
     sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
     sectionTitle: { fontWeight: '700', fontSize: 14, color: '#222' },
-    badge: { backgroundColor: '#28a745', borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 },
+    badge: { backgroundColor: '#D92B2B', borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 },
     badgeText: { color: '#fff', fontSize: 12, fontWeight: '700' },
     vaciarBtn: {
         flexDirection: 'row', alignItems: 'center', gap: 4,
-        borderWidth: 1, borderColor: '#b93a32', borderRadius: 8,
+        borderWidth: 1, borderColor: '#D92B2B', borderRadius: 8,
         paddingHorizontal: 10, paddingVertical: 5,
     },
-    vaciarText: { color: '#b93a32', fontSize: 12, fontWeight: '600' },
+    vaciarText: { color: '#D92B2B', fontSize: 12, fontWeight: '600' },
     itemDivider: { height: 1, backgroundColor: '#f0f0f0', marginHorizontal: 14 },
     itemRow: { flexDirection: 'row', padding: 14, gap: 12 },
     image: { width: 72, height: 72, borderRadius: 10 },
@@ -263,20 +268,20 @@ const styles = StyleSheet.create({
     summaryLabel: { color: '#555', fontSize: 14 },
     summaryValue: { color: '#333', fontSize: 14, fontWeight: '500' },
     summaryMuted: { color: '#aaa', fontSize: 14 },
-    summaryVerde: { color: '#28a745', fontSize: 14, fontWeight: '500' },
+    summaryVerde: { color: '#D92B2B', fontSize: 14, fontWeight: '500' },
     separator: { height: 1, backgroundColor: '#e8e8e8', marginVertical: 2 },
     totalLabel: { fontSize: 16, fontWeight: '700', color: '#222' },
-    totalValue: { fontSize: 24, fontWeight: '800', color: '#28a745' },
+    totalValue: { fontSize: 24, fontWeight: '800', color: '#D92B2B' },
     checkoutBtn: {
         flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-        borderRadius: 10, backgroundColor: '#28a745',
+        borderRadius: 10, backgroundColor: '#D92B2B',
         paddingVertical: 14, marginTop: 4,
     },
     checkoutText: { color: '#fff', fontWeight: '700', fontSize: 16 },
     continueBtn: {
         flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
-        borderRadius: 10, borderWidth: 1, borderColor: '#ccc',
+        borderRadius: 10, borderWidth: 1, borderColor: '#D92B2B',
         paddingVertical: 12,
     },
-    continueBtnText: { color: '#555', fontWeight: '600', fontSize: 14 },
+    continueBtnText: { color: '#D92B2B', fontWeight: '600', fontSize: 14 },
 });

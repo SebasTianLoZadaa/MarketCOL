@@ -130,7 +130,7 @@ export default function AdminProveedoresScreen() {
                                     <Ionicons name={item.activo ? 'eye-off-outline' : 'eye-outline'} size={14} color="#fff" />
                                 </Pressable>
                                 <Pressable
-                                    style={[styles.actionBtn, { backgroundColor: '#3b82f6' }]}
+                                    style={[styles.actionBtn, { backgroundColor: '#dc2626' }]}
                                     onPress={() => abrirModal(item)}>
                                     <Ionicons name="pencil" size={14} color="#fff" />
                                 </Pressable>
@@ -147,7 +147,7 @@ export default function AdminProveedoresScreen() {
                 <View style={styles.modalWrap}>
                     <View style={styles.modalCard}>
                         <View style={styles.modalHeader}>
-                            <Ionicons name={editing ? 'pencil' : 'add-circle-outline'} size={24} color="#28a745" />
+                            <Ionicons name={editing ? 'pencil' : 'add-circle-outline'} size={24} color="#dc2626" />
                             <ThemedText type="title">{editing ? 'Editar proveedor' : 'Crear proveedor'}</ThemedText>
                         </View>
 
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     empty: { color: '#888', textAlign: 'center', marginTop: 20 },
 
     // Card
-    card: { flexDirection: 'row', gap: 12, alignItems: 'center', padding: 12, borderRadius: 12, backgroundColor: '#fff', marginBottom: 10 },
+    card: { flexDirection: 'row', gap: 12, alignItems: 'center', padding: 12, borderRadius: 12, borderWidth: 1, borderColor: '#f3d4d4', backgroundColor: '#fff', marginBottom: 10 },
     estadoRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8 },
     estadoDot: { width: 10, height: 10, borderRadius: 6 },
     meta: { color: '#666', fontSize: 13 },
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     actionBtn: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
 
     // Create
-    createBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#28a745', borderRadius: 10, paddingVertical: 12, marginBottom: 4 },
+    createBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#dc2626', borderRadius: 10, paddingVertical: 12, marginBottom: 4 },
     createBtnText: { color: '#fff', fontWeight: '700' },
 
     // Modal
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     input: { borderWidth: 1, borderColor: '#d5d5d5', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, backgroundColor: '#fff' },
     multiline: { minHeight: 60, textAlignVertical: 'top' },
     modalActions: { flexDirection: 'row', gap: 8, marginTop: 12 },
-    btnGuardar: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#28a745', paddingVertical: 10, paddingHorizontal: 12, borderRadius: 10 },
+    btnGuardar: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#dc2626', paddingVertical: 10, paddingHorizontal: 12, borderRadius: 10 },
     btnGuardarText: { color: '#fff', fontWeight: '700' },
     btnCancelar: { justifyContent: 'center', paddingHorizontal: 12, borderRadius: 10 },
     btnCancelarText: { color: '#666' },

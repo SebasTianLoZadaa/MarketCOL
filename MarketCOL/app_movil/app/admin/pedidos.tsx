@@ -1,4 +1,4 @@
-/**
+    /**
  * Lista de pedidos en el panel de administrador - MarketCOL
  * Muestra todos los pedidos con filtros, paginación y acciones rápidas.
  * Permite confirmar pagos y cambiar estados directamente.
@@ -274,15 +274,17 @@ const styles = StyleSheet.create({
     empty: { textAlign: 'center', color: '#888', marginTop: 20 },
     searchRow: { flexDirection: 'row', gap: 8, marginBottom: 4 },
     input: { flex: 1, borderWidth: 1, borderColor: '#d5d5d5', borderRadius: 10, paddingHorizontal: 12, backgroundColor: '#fff' },
-    searchBtn: { backgroundColor: '#28a745', borderRadius: 10, paddingHorizontal: 14, justifyContent: 'center', alignItems: 'center' },
+    searchBtn: { backgroundColor: '#dc2626', borderRadius: 10, paddingHorizontal: 14, justifyContent: 'center', alignItems: 'center' },
     searchBtnText: { color: '#fff', fontWeight: '700' },
-    chipsRow: { gap: 6, paddingVertical: 4, marginBottom: 4 },
-    chip: { borderRadius: 999, borderWidth: 1.5, borderColor: '#d1d5db', paddingVertical: 6, paddingHorizontal: 12, backgroundColor: '#fff' },
-    chipActive: { backgroundColor: '#28a745', borderColor: '#28a745' },
-    chipText: { color: '#374151', fontWeight: '600', fontSize: 12 },
+
+    chipsRow: { flexDirection: 'row', gap: 10, paddingVertical: 10, marginBottom: 12, alignItems: 'center' },
+    chip: { alignSelf: 'flex-start', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', minHeight: 38, minWidth: 72, borderRadius: 999, borderWidth: 1.5, borderColor: '#d1d5db', paddingVertical: 8, paddingHorizontal: 16, backgroundColor: '#fff' },
+    chipActive: { backgroundColor: '#dc2626', borderColor: '#dc2626' },
+    chipText: { color: '#374151', fontWeight: '600', fontSize: 15, lineHeight: 20 },
     chipTextActive: { color: '#fff' },
+    
     list: { flex: 1 },
-    card: { borderWidth: 1, borderColor: '#e8e8e8', borderRadius: 12, padding: 12, backgroundColor: '#fff', marginBottom: 8, gap: 6 },
+    card: { borderWidth: 1, borderColor: '#f3d4d4', borderRadius: 12, padding: 12, backgroundColor: '#fff', marginBottom: 8, gap: 6 },
     cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     estadoBadge: { borderRadius: 999, paddingHorizontal: 10, paddingVertical: 3 },
     estadoText: { fontWeight: '600', fontSize: 11 },
@@ -302,7 +304,7 @@ const styles = StyleSheet.create({
     btnCancelar: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#ef4444', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 },
     btnCancelarText: { color: '#fff', fontWeight: '600', fontSize: 12 },
     paginationRow: { flexDirection: 'row', gap: 10, alignItems: 'center', justifyContent: 'center', marginTop: 10 },
-    pageBtn: { backgroundColor: '#28a745', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8 },
+    pageBtn: { backgroundColor: '#dc2626', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8 },
     pageBtnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
     pageLabel: { fontWeight: '600', color: '#333' },
 });

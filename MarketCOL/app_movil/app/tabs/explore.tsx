@@ -46,7 +46,7 @@ type AuthCtx = {
     //login: funcion que recibe el email y contraseña lanza error si falla
     login: (email: string, password: string) => Promise<unknown>;
     //register: funcion que registra usuario lanza error si falla
-    register: (data: {nombre: string, apellido: string, email: string, password: string, telefono?: string, direccion?: string }) => Promise<unknown>;
+    register: (data: {nombre: string, apellido: string, cedula: string, email: string, password: string, telefono?: string, direccion?: string }) => Promise<unknown>;
     //logout: funcion de cerrar la sesion del usuario
     logout: () => Promise<void>;
     //updatePerfil: funcion que actualiza los datos del usuario
@@ -68,6 +68,7 @@ export default function TabTwoScreen() {
     // campos del formulario de registro y login
     const [nombre, setNombre] = useState('');
     const [apellido, setApellido] = useState('');
+    const [cedula, setCedula] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -109,6 +110,7 @@ export default function TabTwoScreen() {
         setConfirmPassword('');
         setNombre('');
         setApellido('');
+        setCedula('');
         setTelefono('');
         setDireccion('');
         setIsRegisterMode(false);
@@ -124,8 +126,13 @@ export default function TabTwoScreen() {
         if (isRegisterMode) {
             // Validaciones de registro
             // todos los campos marcados con * son obligatorios
-            if (!nombre || !apellido || !email || !password || !confirmPassword) {
+            if (!nombre || !apellido || !cedula || !email || !password || !confirmPassword) {
                 setErrorMessage('Completa todos los campos obligatorios *. ');
+                return;
+            }
+
+            if (!/^\d{6,20}$/.test(cedula)) {
+                setErrorMessage('La cédula debe tener solo números y mínimo 6 dígitos');
                 return;
             }
 
@@ -159,7 +166,7 @@ export default function TabTwoScreen() {
             if (isRegisterMode) {
                 // llama a register() del contexto con los datos del formulario
                 // el operador spread condicional ... solo incluye telefono/direccion si no estan vacios
-                await register({ nombre, apellido, email, password,
+                await register({ nombre, apellido, cedula, email, password,
                     ...(telefono ? { telefono } : {}),
                     ...(direccion ? { direccion }: {}),
                 });
@@ -170,6 +177,7 @@ export default function TabTwoScreen() {
                 setConfirmPassword('');
                 setNombre('');
                 setApellido('');
+                setCedula('');
                 setTelefono('');
                 setDireccion('');
             } else {
@@ -259,6 +267,14 @@ export default function TabTwoScreen() {
                 placeholder="Apellido *"
                 value={apellido}
                 onChangeText={setApellido}
+                style={styles.input}
+              />
+              <TextInput
+                placeholder="Cédula *"
+                keyboardType="numeric"
+                value={cedula}
+                onChangeText={setCedula}
+                maxLength={20}
                 style={styles.input}
               />
             </>
@@ -356,7 +372,7 @@ export default function TabTwoScreen() {
   //   auxiliar      → cian (#06b6d4)
   //   cliente       → verde (#10b981)
   const rolColor = (r?: string) =>
-    r === 'administrador' ? '#6366f1' : r === 'auxiliar' ? '#06b6d4' : '#10b981';
+    r === 'administrador' ? '#F44444' : r === 'auxiliar' ? '#06b6d4' : '#10b981';
 
   // rolLabel: devuelve el texto legible del rol.
   const rolLabel = (r?: string) =>
@@ -456,16 +472,16 @@ export default function TabTwoScreen() {
         </View>
       ) : (
         // ── BOTÓN PARA ABRIR EL FORMULARIO DE EDICIÓN ─────────────────────
-        <Pressable style={[styles.btn, styles.btnOutline]} onPress={() => { setEditMode(true); setPerfilSuccess(''); }}>
-          <Ionicons name="create-outline" size={17} color="#6366f1" />
-          <Text style={[styles.btnTextOutline, { color: '#6366f1' }]}>Editar perfil</Text>
+        <Pressable style={[styles.btn, { backgroundColor: '#00dada' }]} onPress={() => { setEditMode(true); setPerfilSuccess(''); }}>
+          <Ionicons name="create-outline" size={17} color="#ffffff" />
+          <Text style={[styles.btnTextOutline, { color: '#ffffff' }]}>Editar perfil</Text>
         </Pressable>
       )}
 
       {/* ── BOTÓN: PANEL DE ADMINISTRACIÓN (solo admin y auxiliar) ─────── */}
       {/* La condición evalúa el rol del usuario antes de renderizar */}
       {user?.rol === 'administrador' || user?.rol === 'auxiliar' ? (
-        <Pressable style={[styles.btn, { backgroundColor: '#6366f1' }]} onPress={() => routerPush('/admin/dashboard')}>
+        <Pressable style={[styles.btn, { backgroundColor: '#44A2FF' }]} onPress={() => routerPush('/admin/dashboard')}>
           <Ionicons name="speedometer-outline" size={17} color="#fff" />
           <Text style={styles.btnTextWhite}>Panel de Administración</Text>
         </Pressable>
@@ -502,12 +518,12 @@ const styles = StyleSheet.create({
   editBtn: { borderRadius: 10, borderWidth: 1, borderColor: '#0a7ea4', paddingVertical: 10, alignItems: 'center' },
   editBtnText: { color: '#0a7ea4', fontWeight: '600' },
   meta: { color: '#666', fontSize: 13 },                             // Texto secundario pequeño.
-  primaryButton: { borderRadius: 10, paddingVertical: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0a7ea4' }, // Botón "Entrar" / "Crear cuenta".
+  primaryButton: { borderRadius: 10, paddingVertical: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: '#D92B2B' }, // Botón "Entrar" / "Crear cuenta".
   primaryButtonText: { color: '#fff', fontWeight: '700', fontSize: 16 },
-  secondaryButton: { flex: 1, borderRadius: 10, borderWidth: 1, borderColor: '#d5d5d5', paddingVertical: 12, alignItems: 'center', justifyContent: 'center' },
-  logoutButton: { borderRadius: 10, backgroundColor: '#b93a32', paddingVertical: 12, alignItems: 'center', marginTop: 8 },
-  ordersButton: { borderRadius: 10, backgroundColor: '#0a7ea4', paddingVertical: 12, alignItems: 'center', marginTop: 8 },
-  adminBtn: { borderRadius: 10, backgroundColor: '#04566f', paddingVertical: 12, alignItems: 'center', marginTop: 8 },
+  secondaryButton: { flex: 1, borderRadius: 10, borderWidth: 1, borderColor: '#D92B2B', paddingVertical: 12, alignItems: 'center', justifyContent: 'center' },
+  logoutButton: { borderRadius: 10, backgroundColor: '#B01F1F', paddingVertical: 12, alignItems: 'center', marginTop: 8 },
+  ordersButton: { borderRadius: 10, backgroundColor: '#D92B2B', paddingVertical: 12, alignItems: 'center', marginTop: 8 },
+  adminBtn: { borderRadius: 10, backgroundColor: '#B01F1F', paddingVertical: 12, alignItems: 'center', marginTop: 8 },
   adminBtnText: { color: '#fff', fontWeight: '700' },
   ordersText: { color: '#fff', fontWeight: '700' },
   logoutText: { color: '#fff', fontWeight: '700' },
@@ -547,21 +563,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
     borderRadius: 12, paddingVertical: 14,
   },
-  btnPrimary: { backgroundColor: '#6366f1' },                          // Relleno índigo.
-  btnOutline: { borderWidth: 2, borderColor: '#6366f1', backgroundColor: '#fff' }, // Solo borde índigo.
+  btnPrimary: { backgroundColor: '#D92B2B' },                          // Relleno rojo.
+  btnOutline: { borderWidth: 2, borderColor: '#D92B2B', backgroundColor: '#fff' }, // Solo borde rojo.
   btnTextWhite: { color: '#fff', fontWeight: '700', fontSize: 15 },    // Texto blanco para botones rellenos.
-  btnTextOutline: { color: '#6366f1', fontWeight: '700', fontSize: 15 }, // Texto índigo para botones outline.
+  btnTextOutline: { color: '#D92B2B', fontWeight: '700', fontSize: 15 }, // Texto rojo para botones outline.
 
   // Banner verde de éxito (perfil actualizado).
   successBanner: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: '#ecfdf5', borderRadius: 10, padding: 12, borderWidth: 1, borderColor: '#a7f3d0',
+    backgroundColor: '#fff1f1', borderRadius: 10, padding: 12, borderWidth: 1, borderColor: '#FECACA',
   },
-  successText: { color: '#065f46', fontSize: 13, fontWeight: '500' },
+  successText: { color: '#B01F1F', fontSize: 13, fontWeight: '500' },
   // Banner rojo de error (falló la actualización del perfil).
   errorBanner: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: '#fef2f2', borderRadius: 10, padding: 10, borderWidth: 1, borderColor: '#fca5a5',
+    backgroundColor: '#fef2f2', borderRadius: 10, padding: 10, borderWidth: 1, borderColor: '#fecaca',
   },
   errorText: { color: '#b91c1c', fontSize: 13 },
 

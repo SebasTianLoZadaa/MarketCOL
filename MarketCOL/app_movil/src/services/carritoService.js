@@ -35,6 +35,7 @@ function normalizeItem(item) {
     const producto = item.Producto || item.producto || {};
     const precio = Number (item.precio ?? item.precioUnitario ?? producto.precio ?? 0);
     const cantidad = Number (item.cantidad || 0);
+    const stock = Number(item.stock ?? producto.stock ?? 0);
 
     return {
         id: item.id,
@@ -43,8 +44,18 @@ function normalizeItem(item) {
         imagen: item.imagen ?? producto.imagen ?? '',
         precio,
         cantidad,
+        stock,
         subtotal: precio * cantidad,
     };
+}
+
+function getStockValue(producto) {
+    return Number(producto?.stock ?? producto?.stockDisponible ?? producto?.stock_disponible ?? producto?.cantidadDisponible ?? 0);
+}
+
+function buildStockError(producto, stock) {
+    const nombre = producto?.nombre || 'este producto';
+    return new Error(`Solo quedan ${stock} unidad${stock === 1 ? '' : 'es'} disponibles de ${nombre}.`);
 }
 
 //calcula resumen del carrito: items normalizados, cantidad total y monto total
@@ -73,7 +84,12 @@ const carritoService = {
 
     //agrega un producto al carrito correspondiente
     addToCarrito: async ({ isAuthenticated, producto, cantidad = 1 }) => {
+        const stock = getStockValue(producto);
+
         if (isAuthenticated) {
+            if (stock > 0 && cantidad > stock) {
+                throw buildStockError(producto, stock);
+            }
             await apiClient.post('/cliente/carrito', {
                 productoId: producto.id,
                 cantidad,
@@ -84,14 +100,22 @@ const carritoService = {
         const existing = localItems.find((item) => Number(item.productoId) === Number(producto.id));
 
         if (existing) {
-            existing.cantidad += cantidad;
+            const nextCantidad = existing.cantidad + cantidad;
+            if (stock > 0 && nextCantidad > stock) {
+                throw buildStockError(producto, stock);
+            }
+            existing.cantidad = nextCantidad;
         } else {
+            if (stock > 0 && cantidad > stock) {
+                throw buildStockError(producto, stock);
+            }
             localItems.push({
                 id: Date.now(),
                 productoId: producto.id,
                 nombre: producto.nombre,
                 precio: Number(producto.precio || 0),
                 cantidad,
+                stock,
             });
         }
         await writeLocalCart(localItems);
@@ -108,6 +132,11 @@ const carritoService = {
         const item = localItems.find((it) => Number(it.id) === Number (itemId));
         if (!item) {
             return;
+        }
+
+        const stock = Number(item.stock ?? 0);
+        if (stock > 0 && cantidad > stock) {
+            throw buildStockError(item, stock);
         }
 
         item.cantidad = cantidad;

@@ -61,13 +61,14 @@ export default function AdminDashboardScreen() {
                 const subsData = subs.data?.data?.subcategorias || [];
                 const provsData = provs.data?.data?.proveedores || [];
                 const ordStats = orders.data?.data || {};
+                const usersStats = userStats?.data?.data || userStats?.data || {};
 
                 setStats({
                     categorias: Array.isArray(catsData) ? catsData.length : 0,
                     subcategorias: Array.isArray(subsData) ? subsData.length : 0,
                     productos: prods.data?.data?.paginacion?.total || 0,
                     proveedores: Array.isArray(provsData) ? provsData.length : 0,
-                    usuarios: userStats?.data?.data?.stats?.totalUsuarios || 0,
+                    usuarios: usersStats.total ?? usersStats.stats?.totalUsuarios ?? 0,
                     pedidos: ordStats.totalPedidos || 0,
                     pendientes: ordStats.pedidosPorEstado?.find((e: any) => e.estado === 'pendiente')?.cantidad || 0,
                     listos: ordStats.pedidosPorEstado?.find((e: any) => e.estado === 'listo')?.cantidad || 0,
@@ -95,7 +96,7 @@ export default function AdminDashboardScreen() {
 
     const cards: StatCard[] = [
         { title: 'Categorías',    value: stats.categorias,    icon: 'folder-outline',       color: '#28a745', bgColor: '#d1fae5', route: '/admin/categorias', show: true },
-        { title: 'Subcategorías', value: stats.subcategorias, icon: 'folder-open-outline',  color: '#20c997', bgColor: '#d1fae5', route: '/admin/subcategorias', show: true },
+        { title: 'Subcategorías', value: stats.subcategorias, icon: 'folder-open-outline',  color: '#dc2626', bgColor: '#fee2e2', route: '/admin/subcategorias', show: true },
         { title: 'Productos',     value: stats.productos,     icon: 'cube-outline',         color: '#10b981', bgColor: '#d1fae5', route: '/admin/productos', show: true },
         { title: 'Proveedores',   value: stats.proveedores,   icon: 'truck-outline',        color: '#0891b2', bgColor: '#cffafe', route: '/admin/proveedores', show: true },
         { title: 'Usuarios',      value: stats.usuarios,      icon: 'people-outline',       color: '#f59e0b', bgColor: '#fef3c7', route: '/admin/usuarios', show: isAdmin },
@@ -127,7 +128,7 @@ export default function AdminDashboardScreen() {
             {/* GRID DE ESTADÍSTICAS */}
             {loading ? (
                 <View style={styles.loadingBox}>
-                    <ActivityIndicator size="large" color="#28a745" />
+                    <ActivityIndicator size="large" color="#a18686" />
                     <Text style={styles.loadingText}>Cargando estadísticas...</Text>
                 </View>
             ) : (
@@ -159,7 +160,7 @@ export default function AdminDashboardScreen() {
             {!loading && (
                 <View style={styles.salesBanner}>
                     <View style={[styles.salesIconWrap, { backgroundColor: '#d1fae5' }]}>
-                        <Ionicons name="trending-up-outline" size={22} color="#28a745" />
+                        <Ionicons name="trending-up-outline" size={22} color="#FF4444" />
                     </View>
                     <View style={{ flex: 1 }}>
                         <Text style={styles.salesLabel}>Ventas Totales</Text>
@@ -175,9 +176,13 @@ export default function AdminDashboardScreen() {
                     <Text style={styles.sectionTitle}>Accesos Rápidos</Text>
                 </View>
                 <View style={styles.sectionBody}>
-                    <Pressable style={[styles.actionBtn, { borderColor: '#28a745' }]} onPress={() => push('/admin/productos')}>
-                        <Ionicons name="add-circle-outline" size={18} color="#28a745" />
-                        <Text style={[styles.actionText, { color: '#28a745' }]}>Gestionar Productos</Text>
+                    <Pressable style={[styles.actionBtn, { borderColor: '#FF4444' }]} onPress={() => push('/admin/productos')}>
+                        <Ionicons name="add-circle-outline" size={18} color="#FF4444" />
+                        <Text style={[styles.actionText, { color: '#FF4444' }]}>Gestionar Productos</Text>
+                    </Pressable>
+                    <Pressable style={[styles.actionBtn, { borderColor: '#dc2626' }]} onPress={() => push('/admin/subcategorias')}>
+                        <Ionicons name="folder-open-outline" size={18} color="#dc2626" />
+                        <Text style={[styles.actionText, { color: '#dc2626' }]}>Gestionar Subcategorías</Text>
                     </Pressable>
                     <Pressable style={[styles.actionBtn, { borderColor: '#20c997' }]} onPress={() => push('/admin/proveedores')}>
                         <Ionicons name="truck-outline" size={18} color="#20c997" />
@@ -187,10 +192,6 @@ export default function AdminDashboardScreen() {
                         <Ionicons name="list-outline" size={18} color="#f59e0b" />
                         <Text style={[styles.actionText, { color: '#f59e0b' }]}>Gestionar Pedidos</Text>
                     </Pressable>
-                    <Pressable style={[styles.actionBtn, { borderColor: '#6b7280' }]} onPress={() => push('/')}>
-                        <Ionicons name="storefront-outline" size={18} color="#6b7280" />
-                        <Text style={[styles.actionText, { color: '#6b7280' }]}>Visitar Tienda</Text>
-                    </Pressable>
                 </View>
             </View>
 
@@ -198,11 +199,11 @@ export default function AdminDashboardScreen() {
             <View style={styles.infoCard}>
                 <Text style={styles.infoTitle}>Información del Sistema</Text>
                 <View style={styles.infoRow}>
-                    <Ionicons name="checkmark-circle" size={16} color="#28a745" />
+                    <Ionicons name="checkmark-circle" size={16} color="#FF4444" />
                     <Text style={styles.infoText}>Sistema operativo correctamente</Text>
                 </View>
                 <View style={styles.infoRow}>
-                    <Ionicons name="server-outline" size={16} color="#28a745" />
+                    <Ionicons name="server-outline" size={16} color="#FF4444" />
                     <Text style={styles.infoText}>API: http://10.0.2.2:5000</Text>
                 </View>
                 <View style={styles.infoRow}>
@@ -224,7 +225,7 @@ const styles = StyleSheet.create({
     centered: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, padding: 24 },
     restrictedTitle: { fontSize: 22, fontWeight: '700', color: '#333' },
     restrictedSub: { color: '#888', fontSize: 14 },
-    header: { borderRadius: 16, backgroundColor: '#28a745', padding: 20, gap: 8 },
+    header: { borderRadius: 16, backgroundColor: '#e42c2c', padding: 20, gap: 8 },
     headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
     headerTitle: { fontSize: 22, fontWeight: '800', color: '#fff' },
     headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.85)', marginTop: 2 },
@@ -251,11 +252,11 @@ const styles = StyleSheet.create({
     },
     salesIconWrap: { borderRadius: 10, padding: 10 },
     salesLabel: { fontSize: 12, color: '#888' },
-    salesValue: { fontSize: 22, fontWeight: '800', color: '#28a745' },
+    salesValue: { fontSize: 22, fontWeight: '800', color: '#FF4444' },
     section: { borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: '#e8e8e8' },
     sectionHeader: {
         flexDirection: 'row', alignItems: 'center', gap: 8,
-        backgroundColor: '#28a745', padding: 14,
+        backgroundColor: '#FF4444', padding: 14,
     },
     sectionTitle: { color: '#fff', fontWeight: '700', fontSize: 15 },
     sectionBody: { backgroundColor: '#fff', padding: 14, gap: 10 },

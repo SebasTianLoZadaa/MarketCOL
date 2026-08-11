@@ -86,10 +86,10 @@ export default function MisPedidosScreen() {
   if (!isAuthenticated) {
     return (
       <View style={styles.centered}>
-        <Ionicons name="lock-closed" size={60} color="#28a745" />
+        <Ionicons name="lock-closed" size={60} color="#D92B2B" />
         <ThemedText type="title">Inicia Sesión</ThemedText>
         <ThemedText style={styles.subtitle}>Inicia sesión para ver tu historial de pedidos.</ThemedText>
-        <Pressable style={styles.primaryButton} onPress={() => routerReplace('/(tabs)/explore')}>
+        <Pressable style={styles.primaryButton} onPress={() => routerReplace('/tabs')}>
           <ThemedText style={styles.primaryButtonText}>Ir a Cuenta</ThemedText>
         </Pressable>
       </View>
@@ -99,7 +99,7 @@ export default function MisPedidosScreen() {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#28a745" />
+        <ActivityIndicator size="large" color="#D92B2B" />
         <ThemedText>Cargando pedidos...</ThemedText>
       </View>
     );
@@ -116,7 +116,7 @@ export default function MisPedidosScreen() {
           <Ionicons name="receipt-outline" size={60} color="#ccc" />
           <ThemedText type="defaultSemiBold">Aún no tienes pedidos</ThemedText>
           <ThemedText style={styles.subtitle}>Cuando compres, aparecerán aquí.</ThemedText>
-          <Pressable style={styles.primaryButton} onPress={() => routerReplace('/(tabs)/')}>
+          <Pressable style={styles.primaryButton} onPress={() => routerReplace('/tabs')}>
             <Ionicons name="storefront-outline" size={16} color="#fff" />
             <ThemedText style={styles.primaryButtonText}>Ir a la Tienda</ThemedText>
           </Pressable>
@@ -135,7 +135,7 @@ export default function MisPedidosScreen() {
               {/* Cabecera: ID + Estado */}
               <View style={styles.rowBetween}>
                 <View style={styles.idRow}>
-                  <Ionicons name="receipt-outline" size={16} color="#28a745" />
+                  <Ionicons name="receipt-outline" size={16} color="#D92B2B" />
                   <ThemedText type="defaultSemiBold">Pedido #{pedido.id}</ThemedText>
                 </View>
                 <View style={[styles.badge, { backgroundColor: estadoInfo.bg }]}>
@@ -212,13 +212,13 @@ const styles = StyleSheet.create({
     borderRadius: 999, paddingHorizontal: 8, paddingVertical: 3,
   },
   pagoBadgeText: { fontWeight: '600', fontSize: 10 },
-  total: { fontWeight: '700', fontSize: 16, color: '#28a745' },
+  total: { fontWeight: '700', fontSize: 16, color: '#D92B2B' },
   metodoRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   metodoText: { fontSize: 11, color: '#888' },
   primaryButton: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
     borderRadius: 10, paddingVertical: 14, paddingHorizontal: 20,
-    backgroundColor: '#28a745',
+    backgroundColor: '#D92B2B',
   },
   primaryButtonText: { color: '#fff', fontWeight: '700', fontSize: 16 },
 });

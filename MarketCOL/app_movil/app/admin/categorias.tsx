@@ -1,10 +1,10 @@
 /**
  * Pantalla de administración de categorías - MarketCOL
  * Lista categorías, permite crear, editar y activar/desactivar.
- * Solo administradores pueden gestionar (auxiliar solo ve).
+ * Administrador y auxiliar pueden gestionar; solo admin sigue pudiendo eliminar en backend.
  */
 
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Modal, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '../../components/themed-text';
@@ -20,7 +20,7 @@ type Categoria = {
 
 export default function AdminCategoriasScreen() {
     const { user } = useAuth() as { user?: { rol?: string } };
-    const isAdmin = user?.rol === 'administrador';
+    const canManageCategorias = user?.rol === 'administrador' || user?.rol === 'auxiliar';
 
     const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [loading, setLoading] = useState(false);
@@ -29,6 +29,17 @@ export default function AdminCategoriasScreen() {
     const [descripcion, setDescripcion] = useState('');
     const [editing, setEditing] = useState<Categoria | null>(null);
     const [errorMsg, setErrorMsg] = useState('');
+    const [busqueda, setBusqueda] = useState('');
+
+    const categoriasFiltradas = useMemo(() => {
+        const termino = busqueda.trim().toLowerCase();
+        if (!termino) return categorias;
+
+        return categorias.filter((item) => {
+            const texto = `${item.nombre || ''} ${item.descripcion || ''}`.toLowerCase();
+            return texto.includes(termino);
+        });
+    }, [categorias, busqueda]);
 
     const fetchCategorias = async () => {
         setLoading(true);
@@ -95,7 +106,25 @@ export default function AdminCategoriasScreen() {
         <View style={styles.container}>
             <ThemedText type="title">Categorías</ThemedText>
 
-            {isAdmin && (
+            <View style={styles.searchRow}>
+                <Ionicons name="search" size={18} color="#9ca3af" />
+                <TextInput
+                    placeholder="Buscar categoría..."
+                    value={busqueda}
+                    onChangeText={setBusqueda}
+                    style={styles.searchInput}
+                    placeholderTextColor="#9ca3af"
+                    autoCorrect={false}
+                    autoCapitalize="none"
+                />
+                {busqueda.length > 0 ? (
+                    <Pressable onPress={() => setBusqueda('')}>
+                        <Ionicons name="close-circle" size={18} color="#9ca3af" />
+                    </Pressable>
+                ) : null}
+            </View>
+
+            {canManageCategorias && (
                 <Pressable style={styles.createBtn} onPress={() => abrirModal()}>
                     <Ionicons name="add-circle-outline" size={18} color="#fff" />
                     <ThemedText style={styles.createBtnText}>Crear categoría</ThemedText>
@@ -104,13 +133,15 @@ export default function AdminCategoriasScreen() {
 
             {loading ? (
                 <View style={styles.centered}>
-                    <ActivityIndicator size="large" color="#28a745" />
+                    <ActivityIndicator size="large" color="#cd2626" />      
                     <ThemedText>Cargando categorías...</ThemedText>
                 </View>
             ) : null}
 
+
+
             <FlatList
-                data={categorias}
+                data={categoriasFiltradas}
                 keyExtractor={(item) => String(item.id)}
                 renderItem={({ item }) => (
                     <View style={styles.card}>
@@ -128,7 +159,7 @@ export default function AdminCategoriasScreen() {
                             </View>
                         </View>
 
-                        {isAdmin && (
+                        {canManageCategorias && (
                             <View style={styles.actionsRow}>
                                 <Pressable
                                     style={[styles.actionBtn, { backgroundColor: item.activo ? '#f59e0b' : '#28a745' }]}
@@ -136,7 +167,7 @@ export default function AdminCategoriasScreen() {
                                     <Ionicons name={item.activo ? 'eye-off-outline' : 'eye-outline'} size={14} color="#fff" />
                                 </Pressable>
                                 <Pressable
-                                    style={[styles.actionBtn, { backgroundColor: '#3b82f6' }]}
+                                    style={[styles.actionBtn, { backgroundColor: '#dc2626' }]}
                                     onPress={() => abrirModal(item)}>
                                     <Ionicons name="pencil" size={14} color="#fff" />
                                 </Pressable>
@@ -147,7 +178,9 @@ export default function AdminCategoriasScreen() {
                 ListEmptyComponent={!loading ? (
                     <View style={styles.emptyState}>
                         <Ionicons name="folder-open-outline" size={60} color="#ccc" />
-                        <ThemedText style={styles.emptyText}>No hay categorías.</ThemedText>
+                        <ThemedText style={styles.emptyText}>
+                            {busqueda.trim() ? 'No hay categorías que coincidan con la búsqueda.' : 'No hay categorías.'}
+                        </ThemedText>
                     </View>
                 ) : null}
                 style={styles.list}
@@ -158,7 +191,7 @@ export default function AdminCategoriasScreen() {
                 <View style={styles.modalWrap}>
                     <View style={styles.modalCard}>
                         <View style={styles.modalHeader}>
-                            <Ionicons name={editing ? 'pencil' : 'add-circle-outline'} size={24} color="#28a745" />
+                            <Ionicons name={editing ? 'pencil' : 'add-circle-outline' } size={24} color="#cd2626" />
                             <ThemedText type="title">{editing ? 'Editar categoría' : 'Crear categoría'}</ThemedText>
                         </View>
 
@@ -213,8 +246,12 @@ const styles = StyleSheet.create({
     input: { borderWidth: 1, borderColor: '#d5d5d5', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, backgroundColor: '#fff' },
     multiline: { minHeight: 60, textAlignVertical: 'top' },
 
+    // Búsqueda
+    searchRow: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fff', borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10 },
+    searchInput: { flex: 1, fontSize: 14, color: '#111827', padding: 0 },
+
     // Botón crear
-    createBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#28a745', borderRadius: 10, paddingVertical: 12, marginBottom: 4 },
+    createBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#dc2626', borderRadius: 10, paddingVertical: 12, marginBottom: 4 },
     createBtnText: { color: '#fff', fontWeight: '700' },
 
     list: { flex: 1 },
@@ -238,7 +275,7 @@ const styles = StyleSheet.create({
     errorRow: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#fef2f2', borderRadius: 8, padding: 10, marginBottom: 8 },
     errorText: { color: '#ef4444', fontWeight: '600', fontSize: 13 },
     modalActions: { flexDirection: 'row', gap: 10, marginTop: 16 },
-    btnGuardar: { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#28a745', borderRadius: 10, paddingVertical: 14 },
+    btnGuardar: { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#cd2626', borderRadius: 10, paddingVertical: 14 },
     btnGuardarText: { color: '#fff', fontWeight: '700', fontSize: 15 },
     btnCancelar: { flex: 1, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: '#d5d5d5', borderRadius: 10, paddingVertical: 14 },
     btnCancelarText: { color: '#666', fontWeight: '600', fontSize: 15 },

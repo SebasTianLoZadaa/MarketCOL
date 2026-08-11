@@ -42,7 +42,7 @@ export default function AdminProductoForm() {
     const [nombre, setNombre] = useState(producto?.nombre ?? '');
     const [descripcion, setDescripcion] = useState(producto?.descripcion ?? '');
     const [precio, setPrecio] = useState(producto?.precio?.toString() ?? '');
-    const [stock, setStock] = useState(producto?.stock?.toString() ?? '');
+    const [stock, setStock] = useState(producto?.stock?.toString() ?? '1');
     const [imagen, setImagen] = useState(producto?.imagen ?? '');
     const [loading, setLoading] = useState(false);
 
@@ -107,17 +107,21 @@ export default function AdminProductoForm() {
     }, [categoriaId]);
 
     const handleSubmit = async () => {
-        if (!nombre || !precio || !categoriaId || !subcategoriaId) {
-            Alert.alert('Error', 'Nombre, precio, categoría y subcategoría son obligatorios');
+        if (!nombre || !precio || !categoriaId || !subcategoriaId || stock.trim() === '') {
+            Alert.alert('Error', 'Nombre, precio, stock, categoría y subcategoría son obligatorios');
             return;
         }
+
+        const stockNumerico = Number.parseInt(stock, 10);
+        const stockValido = Number.isNaN(stockNumerico) || stockNumerico < 0 ? 1 : stockNumerico;
+
         setLoading(true);
         try {
             const data = {
                 nombre,
                 descripcion,
                 precio: parseFloat(precio),
-                stock: parseInt(stock, 10) || 0,
+                stock: stockValido,
                 imagen,
                 categoriaId,
                 subcategoriaId,

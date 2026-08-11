@@ -279,11 +279,6 @@ export default function PedidoDetalleScreen(){
         <Pressable style={styles.secondaryButton} onPress={() => router.replace('/mis-pedidos')}>
           <ThemedText>Mis pedidos</ThemedText>
         </Pressable>
-
-        {/* Navega al catálogo/home para continuar comprando */}
-        <Pressable style={styles.primaryButton} onPress={() => router.replace('/')}>
-          <ThemedText style={styles.primaryButtonText}>Seguir comprando</ThemedText>
-        </Pressable>
       </View>
     </ScrollView>
   );

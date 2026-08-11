@@ -218,12 +218,12 @@ const styles = StyleSheet.create({
     // Búsqueda
     searchRow: { flexDirection: 'row', gap: 8, marginBottom: 4 },
     input: { flex: 1, borderWidth: 1, borderColor: '#d5d5d5', borderRadius: 10, paddingHorizontal: 12, backgroundColor: '#fff' },
-    searchBtn: { backgroundColor: '#28a745', borderRadius: 10, paddingHorizontal: 14, justifyContent: 'center', alignItems: 'center' },
+    searchBtn: { backgroundColor: '#dc2626', borderRadius: 10, paddingHorizontal: 14, justifyContent: 'center', alignItems: 'center' },
 
     list: { flex: 1 },
     
     // Card
-    card: { flexDirection: 'row', gap: 10, borderWidth: 1, borderColor: '#e8e8e8', borderRadius: 12, padding: 12, backgroundColor: '#fff', marginBottom: 8, alignItems: 'center' },
+    card: { flexDirection: 'row', gap: 10, borderWidth: 1, borderColor: '#f3d4d4', borderRadius: 12, padding: 12, backgroundColor: '#fff', marginBottom: 8, alignItems: 'center' },
     avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#28a745', alignItems: 'center', justifyContent: 'center' },
     avatarText: { color: '#fff', fontWeight: '700', fontSize: 18 },
     cardBody: { flex: 1, gap: 2 },
@@ -247,6 +247,6 @@ const styles = StyleSheet.create({
 
     // Paginación
     paginationRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 10 },
-    pageBtn: { backgroundColor: '#28a745', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 8 },
+    pageBtn: { backgroundColor: '#dc2626', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 8 },
     pageLabel: { fontWeight: '600', color: '#333' },
 });

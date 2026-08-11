@@ -1,24 +1,24 @@
 /**
  * Colores corporativos de MarketCOL - MerkaCiro
- * Verde principal: #28a745
- * Verde secundario: #20c997
+ * Rojo principal: #D92B2B
+ * Rojo oscuro:    #B01F1F
  */
 
 import { Platform } from 'react-native';
 
 // Colores corporativos MarketCOL
-const primaryGreen = '#28a745';
-const secondaryGreen = '#20c997';
-const darkGreen = '#1e7e34';
+const primaryRed = '#D92B2B';
+const primaryRedDark = '#B01F1F';
+const secondaryGray = '#1A1A1A';
 
-const tintColorLight = primaryGreen;
-const tintColorDark = secondaryGreen;
+const tintColorLight = primaryRed;
+const tintColorDark = primaryRedDark;
 
 export const Colors = {
   // Paleta corporativa
-  primary: primaryGreen,
-  secondary: secondaryGreen,
-  darkColor: darkGreen,
+  primary: primaryRed,
+  secondary: secondaryGray,
+  darkColor: primaryRedDark,
   
   // Colores de estados de pedido (MarketCOL)
   estadoPendiente: '#ffc107',    // Amarillo
@@ -42,14 +42,14 @@ export const Colors = {
   stockBajo: '#dc3545',         // Rojo (0)
   
   // Tema claro
-  lightText: '#11181C',
-  lightBackground: '#fff',
+  lightText: '#111827',
+  lightBackground: '#F4F4F4',
   lightTint: tintColorLight,
-  lightIcon: '#687076',
-  lightTabIconDefault: '#687076',
+  lightIcon: '#374151',
+  lightTabIconDefault: '#6B7280',
   lightTabIconSelected: tintColorLight,
-  lightCard: '#f8f9fa',
-  lightBorder: '#dee2e6',
+  lightCard: '#FFFFFF',
+  lightBorder: '#E5E5E5',
   
   // Tema oscuro
   darkText: '#ECEDEE',
@@ -58,7 +58,7 @@ export const Colors = {
   darkIcon: '#9BA1A6',
   darkTabIconDefault: '#9BA1A6',
   darkTabIconSelected: tintColorDark,
-  darkCard: '#1f2937',
+  darkCard: '#1F2937',
   darkBorder: '#374151',
 };
 

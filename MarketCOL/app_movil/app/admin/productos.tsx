@@ -1,11 +1,12 @@
 /**
  * Gestión de productos - Panel de administración - MarketCOL
  * Lista todos los productos con búsqueda, filtro por categoría y paginación.
- * Permite activar/desactivar y eliminar productos (solo admin).
+ * Permite activar/desactivar y eliminar productos.
+ * Administrador y auxiliar pueden gestionar; la eliminación sigue siendo solo admin.
  * Muestra proveedor asociado y estado de stock.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { ActivityIndicator, Alert, FlatList, Image, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 import { router } from "expo-router";
@@ -48,8 +49,11 @@ export default function AdminProductosScreen() {
     const [filtroCategoria, setFiltroCategoria] = useState('');
     const [pagina, setPagina] = useState(1);
     const [totalPaginas, setTotalPaginas] = useState(1);
+    const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const didMountRef = useRef(false);
 
     const isAdmin = user?.rol === 'administrador';
+    const canManageProductos = isAdmin || user?.rol === 'auxiliar';
 
     useEffect(() => {
         // Cargar categorías para los filtros
@@ -58,7 +62,7 @@ export default function AdminProductosScreen() {
             .catch(() => {});
     }, []);
 
-    const fetchProductos = async (page = 1, search = '', categoria = filtroCategoria) => {
+    const fetchProductos = useCallback(async (page = 1, search = '', categoria = filtroCategoria) => {
         setLoading(true);
         setErrorMessage('');
         try {
@@ -78,11 +82,32 @@ export default function AdminProductosScreen() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [filtroCategoria]);
 
     useEffect(() => {
         fetchProductos(1, '');
-    }, []);
+    }, [fetchProductos]);
+
+    useEffect(() => {
+        if (!didMountRef.current) {
+            didMountRef.current = true;
+            return;
+        }
+
+        if (searchDebounceRef.current) {
+            clearTimeout(searchDebounceRef.current);
+        }
+
+        searchDebounceRef.current = setTimeout(() => {
+            fetchProductos(1, busqueda, filtroCategoria);
+        }, 300);
+
+        return () => {
+            if (searchDebounceRef.current) {
+                clearTimeout(searchDebounceRef.current);
+            }
+        };
+    }, [busqueda, filtroCategoria, fetchProductos]);
 
     const handlePagina = (next: number) => {
         const nueva = Math.max(1, Math.min(totalPaginas, pagina + next));
@@ -102,7 +127,7 @@ export default function AdminProductosScreen() {
             {/* BARRA DE BÚSQUEDA */}
             <View style={styles.searchRow}>
                 <TextInput
-                    placeholder="Buscar producto..."
+                    placeholder="Buscar productos..."
                     value={busqueda}
                     onChangeText={(text) => { setBusqueda(text); fetchProductos(1, text); }}
                     style={styles.input}
@@ -112,43 +137,47 @@ export default function AdminProductosScreen() {
                 </Pressable>
             </View>
 
-            {/* CHIPS DE CATEGORÍAS */}
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipsRow}>
-                <Pressable
-                    onPress={() => { setFiltroCategoria(''); fetchProductos(1, busqueda, ''); }}
-                    style={[styles.chip, filtroCategoria === '' && styles.chipActive]}>
-                    <ThemedText style={[styles.chipText, filtroCategoria === '' && styles.chipTextActive]}>Todas</ThemedText>
-                </Pressable>
-                {categorias.map((cat) => (
-                    <Pressable
-                        key={cat.id}
-                        onPress={() => { setFiltroCategoria(String(cat.id)); fetchProductos(1, busqueda, String(cat.id)); }}
-                        style={[styles.chip, filtroCategoria === String(cat.id) && styles.chipActive]}>
-                        <ThemedText style={[styles.chipText, filtroCategoria === String(cat.id) && styles.chipTextActive]}>
-                            {cat.nombre}
-                        </ThemedText>
-                    </Pressable>
-                ))}
-            </ScrollView>
-
-            {/* BOTÓN CREAR */}
-            <Pressable style={styles.createBtn} onPress={() => push('/admin/producto-form')}>
-                <Ionicons name="add-circle-outline" size={18} color="#fff" />
-                <ThemedText style={styles.createBtnText}>Crear producto</ThemedText>
-            </Pressable>
-
-            {loading ? (
-                <View style={styles.centered}>
-                    <ActivityIndicator size="large" color="#28a745" />
-                    <ThemedText>Cargando productos...</ThemedText>
-                </View>
-            ) : null}
-
-            {errorMessage ? <ThemedText style={styles.error}>{errorMessage}</ThemedText> : null}
-
             <FlatList
                 data={productos}
                 keyExtractor={(item) => String(item.id)}
+                ListHeaderComponent={() => (
+                    <>
+
+                        {canManageProductos && (
+                            <Pressable style={styles.createBtn} onPress={() => push('/admin/producto-form')}>
+                                <Ionicons name="add-circle-outline" size={18} color="#fff" />
+                                <ThemedText style={styles.createBtnText}>Crear producto</ThemedText>
+                            </Pressable>
+                        )}
+
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipsRow}>
+                            <Pressable
+                                onPress={() => { setFiltroCategoria(''); fetchProductos(1, busqueda, ''); }}
+                                style={[styles.chip, filtroCategoria === '' && styles.chipActive]}>
+                                <ThemedText style={[styles.chipText, filtroCategoria === '' && styles.chipTextActive]}>Todos</ThemedText>
+                            </Pressable>
+                            {categorias.map((cat) => (
+                                <Pressable
+                                    key={cat.id}
+                                    onPress={() => { setFiltroCategoria(String(cat.id)); fetchProductos(1, busqueda, String(cat.id)); }}
+                                    style={[styles.chip, filtroCategoria === String(cat.id) && styles.chipActive]}>
+                                    <ThemedText style={[styles.chipText, filtroCategoria === String(cat.id) && styles.chipTextActive]}>
+                                        {cat.nombre}
+                                    </ThemedText>
+                                </Pressable>
+                            ))}
+                        </ScrollView>
+
+                        {loading ? (
+                            <View style={styles.centered}>
+                                <ActivityIndicator size="large" color="#28a745" />
+                                <ThemedText>Cargando productos...</ThemedText>
+                            </View>
+                        ) : null}
+
+                        {errorMessage ? <ThemedText style={styles.error}>{errorMessage}</ThemedText> : null}
+                    </>
+                )}
                 renderItem={({ item }) => {
                     const stockInfo = getStockBadge(item.stock || 0);
                     return (
@@ -163,16 +192,14 @@ export default function AdminProductosScreen() {
                                 <View style={styles.cardBody}>
                                     <ThemedText type="defaultSemiBold" numberOfLines={1}>{item.nombre}</ThemedText>
                                     <ThemedText numberOfLines={1} style={styles.desc}>{item.descripcion || 'Sin descripción'}</ThemedText>
-                                    
-                                    {/* Proveedor */}
+                                {/*proveedor */}
                                     {item.proveedor?.nombre && (
                                         <View style={styles.proveedorRow}>
                                             <Ionicons name="truck-outline" size={11} color="#888" />
                                             <ThemedText style={styles.proveedorText}>{item.proveedor.nombre}</ThemedText>
                                         </View>
                                     )}
-
-                                    {/* Categoría */}
+                                {/*categoria */}
                                     {item.categoria?.nombre && (
                                         <View style={styles.categoriaBadge}>
                                             <ThemedText style={styles.categoriaBadgeText}>{item.categoria.nombre}</ThemedText>
@@ -195,8 +222,8 @@ export default function AdminProductosScreen() {
                                 </View>
                             </Pressable>
 
-                            {/* BOTONES DE ACCIÓN */}
-                            {isAdmin && (
+                            {/*botones de accion*/}
+                            {canManageProductos && (
                                 <View style={styles.actionsCol}>
                                     <Pressable
                                         style={[styles.actionBtn, { backgroundColor: item.activo ? '#f59e0b' : '#28a745' }]}
@@ -214,26 +241,15 @@ export default function AdminProductosScreen() {
                                         }}>
                                         <Ionicons name={item.activo ? 'eye-off-outline' : 'eye-outline'} size={14} color="#fff" />
                                     </Pressable>
-                                    <Pressable
-                                        style={[styles.actionBtn, { backgroundColor: '#ef4444' }]}
-                                        onPress={() => {
-                                            Alert.alert('Eliminar producto', '¿Estás seguro de eliminar este producto?', [
-                                                { text: 'Cancelar', style: 'cancel' },
-                                                {
-                                                    text: 'Eliminar', style: 'destructive',
-                                                    onPress: async () => {
-                                                        try {
-                                                            await deleteProduct(item.id!);
-                                                            fetchProductos(pagina, busqueda);
-                                                        } catch {
-                                                            Alert.alert('Error', 'No se pudo eliminar. Puede tener pedidos asociados.');
-                                                        }
-                                                    },
-                                                },
-                                            ]);
-                                        }}>
-                                        <Ionicons name="trash-outline" size={14} color="#fff" />
-                                    </Pressable>
+                                    {isAdmin && (
+                                        <Pressable
+                                            style={[styles.actionBtn, { backgroundColor: '#ef4444' }]}
+                                            onPress={() => {
+                                                Alert.alert('Eliminar producto', 'no se puede eliminar producto, ingresa desde la página web');
+                                            }}>
+                                            <Ionicons name="trash-outline" size={14} color="#fff" />
+                                        </Pressable>
+                                    )}
                                 </View>
                             )}
                         </View>
@@ -258,41 +274,41 @@ export default function AdminProductosScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 16, gap: 10 },
+    container: { flex: 1, padding: 16 },
     centered: { alignItems: 'center', gap: 10, marginVertical: 20 },
     error: { color: '#ef4444' },
     empty: { textAlign: 'center', color: '#888', marginTop: 20 },
-    searchRow: { flexDirection: 'row', gap: 8, marginBottom: 4 },
+    searchRow: { flexDirection: 'row', gap: 8, marginBottom: 8 },
     input: { flex: 1, borderWidth: 1, borderColor: '#d5d5d5', borderRadius: 10, paddingHorizontal: 12, backgroundColor: '#fff' },
-    searchBtn: { backgroundColor: '#28a745', borderRadius: 10, paddingHorizontal: 14, justifyContent: 'center', alignItems: 'center' },
+    searchBtn: { backgroundColor: '#dc2626', borderRadius: 10, paddingHorizontal: 14, justifyContent: 'center', alignItems: 'center' },
     
-    // Chips
-    chipsRow: { gap: 6, paddingVertical: 4, marginBottom: 4 },
-    chip: { borderRadius: 999, borderWidth: 1.5, borderColor: '#d1d5db', paddingVertical: 6, paddingHorizontal: 12, backgroundColor: '#fff' },
-    chipActive: { backgroundColor: '#28a745', borderColor: '#28a745' },
-    chipText: { color: '#374151', fontWeight: '600', fontSize: 12 },
+    // Chips boton
+    chipsRow: { flexDirection: 'row', gap: 10, paddingVertical: 10, marginBottom: 12, alignItems: 'center' },
+    chip: { alignSelf: 'flex-start', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', minHeight: 38, minWidth: 72, borderRadius: 999, borderWidth: 1.5, borderColor: '#d1d5db', paddingVertical: 8, paddingHorizontal: 16, backgroundColor: '#fff' },
+    chipActive: { backgroundColor: '#dc2626', borderColor: '#dc2626' },
+    chipText: { color: '#374151', fontWeight: '600', fontSize: 15, lineHeight: 20 },
     chipTextActive: { color: '#fff' },
 
-    createBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#28a745', borderRadius: 10, paddingVertical: 12, marginBottom: 4 },
-    createBtnText: { color: '#fff', fontWeight: '700' },
-    list: { flex: 1 },
+    createBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, backgroundColor: '#dc2626', borderRadius: 10, paddingVertical: 14, minHeight: 50, marginBottom: 12 },
+    createBtnText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+    list: { flex: 1, marginTop: 0 },
     
     // Card
-    card: { flexDirection: 'row', gap: 10, borderWidth: 1, borderColor: '#e8e8e8', borderRadius: 12, padding: 10, backgroundColor: '#fff', marginBottom: 8, alignItems: 'center' },
+    card: { flexDirection: 'row', gap: 10, borderWidth: 1, borderColor: '#f3d4d4', borderRadius: 12, padding: 10, backgroundColor: '#fff', marginBottom: 8, alignItems: 'center' },
     image: { width: 70, height: 70, borderRadius: 10 },
     cardBody: { flex: 1, gap: 2 },
-    desc: { color: '#888', fontSize: 12 },
+    desc: { color: '#6b7280', fontSize: 12 },
     proveedorRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 },
-    proveedorText: { color: '#888', fontSize: 11 },
-    categoriaBadge: { alignSelf: 'flex-start', backgroundColor: '#e0e7ff', borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2, marginTop: 2 },
-    categoriaBadgeText: { color: '#28a745', fontSize: 10, fontWeight: '600' },
+    proveedorText: { color: '#6b7280', fontSize: 11 },
+    categoriaBadge: { alignSelf: 'flex-start', backgroundColor: '#fee2e2', borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2, marginTop: 2 },
+    categoriaBadgeText: { color: '#b91c1c', fontSize: 10, fontWeight: '600' },
     priceRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 2 },
-    price: { fontWeight: '700', fontSize: 16, color: '#28a745' },
+    price: { fontWeight: '700', fontSize: 16, color: '#dc2626' },
     stockBadge: { borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2 },
     stockBadgeText: { fontWeight: '600', fontSize: 11 },
     estadoRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 },
     estadoDot: { width: 8, height: 8, borderRadius: 4 },
-    estadoText: { color: '#888', fontSize: 11 },
+    estadoText: { color: '#6b7280', fontSize: 11 },
 
     // Acciones
     actionsCol: { flexDirection: 'column', gap: 6, marginLeft: 8 },
@@ -300,6 +316,6 @@ const styles = StyleSheet.create({
 
     // Paginación
     paginationRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 10 },
-    pageBtn: { backgroundColor: '#28a745', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 8 },
+    pageBtn: { backgroundColor: '#dc2626', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 8 },
     pageLabel: { fontWeight: '600', color: '#333' },
 });
