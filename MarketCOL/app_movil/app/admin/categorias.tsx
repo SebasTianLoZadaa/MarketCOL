@@ -47,7 +47,8 @@ export default function AdminCategoriasScreen() {
             const res = await apiClient.get('/admin/categorias');
             const data = res.data?.data?.categorias || [];
             setCategorias(Array.isArray(data) ? data : []);
-        } catch (err) {
+        } catch (console.error();
+        ) {
             Alert.alert('Error', 'No se pudieron cargar las categorías');
         } finally {
             setLoading(false);
@@ -73,7 +74,8 @@ export default function AdminCategoriasScreen() {
             setModalVisible(false);
             setNombre(''); setDescripcion(''); setEditing(null);
             fetchCategorias();
-        } catch (err) {
+        } catch (console.error();
+        ) {
             Alert.alert('Error', 'No se pudo guardar la categoría');
         }
     };

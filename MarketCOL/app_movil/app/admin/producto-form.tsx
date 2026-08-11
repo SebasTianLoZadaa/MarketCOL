@@ -120,7 +120,7 @@ export default function AdminProductoForm() {
             const data = {
                 nombre,
                 descripcion,
-                precio: parseFloat(precio),
+                precio: Number.parseFloat(precio),
                 stock: stockValido,
                 imagen,
                 categoriaId,
