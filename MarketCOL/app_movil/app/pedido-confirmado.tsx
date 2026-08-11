@@ -78,13 +78,16 @@ export default function PedidoConfirmadoScreen() {
     });
   };
 
-  if (loading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#D92B2B" />
-        <ThemedText>Cargando información del pedido...</ThemedText>
-      </View>
-    );
+  const isLoading = loading;
+  const loadingView = (
+    <View style={styles.centered}>
+      <ActivityIndicator size="large" color="#D92B2B" />
+      <ThemedText>Cargando información del pedido...</ThemedText>
+    </View>
+  );
+
+  if (isLoading) {
+    return loadingView;
   }
 
   const estadoInfo = getEstadoBadge(pedido?.estado || 'pendiente');

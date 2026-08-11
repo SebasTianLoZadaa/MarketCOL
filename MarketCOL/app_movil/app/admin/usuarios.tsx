@@ -49,8 +49,7 @@ export default function AdminUsuariosScreen() {
         try {
             const params: string[] = [];
             if (search.trim()) params.push(`buscar=${encodeURIComponent(search.trim())}`);
-            params.push(`pagina=${page}`);
-            params.push('limite=10');
+            params.push(`pagina=${page}`, 'limite=10');
             const url = `/admin/usuarios?${params.join('&')}`;
             const res = await apiClient.get(url);
             const usuariosData: Usuario[] = res.data?.data?.usuarios || [];

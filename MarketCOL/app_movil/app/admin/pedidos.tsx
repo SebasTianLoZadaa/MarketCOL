@@ -60,8 +60,7 @@ export default function AdminPedidoScreen() {
             const params: string[] = [];
             if (search.trim()) params.push(`buscar=${encodeURIComponent(search.trim())}`);
             if (estado) params.push(`estado=${estado}`);
-            params.push(`pagina=${page}`);
-            params.push('limite=10');
+            params.push(`pagina=${page}`, 'limite=10');
             const url = `/admin/pedidos?${params.join('&')}`;
             const res = await apiClient.get(url);
             const pedidosData: Pedido[] = res.data?.data?.pedidos || [];

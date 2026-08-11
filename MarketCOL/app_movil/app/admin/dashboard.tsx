@@ -74,7 +74,7 @@ export default function AdminDashboardScreen() {
                     listos: ordStats.pedidosPorEstado?.find((e: any) => e.estado === 'listo')?.cantidad || 0,
                     ventas: ordStats.ventasTotales || 0,
                 });
-            } catch (_) {
+            } catch () {
                 // ignore
             } finally {
                 setLoading(false);

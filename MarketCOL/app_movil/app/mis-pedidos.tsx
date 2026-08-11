@@ -5,12 +5,12 @@
 //   - Se recarga automáticamente al enfocar la pantalla.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
-import { useCallback } from 'react';
+
 
 import { ThemedText } from '../components/themed-text';
 import { ThemedView } from '../components/themed-view';

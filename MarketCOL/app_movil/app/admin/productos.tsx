@@ -69,8 +69,7 @@ export default function AdminProductosScreen() {
             const params: string[] = [];
             if (search.trim()) params.push(`buscar=${encodeURIComponent(search.trim())}`);
             if (categoria) params.push(`categoriaId=${categoria}`);
-            params.push(`pagina=${page}`);
-            params.push(`limite=10`);
+            params.push(`pagina=${page}`, 'limite=10');
             const url = `/admin/productos?${params.join('&')}`;
             const res = await apiClient.get(url);
             const productosData: Producto[] = res.data?.data?.productos || [];

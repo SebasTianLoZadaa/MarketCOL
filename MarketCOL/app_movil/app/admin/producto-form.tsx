@@ -146,6 +146,87 @@ export default function AdminProductoForm() {
     const getCategoriaNombre = () => categorias.find(c => c.id === categoriaId)?.nombre || 'Seleccionar categoría';
     const getSubcategoriaNombre = () => subcategorias.find(s => s.id === subcategoriaId)?.nombre || 'Seleccionar subcategoría';
     const getProveedorNombre = () => proveedores.find(p => p.id === proveedorId)?.nombre || 'Sin proveedor';
+    const textoBoton = loading ? 'Guardando...' : (editing ? 'Actualizar Producto' : 'Crear Producto'):
+    const renderCategorias = () => {
+    if (loadingCategorias) {
+        return <ActivityIndicator size="large" color="#28a745" />;
+    }
+    return (
+        <FlatList
+            data={categorias}
+            keyExtractor={(item) => String(item.id)}
+            renderItem={({ item }) => (
+                <Pressable
+                    style={[styles.modalOption, categoriaId === item.id && styles.modalOptionSelected]}
+                    onPress={() => { setCategoriaId(item.id || ''); setCategoriaModalVisible(false); }}>
+                    <Ionicons name="folder-outline" size={18} color={categoriaId === item.id ? '#28a745' : '#888'} />
+                    <Text style={[styles.modalOptionText, categoriaId === item.id && styles.modalOptionTextSelected]}>
+                        {item.nombre}
+                    </Text>
+                </Pressable>
+            )}
+            style={styles.modalList}
+        />
+    );
+};
+
+    const renderSubcategorias = () => {
+        if (subcategorias.length === 0) {
+            return <Text style={{ textAlign: 'center', color: '#888', paddingVertical: 20}}>No hay subcategorias disponibles</Text>;
+
+        } 
+             return (
+        <FlatList
+            data={subcategorias}
+            keyExtractor={(item) => String(item.id)}
+            renderItem={({ item }) => (
+                <Pressable
+                    style={[styles.modalOption, subcategoriaId === item.id && styles.modalOptionSelected]}
+                    onPress={() => { setSubcategoriaId(item.id || ''); setSubcategoriaModalVisible(false); }}>
+                    <Ionicons name="folder-open-outline" size={18} color={subcategoriaId === item.id ? '#28a745' : '#888'} />
+                    <Text style={[styles.modalOptionText, subcategoriaId === item.id && styles.modalOptionTextSelected]}>
+                        {item.nombre}
+                    </Text>
+                </Pressable>
+            )}
+            style={styles.modalList}
+        />
+        );
+    };
+
+    const renderProveedores = () => {
+    if (loadingProveedores) {
+        return <ActivityIndicator size="large" color="#28a745" />;
+    }
+    return (
+        <>
+            {/* Opción "Sin proveedor" */}
+            <Pressable
+                style={[styles.modalOption, proveedorId === '' && styles.modalOptionSelected]}
+                onPress={() => { setProveedorId(''); setProveedorModalVisible(false); }}>
+                <Ionicons name="close-circle-outline" size={18} color={proveedorId === '' ? '#ef4444' : '#888'} />
+                <Text style={[styles.modalOptionText, proveedorId === '' && { color: '#ef4444', fontWeight: '600' }]}>
+                    Sin proveedor
+                </Text>
+            </Pressable>
+            <FlatList
+                data={proveedores}
+                keyExtractor={(item) => String(item.id)}
+                renderItem={({ item }) => (
+                    <Pressable
+                        style={[styles.modalOption, proveedorId === item.id && styles.modalOptionSelected]}
+                        onPress={() => { setProveedorId(item.id || ''); setProveedorModalVisible(false); }}>
+                        <Ionicons name="truck-outline" size={18} color={proveedorId === item.id ? '#28a745' : '#888'} />
+                        <Text style={[styles.modalOptionText, proveedorId === item.id && styles.modalOptionTextSelected]}>
+                            {item.nombre}
+                        </Text>
+                    </Pressable>
+                )}
+                style={styles.modalList}
+            />
+        </>
+    );
+};
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -195,7 +276,7 @@ export default function AdminProductoForm() {
             {/* BOTÓN GUARDAR */}
             <Pressable style={[styles.saveBtn, loading && styles.saveBtnDisabled]} onPress={handleSubmit} disabled={loading}>
                 <Ionicons name="checkmark-circle" size={20} color="#fff" />
-                <Text style={styles.saveBtnText}>{loading ? 'Guardando...' : editing ? 'Actualizar Producto' : 'Crear Producto'}</Text>
+                <Text style={styles.saveBtnText}>{textoBoton}</Text>
             </Pressable>
 
             {/* MODAL CATEGORÍAS */}
@@ -203,25 +284,7 @@ export default function AdminProductoForm() {
                 <View style={styles.modalWrap}>
                     <View style={styles.modalCard}>
                         <Text style={styles.modalTitle}>Seleccionar Categoría</Text>
-                        {loadingCategorias ? (
-                            <ActivityIndicator size="large" color="#28a745" />
-                        ) : (
-                            <FlatList
-                                data={categorias}
-                                keyExtractor={(item) => String(item.id)}
-                                renderItem={({ item }) => (
-                                    <Pressable
-                                        style={[styles.modalOption, categoriaId === item.id && styles.modalOptionSelected]}
-                                        onPress={() => { setCategoriaId(item.id || ''); setCategoriaModalVisible(false); }}>
-                                        <Ionicons name="folder-outline" size={18} color={categoriaId === item.id ? '#28a745' : '#888'} />
-                                        <Text style={[styles.modalOptionText, categoriaId === item.id && styles.modalOptionTextSelected]}>
-                                            {item.nombre}
-                                        </Text>
-                                    </Pressable>
-                                )}
-                                style={styles.modalList}
-                            />
-                        )}
+                        {renderCategorias()}
                         <Pressable style={styles.modalCloseBtn} onPress={() => setCategoriaModalVisible(false)}>
                             <Text style={styles.modalCloseBtnText}>Cerrar</Text>
                         </Pressable>
@@ -234,25 +297,7 @@ export default function AdminProductoForm() {
                 <View style={styles.modalWrap}>
                     <View style={styles.modalCard}>
                         <Text style={styles.modalTitle}>Seleccionar Subcategoría</Text>
-                        {subcategorias.length === 0 ? (
-                            <Text style={{ textAlign: 'center', color: '#888', paddingVertical: 20 }}>No hay subcategorías disponibles</Text>
-                        ) : (
-                            <FlatList
-                                data={subcategorias}
-                                keyExtractor={(item) => String(item.id)}
-                                renderItem={({ item }) => (
-                                    <Pressable
-                                        style={[styles.modalOption, subcategoriaId === item.id && styles.modalOptionSelected]}
-                                        onPress={() => { setSubcategoriaId(item.id || ''); setSubcategoriaModalVisible(false); }}>
-                                        <Ionicons name="folder-open-outline" size={18} color={subcategoriaId === item.id ? '#28a745' : '#888'} />
-                                        <Text style={[styles.modalOptionText, subcategoriaId === item.id && styles.modalOptionTextSelected]}>
-                                            {item.nombre}
-                                        </Text>
-                                    </Pressable>
-                                )}
-                                style={styles.modalList}
-                            />
-                        )}
+                        {renderSubcategorias()}
                         <Pressable style={styles.modalCloseBtn} onPress={() => setSubcategoriaModalVisible(false)}>
                             <Text style={styles.modalCloseBtnText}>Cerrar</Text>
                         </Pressable>
@@ -265,36 +310,7 @@ export default function AdminProductoForm() {
                 <View style={styles.modalWrap}>
                     <View style={styles.modalCard}>
                         <Text style={styles.modalTitle}>Seleccionar Proveedor</Text>
-                        {loadingProveedores ? (
-                            <ActivityIndicator size="large" color="#28a745" />
-                        ) : (
-                            <>
-                                {/* Opción "Sin proveedor" */}
-                                <Pressable
-                                    style={[styles.modalOption, proveedorId === '' && styles.modalOptionSelected]}
-                                    onPress={() => { setProveedorId(''); setProveedorModalVisible(false); }}>
-                                    <Ionicons name="close-circle-outline" size={18} color={proveedorId === '' ? '#ef4444' : '#888'} />
-                                    <Text style={[styles.modalOptionText, proveedorId === '' && { color: '#ef4444', fontWeight: '600' }]}>
-                                        Sin proveedor
-                                    </Text>
-                                </Pressable>
-                                <FlatList
-                                    data={proveedores}
-                                    keyExtractor={(item) => String(item.id)}
-                                    renderItem={({ item }) => (
-                                        <Pressable
-                                            style={[styles.modalOption, proveedorId === item.id && styles.modalOptionSelected]}
-                                            onPress={() => { setProveedorId(item.id || ''); setProveedorModalVisible(false); }}>
-                                            <Ionicons name="truck-outline" size={18} color={proveedorId === item.id ? '#28a745' : '#888'} />
-                                            <Text style={[styles.modalOptionText, proveedorId === item.id && styles.modalOptionTextSelected]}>
-                                                {item.nombre}
-                                            </Text>
-                                        </Pressable>
-                                    )}
-                                    style={styles.modalList}
-                                />
-                            </>
-                        )}
+                        {renderProveedores()}
                         <Pressable style={styles.modalCloseBtn} onPress={() => setProveedorModalVisible(false)}>
                             <Text style={styles.modalCloseBtnText}>Cerrar</Text>
                         </Pressable>

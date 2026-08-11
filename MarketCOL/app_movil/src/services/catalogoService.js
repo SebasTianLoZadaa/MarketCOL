@@ -1,109 +1,262 @@
 /**
- * Servicio de Catálogo (Público) - MarketCOL
- * 
+ * ============================================
+ * SERVICIO DE CATÁLOGO (PÚBLICO) - MarketCOL
+ * ============================================
+ *
  * Gestiona las consultas públicas del catálogo:
  * - Obtener categorías y productos con filtros
  * - Construir URLs válidas para imágenes del backend
+ *
  */
 
 import apiClient from '../api/apiClient';
 import { API_BASE_URL } from '../utils/constants';
 
+/**
+ * Normaliza la ruta de una imagen.
+ */
 const normalizeImagePath = (imagePath = '') => {
-    if (typeof imagePath !== 'string') return '';
-    return imagePath.trim().replace(/\\/g, '/').replace(/^\/+/, '');
+    if (typeof imagePath !== 'string') {
+        return '';
+    }
+
+    return imagePath
+        .trim()
+        .replace(/\\/g, '/')
+        .replace(/^\/+/, '');
 };
 
+/**
+ * Obtiene el origen seguro del backend.
+ *
+ * La aplicación debe utilizar HTTPS para las
+ * comunicaciones con el backend.
+ */
 const getBackendOrigin = () => {
     try {
-        return new URL(API_BASE_URL).origin;
+        const backendUrl = new URL(API_BASE_URL);
+
+        if (backendUrl.protocol !== 'https:') {
+            return '';
+        }
+
+        return backendUrl.origin;
     } catch (error) {
-        return 'http://10.0.2.2:5000';
+        return '';
     }
 };
 
+/**
+ * Valida IDs numéricos provenientes de fuentes externas.
+ */
+const isValidId = (value) => {
+    const id = Number(value);
+
+    return Number.isSafeInteger(id) && id > 0;
+};
+
 const catalogoService = {
+
     /**
      * Obtener todas las categorías activas
+     *
      * @returns {Promise<Array>} Array de categorías
      */
     getCategorias: async () => {
-        const response = await apiClient.get('/catalogo/categorias');
-        const payload = response.data?.data || response.data || {};
+        const response = await apiClient.get(
+            '/catalogo/categorias'
+        );
+
+        const payload =
+            response.data?.data ||
+            response.data ||
+            {};
+
         return payload.categorias || [];
     },
 
     /**
      * Obtener productos del catálogo con filtros opcionales
-     * @param {Object} params - Filtros: categoriaId, subcategoriaId, buscar, precioMin, precioMax, pagina, limite
-     * @returns {Promise<Object>} { productos: Array, paginacion: Object }
+     *
+     * @param {Object} params - Filtros:
+     * categoriaId, subcategoriaId, buscar,
+     * precioMin, precioMax, pagina, limite
+     *
+     * @returns {Promise<Object>}
      */
     getProductos: async (params = {}) => {
-        const response = await apiClient.get('/catalogo/productos', { params });
-        const payload = response.data?.data || response.data || {};
+        const response = await apiClient.get(
+            '/catalogo/productos',
+            { params }
+        );
+
+        const payload =
+            response.data?.data ||
+            response.data ||
+            {};
+
         const productos = payload.productos || [];
-        const paginacion = payload.paginacion || { total: 0, pagina: 1, totalPaginas: 1 };
-        return { productos, paginacion };
+
+        const paginacion =
+            payload.paginacion || {
+                total: 0,
+                pagina: 1,
+                totalPaginas: 1
+            };
+
+        return {
+            productos,
+            paginacion
+        };
     },
 
     /**
      * Obtener un producto específico por ID
+     *
      * @param {number} id - ID del producto
      * @returns {Promise<Object>} Producto con sus relaciones
      */
     getProductoById: async (id) => {
-        const response = await apiClient.get(`/catalogo/productos/${id}`);
-        const payload = response.data?.data || response.data || {};
+
+        if (!isValidId(id)) {
+            throw new Error('ID de producto inválido');
+        }
+
+        const productoId = Number(id);
+
+        const safeProductoId = encodeURIComponent(
+            String(productoId)
+        );
+
+        const response = await apiClient.get(
+            `/catalogo/productos/${safeProductoId}`
+        );
+
+        const payload =
+            response.data?.data ||
+            response.data ||
+            {};
+
         return payload.producto || payload;
     },
 
     /**
      * Obtener subcategorías de una categoría
+     *
      * @param {number} categoriaId - ID de la categoría padre
      * @returns {Promise<Array>} Array de subcategorías activas
      */
     getSubcategoriasPorCategoria: async (categoriaId) => {
-        const response = await apiClient.get(`/catalogo/categorias/${categoriaId}/subcategorias`);
-        const payload = response.data?.data || response.data || {};
+
+        if (!isValidId(categoriaId)) {
+            throw new Error('ID de categoría inválido');
+        }
+
+        const id = Number(categoriaId);
+
+        const safeCategoriaId = encodeURIComponent(
+            String(id)
+        );
+
+        const response = await apiClient.get(
+            `/catalogo/categorias/${safeCategoriaId}/subcategorias`
+        );
+
+        const payload =
+            response.data?.data ||
+            response.data ||
+            {};
+
         return payload.subcategorias || [];
     },
 
     /**
      * Obtener productos destacados para la pantalla de inicio
+     *
      * @returns {Promise<Array>} Array de productos destacados
      */
     getProductosDestacados: async () => {
-        const response = await apiClient.get('/catalogo/destacados');
-        const payload = response.data?.data || response.data || {};
+        const response = await apiClient.get(
+            '/catalogo/destacados'
+        );
+
+        const payload =
+            response.data?.data ||
+            response.data ||
+            {};
+
         return payload.productos || [];
     },
 
     /**
-     * Convierte una ruta relativa del backend en URL completa usable para imagen.
-     * 
-     * - Si no hay ruta, devuelve un placeholder gris.
-     * - Si ya es una URL absoluta (http/https), la devuelve tal cual.
-    * - Si es una ruta relativa, la prefija con la URL del backend.
-     * 
-     * @param {string} path - Ruta de la imagen (ej: '/images/productos/DESPENSA/ARROZ.webp')
+     * Convierte una ruta relativa del backend
+     * en una URL HTTPS completa usable para imagen.
+     *
+     * - Si no hay ruta, devuelve un placeholder.
+     * - Si ya es una URL HTTPS absoluta, la devuelve.
+     * - Si es una ruta relativa, la prefija con la URL segura
+     *   del backend.
+     *
+     * @param {string} path - Ruta de la imagen
      * @returns {string} URL completa de la imagen
      */
     buildImageUrl: (path) => {
-        if (!path) {
-            return 'https://via.placeholder.com/300/200.png?text=Producto';
+
+        const placeholder =
+            'https://via.placeholder.com/300/200.png?text=Producto';
+
+        if (!path || typeof path !== 'string') {
+            return placeholder;
         }
 
-        if (path.startsWith('http://') || path.startsWith('https://')) {
-            return path;
+        const trimmedPath = path.trim();
+
+        /*
+         * Solo se permiten URLs HTTPS.
+         * Las URLs HTTP son rechazadas.
+         */
+        if (trimmedPath.startsWith('https://')) {
+            try {
+                const imageUrl = new URL(trimmedPath);
+
+                if (imageUrl.protocol === 'https:') {
+                    return imageUrl.toString();
+                }
+            } catch (error) {
+                return placeholder;
+            }
+
+            return placeholder;
         }
 
-        const normalizedPath = normalizeImagePath(path);
+        /*
+         * Las URLs HTTP no son seguras.
+         */
+        if (trimmedPath.startsWith('http://')) {
+            return placeholder;
+        }
+
+        const normalizedPath =
+            normalizeImagePath(trimmedPath);
+
         if (!normalizedPath) {
-            return 'https://via.placeholder.com/300/200.png?text=Producto';
+            return placeholder;
         }
 
         const origin = getBackendOrigin();
-        if (normalizedPath.startsWith('uploads/') || normalizedPath.startsWith('images/')) {
+
+        /*
+         * Si API_BASE_URL no utiliza HTTPS,
+         * no se construye una URL insegura.
+         */
+        if (!origin) {
+            return placeholder;
+        }
+
+        if (
+            normalizedPath.startsWith('uploads/') ||
+            normalizedPath.startsWith('images/')
+        ) {
             return `${origin}/${normalizedPath}`;
         }
 

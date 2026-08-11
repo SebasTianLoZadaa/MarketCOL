@@ -38,7 +38,8 @@ export default function AdminProveedoresScreen() {
             const res = await apiClient.get('/admin/proveedores');
             const data = res.data?.data?.proveedores || [];
             setProveedores(Array.isArray(data) ? data : []);
-        } catch (err) {
+        } catch (console.error();
+        ) {
             Alert.alert('Error', 'No se pudieron cargar los proveedores');
         } finally {
             setLoading(false);
@@ -74,7 +75,8 @@ export default function AdminProveedoresScreen() {
             }
             setModalVisible(false);
             fetchProveedores();
-        } catch (_err) {
+        } catch (console.error();
+        ) {
             Alert.alert('Error', 'No se pudo guardar el proveedor');
         }
     };
