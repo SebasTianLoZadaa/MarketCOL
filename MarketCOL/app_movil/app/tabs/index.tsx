@@ -353,88 +353,66 @@ const CatalogHeader = memo(function CatalogHeader({
                     ) : null}
                 </View>
                 <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.filterOptionsScrollContent}
-                >
-                    <View style={styles.filterOptionsRow}>
-                        <Pressable onPress={() => onCategoriaChange('all')} style={[styles.filterOptionChip, categoriaActiva === 'all' && styles.filterOptionChipActive]}>
-                            <ThemedText style={[styles.filterOptionChipText, categoriaActiva === 'all' && styles.filterOptionChipTextActive]}>Todas</ThemedText>
-                        </Pressable>
-                        {categoriaBusqueda.trim().length > 0 ? (
-                            categoriasFiltradas.length > 0 ? categoriasFiltradas.map((cat: any) => (
-                                <Pressable
-                                    key={cat.id}
-                                    onPress={() => onCategoriaChange(String(cat.id))}
-                                    style={[styles.filterOptionChip, categoriaActiva === String(cat.id) && styles.filterOptionChipActive]}>
-                                    <ThemedText style={[styles.filterOptionChipText, categoriaActiva === String(cat.id) && styles.filterOptionChipTextActive]}>
-                                        {cat.nombre}
-                                    </ThemedText>
-                                </Pressable>
-                            )) : (
-                                <ThemedText style={styles.filterEmptyText}>No se encontraron categorías.</ThemedText>
-                            )
-                        ) : categorias.length > 0 ? (
-                            categorias.map((cat: any) => (
-                                <Pressable
-                                    key={cat.id}
-                                    onPress={() => onCategoriaChange(String(cat.id))}
-                                    style={[styles.filterOptionChip, categoriaActiva === String(cat.id) && styles.filterOptionChipActive]}>
-                                    <ThemedText style={[styles.filterOptionChipText, categoriaActiva === String(cat.id) && styles.filterOptionChipTextActive]}>
-                                        {cat.nombre}
-                                    </ThemedText>
-                                </Pressable>
-                            ))
-                        ) : (
-                            <ThemedText style={styles.filterEmptyText}>No hay categorías disponibles.</ThemedText>
-                        )}
-                    </View>
-                </ScrollView>
+    horizontal
+    showsHorizontalScrollIndicator={false}
+    contentContainerStyle={styles.filterOptionsScrollContent}
+>
+    <View style={styles.filterOptionsRow}>
+        <Pressable
+            onPress={() => onCategoriaChange('all')}
+            style={[
+                styles.filterOptionChip,
+                categoriaActiva === 'all' &&
+                    styles.filterOptionChipActive,
+            ]}
+        >
+            <ThemedText
+                style={[
+                    styles.filterOptionChipText,
+                    categoriaActiva === 'all' &&
+                        styles.filterOptionChipTextActive,
+                ]}
+            >
+                Todas
+            </ThemedText>
+        </Pressable>
+
+        <CategoryOptions
+            categorias={categorias}
+            categoriasFiltradas={categoriasFiltradas}
+            categoriaBusqueda={categoriaBusqueda}
+            categoriaActiva={categoriaActiva}
+            onCategoriaChange={onCategoriaChange}
+        />
+    </View>
+</ScrollView>
             </View>
 
-            {categoriaActiva !== 'all' ? (
-                <View style={styles.filterSection}>
-                    <ThemedText style={styles.filterLabel}>Subcategorías</ThemedText>
-                    {subcategoriasLoading ? (
-                        <View style={styles.filterLoadingRow}>
-                            <ActivityIndicator size="small" color="#C83A3A" />
-                            <ThemedText style={styles.filterEmptyText}>Cargando subcategorías...</ThemedText>
-                        </View>
-                    ) : subcategorias.length > 0 ? (
-                        <View style={styles.filterOptionsRow}>
-                            <Pressable onPress={() => onSubcategoriaChange('all')} style={[styles.filterOptionChip, subcategoriaActiva === 'all' && styles.filterOptionChipActive]}>
-                                <ThemedText style={[styles.filterOptionChipText, subcategoriaActiva === 'all' && styles.filterOptionChipTextActive]}>Todas</ThemedText>
-                            </Pressable>
-                            {subcategorias.map((sub: any) => (
-                                <Pressable
-                                    key={sub.id}
-                                    onPress={() => onSubcategoriaChange(String(sub.id))}
-                                    style={[styles.filterOptionChip, subcategoriaActiva === String(sub.id) && styles.filterOptionChipActive]}>
-                                    <ThemedText style={[styles.filterOptionChipText, subcategoriaActiva === String(sub.id) && styles.filterOptionChipTextActive]}>
-                                        {sub.nombre}
-                                    </ThemedText>
-                                </Pressable>
-                            ))}
-                        </View>
-                    ) : (
-                        <ThemedText style={styles.filterEmptyText}>No hay subcategorías para esta categoría.</ThemedText>
-                    )}
-                </View>
-            ) : null}
+           {categoriaActiva !== 'all' && (
+    <View style={styles.filterSection}>
+        <ThemedText style={styles.filterLabel}>
+            Subcategorías
+        </ThemedText>
+
+        <SubcategoryOptions
+            subcategorias={subcategorias}
+            subcategoriaActiva={subcategoriaActiva}
+            subcategoriasLoading={subcategoriasLoading}
+            onSubcategoriaChange={onSubcategoriaChange}
+        />
+    </View>
+)}
 
             <View style={styles.sectionHeader}>
                 <ThemedText style={styles.sectionTitle}>Productos Disponibles</ThemedText>
                 <ThemedText style={styles.sectionCount}>✨ {productosFiltrados.length} encontrados</ThemedText>
             </View>
 
-            {loading && (
-                <View style={styles.centered}>
-                    <ActivityIndicator size="large" color="#C83A3A" />
-                    <ThemedText style={styles.loadingText}>Cargando catálogo...</ThemedText>
-                </View>
-            )}
-            {!loading && errorMessage ? <ThemedText style={styles.errorText}>{errorMessage}</ThemedText> : null}
-            {!loading && !errorMessage && !hasProductos ? <ThemedText style={styles.emptyText}>No hay productos para mostrar.</ThemedText> : null}
+            <CatalogStatus
+    loading={loading}
+    errorMessage={errorMessage}
+    hasProductos={hasProductos}
+/>
         </>
     );
 });
@@ -628,28 +606,75 @@ export default function HomeScreen() {
         handleOpenCarrito,
     ]);
 
-    const ListFooter = () =>
-        !loading && hasProductos && totalPaginas > 1 ? (
-            <View style={styles.paginacionRow}>
-                <Pressable
-                    style={[styles.pagBtn, paginaActual === 1 && styles.pagBtnDisabled]}
-                    onPress={() => setPaginaActual((p) => Math.max(1, p - 1))}
-                    disabled={paginaActual === 1}>
-                    <Ionicons name="chevron-back" size={15} color={paginaActual === 1 ? '#d1d5db' : '#C83A3A'} />
-                    <ThemedText style={[styles.pagBtnText, paginaActual === 1 && styles.pagBtnTextDisabled]}>Anterior</ThemedText>
-                </Pressable>
-                <ThemedText style={styles.pagInfo}>{paginaActual} / {totalPaginas}</ThemedText>
-                <Pressable
-                    style={[styles.pagBtn, paginaActual === totalPaginas && styles.pagBtnDisabled]}
-                    onPress={() => setPaginaActual((p) => Math.min(totalPaginas, p + 1))}
-                    disabled={paginaActual === totalPaginas}>
-                    <ThemedText style={[styles.pagBtnText, paginaActual === totalPaginas && styles.pagBtnTextDisabled]}>Siguiente</ThemedText>
-                    <Ionicons name="chevron-forward" size={15} color={paginaActual === totalPaginas ? '#d1d5db' : '#C83A3A'} />
-                </Pressable>
-            </View>
-        ) : (
-            <View style={{ height: 24 }} />
-        );
+    const ListFooter = () => {
+    if (loading || !hasProductos || totalPaginas <= 1) {
+        return <View style={{ height: 24 }} />;
+    }
+
+    const primeraPagina = paginaActual === 1;
+    const ultimaPagina = paginaActual === totalPaginas;
+
+    return (
+        <View style={styles.paginacionRow}>
+            <Pressable
+                style={[
+                    styles.pagBtn,
+                    primeraPagina && styles.pagBtnDisabled,
+                ]}
+                onPress={() =>
+                    setPaginaActual((p) => Math.max(1, p - 1))
+                }
+                disabled={primeraPagina}
+            >
+                <Ionicons
+                    name="chevron-back"
+                    size={15}
+                    color={primeraPagina ? '#d1d5db' : '#C83A3A'}
+                />
+
+                <ThemedText
+                    style={[
+                        styles.pagBtnText,
+                        primeraPagina && styles.pagBtnTextDisabled,
+                    ]}
+                >
+                    Anterior
+                </ThemedText>
+            </Pressable>
+
+            <ThemedText style={styles.pagInfo}>
+                {paginaActual} / {totalPaginas}
+            </ThemedText>
+
+            <Pressable
+                style={[
+                    styles.pagBtn,
+                    ultimaPagina && styles.pagBtnDisabled,
+                ]}
+                onPress={() =>
+                    setPaginaActual((p) =>
+                        Math.min(totalPaginas, p + 1)
+                    )
+                }
+                disabled={ultimaPagina}
+            >
+                <ThemedText
+                    style={[
+                        styles.pagBtnText,
+                        ultimaPagina && styles.pagBtnTextDisabled,
+                    ]}
+                >
+                    Siguiente
+                </ThemedText>
+
+                <Ionicons
+                    name="chevron-forward"
+                    size={15}
+                    color={ultimaPagina ? '#d1d5db' : '#C83A3A'}
+                />
+            </Pressable>
+        </View>
+    );
 
     const renderProducto = ({ item: producto, index }: { item: any; index: number }) => (
         <View style={[styles.card, index % 2 === 0 ? { marginRight: CARD_GAP / 2 } : { marginLeft: CARD_GAP / 2 }]}>

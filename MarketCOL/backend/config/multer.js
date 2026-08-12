@@ -133,7 +133,7 @@ const getUploadFilename = (imageValue) => {
   const trimmed = imageValue.trim();
   if (!trimmed) return null;
 
-  const normalized = trimmed.replaceAll(/\\/g, '/');
+  const normalized = trimmed.replaceAll('\\', '/');
 
   if (/^https?:\/\//i.test(normalized)) {
     try {

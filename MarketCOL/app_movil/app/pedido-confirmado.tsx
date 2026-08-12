@@ -186,7 +186,7 @@ type ConfirmationBannerProps = {
 
 function ConfirmationBanner({
   pagoPendiente,
-}: ConfirmationBannerProps) {
+}: ConfirmationBannerProps, Readonly) {
   return (
     <ThemedView style={styles.banner}>
       <Ionicons
@@ -223,7 +223,7 @@ type PaymentStatusProps = {
 
 function PaymentStatus({
   pagoPendiente,
-}: PaymentStatusProps) {
+}: PaymentStatusProps, Readonly) {
   const backgroundColor = pagoPendiente
     ? '#fef3c7'
     : '#d1fae5';
@@ -282,7 +282,7 @@ type PaymentMethodProps = {
 
 function PaymentMethod({
   metodoPago,
-}: PaymentMethodProps) {
+}: PaymentMethodProps, Readonly) {
   const esWhatsapp =
     metodoPago === 'whatsapp';
 
@@ -331,7 +331,7 @@ function PedidoDetails({
   pedido,
   estadoInfo,
   pagoPendiente,
-}: PedidoDetailsProps) {
+}: PedidoDetailsProps, Readonly) {
   return (
     <ThemedView style={styles.card}>
       <View style={styles.cardHeader}>
@@ -419,7 +419,7 @@ type PedidoNotesProps = {
 
 function PedidoNotes({
   notas,
-}: PedidoNotesProps) {
+}: PedidoNotesProps, Readonly) {
   if (!notas) {
     return null;
   }
@@ -468,7 +468,7 @@ type WhatsAppButtonProps = {
 
 function WhatsAppButton({
   onPress,
-}: WhatsAppButtonProps) {
+}: WhatsAppButtonProps, Readonly) {
   return (
     <Pressable
       style={styles.whatsappButton}
@@ -598,7 +598,7 @@ function PedidoContent({
   pagoPendiente,
   pedidoListo,
   onWhatsApp,
-}: PedidoContentProps) {
+}: PedidoContentProps, Readonly) {
   return (
     <>
       {pedido ? (
@@ -633,7 +633,7 @@ type ErrorMessageProps = {
 
 function ErrorMessage({
   message,
-}: ErrorMessageProps) {
+}: ErrorMessageProps, Readonly) {
   if (!message) {
     return null;
   }

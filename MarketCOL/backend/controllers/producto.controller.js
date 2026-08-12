@@ -142,7 +142,7 @@ const getStoredImageUrl = (req, imageValue) => {
   const baseUrl = getPublicBaseUrl(req);
 
   const normalizedPath = trimmed
-    .replaceAll(/\\/g, '/')
+    .replaceAll('\\', '/')
     .replace(/^\/+/, '');
 
   if (

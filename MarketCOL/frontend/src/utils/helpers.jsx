@@ -119,7 +119,7 @@ export const getImageUrl = (imagePath) => {
  * Validar email
  */
 export const isValidEmail = (email) => {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const re = /^[^\s@]++@[^\s@]++\.[^\s@]++$/;
   return re.test(email);
 };
 
