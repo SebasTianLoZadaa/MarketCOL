@@ -79,9 +79,9 @@ const getProductos = async (req, res) => {
     if (precioMin || precioMax) {
       where.precio = {};  // Crea el objeto para filtrar precio
       // Op.gte = greater than or equal (>=). Precio >= precioMin
-      if (precioMin) where.precio[Op.gte] = parseFloat(precioMin);
+      if (precioMin) where.precio[Op.gte] = Number.parseFloat(precioMin);
       // Op.lte = less than or equal (<=). Precio <= precioMax
-      if (precioMax) where.precio[Op.lte] = parseFloat(precioMax);
+      if (precioMax) where.precio[Op.lte] = Number.parseFloat(precioMax);
     }
     
     // Define el ordenamiento según el parámetro 'orden'
@@ -105,7 +105,7 @@ const getProductos = async (req, res) => {
     
     // Calcula el offset (cuántos registros saltar) para la paginación.
     // Ejemplo: página 3 con límite 12 -> offset = (3-1) * 12 = 24 (salta los primeros 24)
-    const offset = (parseInt(pagina) - 1) * parseInt(limite);
+    const offset = (Number.parseInt(pagina) - 1) * Number.parseInt(limite);
     
     // Consulta productos con paginación.
     // findAndCountAll() retorna { count: total, rows: registros }
@@ -127,7 +127,7 @@ const getProductos = async (req, res) => {
           where: { activo: true }    // Solo subcategorías activas
         }
       ],
-      limit: parseInt(limite),    // Máximo de registros a retornar
+      limit: Number.parseInt(limite),    // Máximo de registros a retornar
       offset,                     // Registros a saltar
       order                       // Ordenamiento
     });
@@ -139,10 +139,10 @@ const getProductos = async (req, res) => {
         productos,                 // Array de productos de esta página
         paginacion: {
           total: count,            // Total de productos que coinciden con los filtros
-          pagina: parseInt(pagina),
-          limite: parseInt(limite),
+          pagina: Number.parseInt(pagina),
+          limite: Number.parseInt(limite),
           // Math.ceil redondea hacia arriba: 25/12 = 2.08 -> 3 páginas
-          totalPaginas: Math.ceil(count / parseInt(limite))
+          totalPaginas: Math.ceil(count / Number.parseInt(limite))
         }
       }
     });
@@ -383,7 +383,7 @@ const getProductosDestacados = async (req, res) => {
           where: { activo: true }
         }
       ],
-      limit: parseInt(limite),        // Máximo de productos a retornar
+      limit: Number.parseInt(limite),        // Máximo de productos a retornar
       order: [['createdAt', 'DESC']]  // Los más recientes primero
     });
     

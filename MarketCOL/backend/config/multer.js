@@ -115,7 +115,7 @@ const upload = multer({
     // fileSize: tamaño máximo del archivo en bytes.
     // Lee MAX_FILE_SIZE del .env y lo convierte a número con parseInt().
     // Si no existe la variable, usa 5242880 bytes = 5 MB (5 * 1024 * 1024)
-    fileSize: parseInt(process.env.MAX_FILE_SIZE) || 5242880
+    fileSize: Number.parseInt(process.env.MAX_FILE_SIZE) || 5242880
   }
 });
 
@@ -133,7 +133,7 @@ const getUploadFilename = (imageValue) => {
   const trimmed = imageValue.trim();
   if (!trimmed) return null;
 
-  const normalized = trimmed.replace(/\\/g, '/');
+  const normalized = trimmed.replaceAll(/\\/g, '/');
 
   if (/^https?:\/\//i.test(normalized)) {
     try {

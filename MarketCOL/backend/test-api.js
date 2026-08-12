@@ -1,28 +1,74 @@
 const http = require('http');
 
-http.get('http://localhost:5000/api/catalogo/productos', (res) => {
-  let data = '';
-  res.on('data', (chunk) => { data += chunk; });
-  res.on('end', () => {
-    try {
-      const json = JSON.parse(data);
-      const productos = json.data && json.data.productos ? json.data.productos : Array.isArray(json) ? json : [];
-      console.log('✅ Productos en API:', productos.length);
-      if (productos.length > 0) {
-        console.log('\n📦 Primeros 5 productos:');
-        productos.slice(0, 5).forEach((p, i) => {
-          console.log(`\n   ${i+1}. ${p.nombre}`);
-          console.log(`      Imagen: ${p.imagen}`);
-          console.log(`      Precio: $${p.precio}`);
-        });
+const API_HOST = 'localhost';
+const API_PORT = 5000;
+const API_PATH = '/api/catalogo/productos';
+
+const request = http.get(
+  {
+    hostname: API_HOST,
+    port: API_PORT,
+    path: API_PATH,
+    method: 'GET'
+  },
+  (res) => {
+    let data = '';
+
+    res.setEncoding('utf8');
+
+    res.on('data', (chunk) => {
+      data += chunk;
+    });
+
+    res.on('end', () => {
+      try {
+        const json = JSON.parse(data);
+
+        const productos =
+          json?.data?.productos ??
+          (Array.isArray(json) ? json : []);
+
+        /*
+         * La respuesta del servidor se considera
+         * información no confiable.
+         *
+         * No se imprimen directamente en consola
+         * valores provenientes de la respuesta.
+         */
+
+        if (Array.isArray(productos)) {
+          console.log(
+            '✅ La API de productos respondió correctamente.'
+          );
+        } else {
+          console.log(
+            '⚠️ La API respondió, pero el formato de productos no es válido.'
+          );
+        }
+
+        process.exit(0);
+
+      } catch (error) {
+        console.error(
+          '❌ La respuesta de la API no tiene un formato JSON válido.'
+        );
+
+        process.exit(1);
       }
-    } catch(e) {
-      console.error('Error parse:', e.message);
-    }
-    process.exit(0);
-  });
-}).on('error', (e) => {
-  if (e.code === 'ECONNREFUSED') console.log('❌ Backend no está corriendo en puerto 5000');
-  else console.error('Error:', e.message);
+    });
+  }
+);
+
+request.on('error', (error) => {
+  if (error.code === 'ECONNREFUSED') {
+    console.log(
+      '❌ Backend no está corriendo en el puerto 5000.'
+    );
+  } else {
+    console.error(
+      '❌ No fue posible conectar con el backend.'
+    );
+  }
+
   process.exit(1);
 });

@@ -146,7 +146,15 @@ export default function AdminProductoForm() {
     const getCategoriaNombre = () => categorias.find(c => c.id === categoriaId)?.nombre || 'Seleccionar categoría';
     const getSubcategoriaNombre = () => subcategorias.find(s => s.id === subcategoriaId)?.nombre || 'Seleccionar subcategoría';
     const getProveedorNombre = () => proveedores.find(p => p.id === proveedorId)?.nombre || 'Sin proveedor';
-    const textoBoton = loading ? 'Guardando...' : (editing ? 'Actualizar Producto' : 'Crear Producto');
+    let textoBoton = 'Crear Producto';
+
+if (editing) {
+    textoBoton = 'Actualizar Producto';
+}
+
+if (loading) {
+    textoBoton = 'Guardando...';
+}
     const renderCategorias = () => {
     if (loadingCategorias) {
         return <ActivityIndicator size="large" color="#28a745" />;

@@ -36,7 +36,7 @@ export default function CarritoScreen() {
 
     useFocusEffect(
       useCallback(() => {
-        refreshCarrito && refreshCarrito();
+        refreshCarrito?.();
       }, [refreshCarrito])
     );
 

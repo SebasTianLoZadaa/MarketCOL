@@ -54,7 +54,7 @@ const AdminSubcategoriasPage = () => {
       }
       
       // Filtro por categoría
-      if (filtros.categoriaId !== 'todas' && sub.categoriaId !== parseInt(filtros.categoriaId)) {
+      if (filtros.categoriaId !== 'todas' && sub.categoriaId !== Number.parseInt(filtros.categoriaId)) {
         return false;
       }
       

@@ -84,7 +84,7 @@ const CarritoPage = () => {
   if (loading) return <LoadingSpinner message="Cargando carrito..." />;
 
   const items = carrito?.items || [];
-  const total = parseFloat(carrito?.resumen?.total || carrito?.total || 0);
+  const total = Number.parseFloat(carrito?.resumen?.total || carrito?.total || 0);
 
   return (
     <div style={{ maxWidth: 1040, margin: '0 auto', padding: '36px 24px' }}>

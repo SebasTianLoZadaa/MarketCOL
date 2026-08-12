@@ -70,7 +70,7 @@ const getCarrito = async (req, res) => {
     // forEach recorre cada item del array
     itemsCarrito.forEach(item => {
       // parseFloat convierte el precio (que puede ser string) a número decimal
-      total += parseFloat(item.precioUnitario) * item.cantidad;
+      total += Number.parseFloat(item.precioUnitario) * item.cantidad;
     });
     
     // Responde con los items del carrito y un resumen
@@ -122,7 +122,7 @@ const agregarAlCarrito = async (req, res) => {
     
     // VALIDACIÓN 2: Verifica que la cantidad sea un número válido >= 1
     // parseInt convierte string a número entero: "3" -> 3
-    const cantidadNum = parseInt(cantidad);
+    const cantidadNum = Number.parseInt(cantidad);
     if (cantidadNum < 1) {
       return res.status(400).json({
         success: false,
@@ -257,7 +257,7 @@ const actualizarItemCarrito = async (req, res) => {
     const { cantidad } = req.body;
     
     // Convierte la cantidad a número entero y valida que sea >= 1
-    const cantidadNum = parseInt(cantidad);
+    const cantidadNum = Number.parseInt(cantidad);
     if (cantidadNum < 1) {
       return res.status(400).json({
         success: false,

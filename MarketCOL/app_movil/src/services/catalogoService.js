@@ -22,7 +22,7 @@ const normalizeImagePath = (imagePath = '') => {
 
     return imagePath
         .trim()
-        .replace(/\\/g, '/')
+        .replaceAll(/\\/g, '/')
         .replace(/^\/+/, '');
 };
 

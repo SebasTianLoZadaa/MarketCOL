@@ -5,7 +5,7 @@
  * Punto de entrada de la aplicación.
  * Configura React, importa estilos globales y monta el componente App.
  */
-
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 

@@ -91,11 +91,11 @@ const AdminProductosPage = () => {
         prod.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
         prod.descripcion?.toLowerCase().includes(busqueda.toLowerCase());
       
-      const coincideCategoria = filtroCategoria === '' || prod.categoriaId === parseInt(filtroCategoria);
-      const coincideSubcategoria = filtroSubcategoria === '' || prod.subcategoriaId === parseInt(filtroSubcategoria);
+      const coincideCategoria = filtroCategoria === '' || prod.categoriaId === Number.parseInt(filtroCategoria);
+      const coincideSubcategoria = filtroSubcategoria === '' || prod.subcategoriaId === Number.parseInt(filtroSubcategoria);
       
-      const min = precioMin === '' ? 0 : parseFloat(precioMin);
-      const max = precioMax === '' ? Infinity : parseFloat(precioMax);
+      const min = precioMin === '' ? 0 : Number.parseFloat(precioMin);
+      const max = precioMax === '' ? Infinity : Number.parseFloat(precioMax);
       const coincidePrecio = prod.precio >= min && prod.precio <= max;
       
       return coincideBusqueda && coincideCategoria && coincideSubcategoria && coincidePrecio;
@@ -272,8 +272,8 @@ const AdminProductosPage = () => {
       await api.put(`/admin/productos/${producto.id}`, {
         nombre: producto.nombre,
         descripcion: producto.descripcion,
-        precio: parseFloat(producto.precio),
-        stock: parseInt(producto.stock),
+        precio: Number.parseFloat(producto.precio),
+        stock: Number.parseInt(producto.stock),
         categoriaId: producto.categoriaId,
         subcategoriaId: producto.subcategoriaId || null,
         proveedorId: producto.proveedorId || null,
@@ -307,7 +307,7 @@ const AdminProductosPage = () => {
 
   // Subcategorías para el formulario (basadas en categoría seleccionada)
   const subcategoriasFiltradas = useMemo(() => {
-    return subcategorias.filter(sub => sub.categoriaId === parseInt(formData.categoriaId));
+    return subcategorias.filter(sub => sub.categoriaId === Number.parseInt(formData.categoriaId));
   }, [subcategorias, formData.categoriaId]);
 
   if (loading) {
@@ -418,7 +418,7 @@ const AdminProductosPage = () => {
                 >
                   <option value="">Todas las subcategorías</option>
                   {filtroCategoria && subcategorias
-                    .filter(s => s.categoriaId === parseInt(filtroCategoria) && s.activo)
+                    .filter(s => s.categoriaId === Number.parseInt(filtroCategoria) && s.activo)
                     .map((sub) => (
                       <option key={sub.id} value={sub.id}>{sub.nombre}</option>
                     ))

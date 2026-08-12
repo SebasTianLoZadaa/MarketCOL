@@ -144,7 +144,7 @@ const AdminDashboardPage = () => {
         setStats({
           pedidosPendientes: pedidosRes.data.data.pedidosPorEstado.find(e => e.estado === 'pendiente')?.cantidad || 0,
           pedidosListos:     pedidosRes.data.data.pedidosPorEstado.find(e => e.estado === 'listo')?.cantidad || 0,
-          ventasHoy:         parseFloat(pedidosRes.data.data.ventasHoy || 0),
+          ventasHoy:         Number.parseFloat(pedidosRes.data.data.ventasHoy || 0),
           stockBajo,
           totalProductos:    productosRes.data.data.total || productosRes.data.data.productos.length,
           totalClientes:     usuariosRes.data.data.totalClientes

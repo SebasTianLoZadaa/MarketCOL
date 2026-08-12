@@ -67,7 +67,7 @@ const CartItem = ({ item, onUpdate }) => {
             min="1"
             max={item.producto?.stock}
             value={item.cantidad}
-            onChange={(e) => handleCantidadChange(parseInt(e.target.value))}
+            onChange={(e) => handleCantidadChange(Number.parseInt(e.target.value))}
             className="mx-2 text-center"
             style={{ width: '60px' }}
           />

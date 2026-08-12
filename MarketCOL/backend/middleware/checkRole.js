@@ -178,7 +178,7 @@ const esPropioUsuarioOAdmin = (req, res, next) => {
     
     // Compara el ID de la URL con el ID del usuario autenticado
     // parseInt() convierte el string de la URL a número para comparar correctamente
-    if (parseInt(usuarioIdParam) !== req.usuario.id) {
+    if (Number.parseInt(usuarioIdParam, 10) !== req.usuario.id) {
       return res.status(403).json({    // 403 = Intenta acceder a datos de otro usuario
         success: false,
         message: 'Acceso denegado. No puedes acceder a datos de otros usuarios'

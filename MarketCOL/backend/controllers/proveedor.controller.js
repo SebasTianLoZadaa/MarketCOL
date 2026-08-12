@@ -46,7 +46,7 @@ const getProveedores = async (req, res) => {
     }
     
     // Calcula el offset para paginación
-    const offset = (parseInt(pagina, 10) - 1) * parseInt(limite, 10);
+    const offset = (Number.parseInt(pagina, 10) - 1) * Number.parseInt(limite, 10);
     
     // Consulta los proveedores paginados con el total de registros
     const { count, rows: proveedores } = await Proveedor.findAndCountAll({
@@ -63,7 +63,7 @@ const getProveedores = async (req, res) => {
           ]
         ]
       },
-      limit: parseInt(limite, 10),
+      limit: Number.parseInt(limite, 10),
       offset,
       order: [['nombre', 'ASC']]
     });
@@ -74,9 +74,9 @@ const getProveedores = async (req, res) => {
         proveedores,
         paginacion: {
           total: count,
-          pagina: parseInt(pagina, 10),
-          limite: parseInt(limite, 10),
-          totalPaginas: Math.ceil(count / parseInt(limite, 10))
+          pagina: Number.parseInt(pagina, 10),
+          limite: Number.parseInt(limite, 10),
+          totalPaginas: Math.ceil(count / Number.parseInt(limite, 10))
         }
       }
     });
@@ -156,7 +156,7 @@ const crearProveedor = async (req, res) => {
     
     // Validación de email (si se proporciona)
     if (email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const emailRegex = /^[^\s@]++@[^\s@]++\.[^\s@]++$/;
       if (!emailRegex.test(email)) {
         return res.status(400).json({
           success: false,
@@ -237,7 +237,7 @@ const actualizarProveedor = async (req, res) => {
     // Validar email si se está actualizando
     if (email !== undefined) {
       if (email && email.trim() !== '') {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[^\s@]++@[^\s@]++\.[^\s@]++$/;
         if (!emailRegex.test(email)) {
           return res.status(400).json({
             success: false,

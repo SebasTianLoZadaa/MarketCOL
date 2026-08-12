@@ -9,8 +9,8 @@
  * Formatear precio en pesos colombianos
  */
 export const formatCurrency = (value) => {
-  const numero = parseFloat(value);
-  if (isNaN(numero)) return '$0';
+  const numero = Number.parseFloat(value);
+  if (Number.isNaN(numero)) return '$0';
   
   return new Intl.NumberFormat('es-CO', {
     style: 'currency',

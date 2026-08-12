@@ -491,7 +491,7 @@ const getEstadisticasSubcategoria = async (req, res) => {
     
     // Recorre cada producto sumando al acumulador
     productos.forEach(producto => {
-      valorTotalInventario += parseFloat(producto.precio) * producto.stock;
+      valorTotalInventario += Number.parseFloat(producto.precio) * producto.stock;
       stockTotal += producto.stock;
     });
     

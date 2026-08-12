@@ -151,7 +151,7 @@ const CheckoutPage = () => {
   }
 
   const items = carrito?.items || [];
-  const total = parseFloat(carrito?.resumen?.total || 0);
+  const total = Number.parseFloat(carrito?.resumen?.total || 0);
 
   return (
     <Container className="py-4">

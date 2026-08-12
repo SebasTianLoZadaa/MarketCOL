@@ -44,7 +44,7 @@ try {
 }
 
 export const API_BASE_URL =
-    parsedApiUrl.toString().replace(/\/+$/, '');
+    parsedApiUrl.toString().replace(/\/++$/, '');
 
 
 /**

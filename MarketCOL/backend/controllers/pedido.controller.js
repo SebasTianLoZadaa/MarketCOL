@@ -138,7 +138,7 @@ const crearPedido = async (req, res) => {
       }
       
       // Suma al total del pedido: precioUnitario × cantidad
-      totalPedido += parseFloat(item.precioUnitario) * item.cantidad;
+      totalPedido += Number.parseFloat(item.precioUnitario) * item.cantidad;
     }
     
     // Si hubo errores de validación en algún producto, revierte y muestra todos los errores
@@ -174,7 +174,7 @@ const crearPedido = async (req, res) => {
         productoId: producto.id,                              // FK al producto
         cantidad: item.cantidad,                              // Cantidad solicitada
         precioUnitario: item.precioUnitario,                  // Precio al momento de la compra
-        subtotal: parseFloat(item.precioUnitario) * item.cantidad  // Subtotal de este item
+        subtotal: Number.parseFloat(item.precioUnitario) * item.cantidad  // Subtotal de este item
       }, { transaction: t });
       
       detallesPedido.push(detalle);   // Agrega al array de detalles
@@ -271,7 +271,7 @@ const getMisPedidos = async (req, res) => {
     if (estado) where.estado = estado;
     
     // Calcula el offset para paginación
-    const offset = (parseInt(pagina) - 1) * parseInt(limite);
+    const offset = (Number.parseInt(pagina) - 1) * Number.parseInt(limite);
     
     // Consulta pedidos con paginación.
     // findAndCountAll retorna { count: total, rows: registros }
@@ -288,7 +288,7 @@ const getMisPedidos = async (req, res) => {
           }]
         }
       ],
-      limit: parseInt(limite),
+      limit: Number.parseInt(limite),
       offset,
       order: [['createdAt', 'DESC']]    // Más recientes primero
     });
@@ -300,9 +300,9 @@ const getMisPedidos = async (req, res) => {
         pedidos,
         paginacion: {
           total: count,
-          pagina: parseInt(pagina),
-          limite: parseInt(limite),
-          totalPaginas: Math.ceil(count / parseInt(limite))
+          pagina: Number.parseInt(pagina),
+          limite: Number.parseInt(limite),
+          totalPaginas: Math.ceil(count / Number.parseInt(limite))
         }
       }
     });
@@ -508,7 +508,7 @@ const getAllPedidos = async (req, res) => {
       }
     }
     
-    const offset = (parseInt(pagina, 10) - 1) * parseInt(limite, 10);
+    const offset = (Number.parseInt(pagina, 10) - 1) * Number.parseInt(limite, 10);
     
     // Construye el include del usuario con posible filtro de búsqueda
     const usuarioInclude = {
@@ -542,7 +542,7 @@ const getAllPedidos = async (req, res) => {
           }]
         }
       ],
-      limit: parseInt(limite, 10),
+      limit: Number.parseInt(limite, 10),
       offset,
       order: [['createdAt', 'DESC']]     // Más recientes primero
     });
@@ -554,9 +554,9 @@ const getAllPedidos = async (req, res) => {
         pedidos,
         paginacion: {
           total: count,
-          pagina: parseInt(pagina),
-          limite: parseInt(limite),
-          totalPaginas: Math.ceil(count / parseInt(limite))
+          pagina: Number.parseInt(pagina),
+          limite: Number.parseInt(limite),
+          totalPaginas: Math.ceil(count / Number.parseInt(limite))
         }
       }
     });
@@ -687,13 +687,13 @@ const getEstadisticasPedidos = async (req, res) => {
         totalPedidos,                    // Total de pedidos
         pedidosHoy,                      // Pedidos creados hoy
         // Si no hay ventas (null), usa 0. toFixed(2) formatea a 2 decimales.
-        ventasTotales: parseFloat(ventasTotales || 0).toFixed(2),
+        ventasTotales: Number.parseFloat(ventasTotales || 0).toFixed(2),
         // Transforma cada resultado de la agrupación a un formato limpio
         pedidosPorEstado: pedidosPorEstado.map(p => ({
           estado: p.estado,
           // getDataValue() obtiene el valor de un campo virtual (alias del SQL)
-          cantidad: parseInt(p.getDataValue('cantidad')),
-          totalVentas: parseFloat(p.getDataValue('totalVentas') || 0).toFixed(2)
+          cantidad: Number.parseInt(p.getDataValue('cantidad')),
+          totalVentas: Number.parseFloat(p.getDataValue('totalVentas') || 0).toFixed(2)
         }))
       }
     });
