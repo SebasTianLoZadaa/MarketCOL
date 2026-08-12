@@ -119,8 +119,12 @@ const CarritoPage = () => {
           <p style={{ color: 'var(--gray)', marginBottom: 24 }}>
             Agrega productos para comenzar tu compra
           </p>
-          <button className="mk-btn mk-btn-primary" onClick={() => navigate('/catalogo')}>
-            Ir al Catálogo
+          <button
+              type="button"
+              className="mk-btn mk-btn-primary"
+              onClick={() => navigate('/catalogo')}
+            >
+              Ir al Catálogo
           </button>
         </div>
       ) : (
@@ -135,7 +139,11 @@ const CarritoPage = () => {
               <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--carbon)' }}>
                 Productos en tu carrito
               </span>
-              <button className="mk-btn mk-btn-danger-soft mk-btn-sm" onClick={handleVaciar}>
+              <button
+                type="button"
+                className="mk-btn mk-btn-danger-soft mk-btn-sm"
+                onClick={handleVaciar}
+              >
                 Vaciar carrito
               </button>
             </div>
@@ -178,11 +186,24 @@ const CarritoPage = () => {
 
                   {/* Qty */}
                   <div className="mk-qty">
-                    <button className="mk-qty-btn"
-                      onClick={() => handleCantidad(item.id, item.cantidad - 1)}>−</button>
-                    <span className="mk-qty-val">{item.cantidad}</span>
-                    <button className="mk-qty-btn" style={{ color: 'var(--red)' }}
-                      onClick={() => handleCantidad(item.id, item.cantidad + 1)}>+</button>
+                <button
+                type="button"
+                className="mk-qty-btn"
+                onClick={() => handleCantidad(item.id, item.cantidad - 1)}
+>
+                −
+              </button>
+
+              <span className="mk-qty-val">{item.cantidad}</span>
+
+              <button
+                type="button"
+                className="mk-qty-btn"
+                style={{ color: 'var(--red)' }}
+                onClick={() => handleCantidad(item.id, item.cantidad + 1)}
+              >
+                +
+              </button>
                   </div>
 
                   {/* Subtotal */}
@@ -195,22 +216,34 @@ const CarritoPage = () => {
 
                   {/* Eliminar */}
                   <button
-                    onClick={() => handleEliminar(item.id)}
-                    style={{
-                      background: 'none', border: 'none', cursor: 'pointer',
-                      color: 'var(--gray)', fontSize: 18, padding: '4px 6px',
-                      borderRadius: 'var(--radius-sm)', transition: 'color 0.15s',
-                    }}
-                    title="Eliminar"
-                  >×</button>
+                type="button"
+                onClick={() => handleEliminar(item.id)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--gray)',
+                  fontSize: 18,
+                  padding: '4px 6px',
+                  borderRadius: 'var(--radius-sm)',
+                  transition: 'color 0.15s',
+                }}
+                title="Eliminar"
+              >
+                ×
+              </button>
                 </div>
               ))}
             </div>
 
-            <button className="mk-btn mk-btn-ghost" style={{ marginTop: 20 }}
-              onClick={() => navigate('/catalogo')}>
-              ← Seguir comprando
-            </button>
+                <button
+                  type="button"
+                  className="mk-btn mk-btn-ghost"
+                  style={{ marginTop: 20 }}
+                  onClick={() => navigate('/catalogo')}
+                >
+                  ← Seguir comprando
+                </button>
           </div>
 
           {/* Resumen */}
@@ -253,8 +286,12 @@ const CarritoPage = () => {
                 </span>
               </div>
 
-              <button className="mk-btn mk-btn-primary mk-btn-w" style={{ padding: 13, fontSize: 15 }}
-                onClick={handleCheckout}>
+              <button
+                type="button"
+                className="mk-btn mk-btn-primary mk-btn-w"
+                style={{ padding: 13, fontSize: 15 }}
+                onClick={handleCheckout}
+              >
                 {isAuthenticated ? 'Finalizar pedido' : 'Iniciar sesión para pedir'}
               </button>
 

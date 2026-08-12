@@ -127,8 +127,9 @@ const LoginPage = () => {
 
           <form onSubmit={handleSubmit}>
             <div className="mk-field">
-              <label className="mk-label">Correo electrónico</label>
+              <label HtmlFor="email" className="mk-label">Correo electrónico</label>
               <input
+                id="email"
                 className="mk-input"
                 type="email" placeholder="tu@correo.com"
                 value={email} onChange={e => setEmail(e.target.value)}
@@ -137,8 +138,9 @@ const LoginPage = () => {
             </div>
 
             <div className="mk-field">
-              <label className="mk-label">Contraseña</label>
+              <label HtmlFor="password" className="mk-label">Contraseña</label>
               <input
+                id="password"
                 className="mk-input"
                 type="password" placeholder="••••••••"
                 value={password} onChange={e => setPassword(e.target.value)}

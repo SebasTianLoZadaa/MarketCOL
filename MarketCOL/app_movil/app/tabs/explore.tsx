@@ -398,7 +398,7 @@ function AuthForm({
     successMessage,
     handleSubmit,
     resetFeedback
-}: AuthFormProps) {
+}: AuthFormProps, Readonly) {
     return (
         <KeyboardAvoidingView
             style={styles.container}
@@ -573,27 +573,39 @@ function ProfileView({
     setPerfilSuccess,
     handleGuardarPerfil,
     handleLogout
-}: ProfileViewProps) {
-    const rolColor = (r?: string) =>
-        r === 'administrador'
-            ? '#F44444'
-            : r === 'auxiliar'
-                ? '#06b6d4'
-                : '#10b981';
+}: ProfileViewProps, Readonly) {
+    const rolColor = (r?: string) => {
+        switch (r) {
+            case 'administrador':
+                return '#F44444';
+            case 'auxiliar':
+                return '#06b6d4';
+            default:
+                return '#10b981';
+        }
+    };
 
-    const rolLabel = (r?: string) =>
-        r === 'administrador'
-            ? 'Administrador'
-            : r === 'auxiliar'
-                ? 'Auxiliar'
-                : 'Cliente';
+    const rolLabel = (r?: string) => {
+        switch (r) {
+            case 'administrador':
+                return 'Administrador';
+            case 'auxiliar':
+                return 'Auxiliar';
+            default:
+                return 'Cliente';
+        }
+    };
 
-    const rolIcon = (r?: string): keyof typeof Ionicons.glyphMap =>
-        r === 'administrador'
-            ? 'shield-checkmark'
-            : r === 'auxiliar'
-                ? 'construct'
-                : 'person';
+    const rolIcon = (r?: string): keyof typeof Ionicons.glyphMap => {
+        switch (r) {
+            case 'administrador':
+                return 'shield-checkmark';
+            case 'auxiliar':
+                return 'construct';
+            default:
+                return 'person';
+        }
+    };
 
     return (
         <ScrollView
@@ -787,8 +799,8 @@ function EditProfileForm({
     setEditMode,
     setPerfilError,
     handleGuardarPerfil
-}: EditProfileFormProps) {
-    return (
+}: EditProfileFormProps, Readonly) {
+    return (    
         <View style={styles.card}>
 
             <View style={styles.cardHeader}>
@@ -890,7 +902,7 @@ type AdminButtonProps = {
     rol?: string;
 };
 
-function AdminButton({ rol }: AdminButtonProps) {
+function AdminButton({ rol }: Readonly<AdminButtonProps>) {
     const hasAdminAccess =
         rol === 'administrador' || rol === 'auxiliar';
 

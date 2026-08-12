@@ -331,6 +331,7 @@ const CatalogoPage = () => {
         </div>
 
         <button
+          type="button"
           className={`mk-sidebar-link ${
             !filtros.categoriaId ? 'active' : ''
           }`}
@@ -342,6 +343,7 @@ const CatalogoPage = () => {
 
         {categorias.map((cat) => (
           <button
+            type="button"
             key={cat.id}
             className={`mk-sidebar-link ${
               filtros.categoriaId === String(cat.id)
@@ -384,6 +386,7 @@ const CatalogoPage = () => {
             </div>
 
             <button
+            type="button"
               className={`mk-sidebar-link ${
                 !filtros.subcategoriaId ? 'active' : ''
               }`}
@@ -401,6 +404,7 @@ const CatalogoPage = () => {
 
             {subcategorias.map((sub) => (
               <button
+              type="button"
                 key={sub.id}
                 className={`mk-sidebar-link ${
                   filtros.subcategoriaId === String(sub.id)
@@ -428,6 +432,7 @@ const CatalogoPage = () => {
         />
 
         <button
+         type="button"
           className="mk-btn mk-btn-danger-soft mk-btn-w mk-btn-sm"
           onClick={handleLimpiar}
         >
@@ -481,6 +486,7 @@ const CatalogoPage = () => {
           </div>
 
           <button
+          type="button"
             className="mk-btn mk-btn-primary"
             onClick={handleCheckout}
           >
@@ -523,6 +529,7 @@ const CatalogoPage = () => {
             {mensaje.texto}
 
             <button
+              type="button"
               onClick={() =>
                 setMensaje({
                   tipo: '',
@@ -579,6 +586,7 @@ const CatalogoPage = () => {
               <div className="mk-pagination">
                 <button
                   className="mk-btn mk-btn-ghost mk-btn-sm"
+                  type="button"
                   disabled={paginacion.pagina === 1}
                   onClick={() =>
                     handlePageChange(
@@ -591,6 +599,7 @@ const CatalogoPage = () => {
 
                 {getPages().map((n) => (
                   <button
+                    type="button"
                     key={n}
                     className={`mk-btn mk-btn-sm ${
                       paginacion.pagina === n
@@ -604,6 +613,7 @@ const CatalogoPage = () => {
                 ))}
 
                 <button
+                  type="button"
                   className="mk-btn mk-btn-ghost mk-btn-sm"
                   disabled={
                     paginacion.pagina ===
@@ -657,6 +667,7 @@ const CatalogoPage = () => {
             </p>
 
             <button
+              type="button"
               className="mk-btn mk-btn-primary"
               onClick={handleLimpiar}
             >

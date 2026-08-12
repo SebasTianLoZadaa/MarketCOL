@@ -37,6 +37,186 @@ const FEATURES = [
     { emoji: '⚡', title: 'Pedido listo', desc: 'En minutos' },
 ] as const;
 
+// NUEVO: componente para las opciones de categorías
+const CategoryOptions = memo(function CategoryOptions({
+    categorias,
+    categoriasFiltradas,
+    categoriaBusqueda,
+    categoriaActiva,
+    onCategoriaChange,
+}: {
+    categorias: any[];
+    categoriasFiltradas: any[];
+    categoriaBusqueda: string;
+    categoriaActiva: string;
+    onCategoriaChange: (id: string) => void;
+}) {
+    const lista = categoriaBusqueda.trim()
+        ? categoriasFiltradas
+        : categorias;
+
+    if (lista.length === 0) {
+        return (
+            <ThemedText style={styles.filterEmptyText}>
+                {categoriaBusqueda.trim()
+                    ? 'No se encontraron categorías.'
+                    : 'No hay categorías disponibles.'}
+            </ThemedText>
+        );
+    }
+
+    return (
+        <>
+            {lista.map((cat: any) => {
+                const id = String(cat.id);
+                const activa = categoriaActiva === id;
+
+                return (
+                    <Pressable
+                        key={cat.id}
+                        onPress={() => onCategoriaChange(id)}
+                        style={[
+                            styles.filterOptionChip,
+                            activa && styles.filterOptionChipActive,
+                        ]}
+                    >
+                        <ThemedText
+                            style={[
+                                styles.filterOptionChipText,
+                                activa && styles.filterOptionChipTextActive,
+                            ]}
+                        >
+                            {cat.nombre}
+                        </ThemedText>
+                    </Pressable>
+                );
+            })}
+        </>
+    );
+});
+
+// NUEVO: componente para las subcategorías
+const SubcategoryOptions = memo(function SubcategoryOptions({
+    subcategorias,
+    subcategoriaActiva,
+    subcategoriasLoading,
+    onSubcategoriaChange,
+}: {
+    subcategorias: any[];
+    subcategoriaActiva: string;
+    subcategoriasLoading: boolean;
+    onSubcategoriaChange: (id: string) => void;
+}) {
+    if (subcategoriasLoading) {
+        return (
+            <View style={styles.filterLoadingRow}>
+                <ActivityIndicator size="small" color="#C83A3A" />
+                <ThemedText style={styles.filterEmptyText}>
+                    Cargando subcategorías...
+                </ThemedText>
+            </View>
+        );
+    }
+
+    if (subcategorias.length === 0) {
+        return (
+            <ThemedText style={styles.filterEmptyText}>
+                No hay subcategorías para esta categoría.
+            </ThemedText>
+        );
+    }
+
+    return (
+        <View style={styles.filterOptionsRow}>
+            <Pressable
+                onPress={() => onSubcategoriaChange('all')}
+                style={[
+                    styles.filterOptionChip,
+                    subcategoriaActiva === 'all' &&
+                        styles.filterOptionChipActive,
+                ]}
+            >
+                <ThemedText
+                    style={[
+                        styles.filterOptionChipText,
+                        subcategoriaActiva === 'all' &&
+                            styles.filterOptionChipTextActive,
+                    ]}
+                >
+                    Todas
+                </ThemedText>
+            </Pressable>
+
+            {subcategorias.map((sub: any) => {
+                const id = String(sub.id);
+                const activa = subcategoriaActiva === id;
+
+                return (
+                    <Pressable
+                        key={sub.id}
+                        onPress={() => onSubcategoriaChange(id)}
+                        style={[
+                            styles.filterOptionChip,
+                            activa && styles.filterOptionChipActive,
+                        ]}
+                    >
+                        <ThemedText
+                            style={[
+                                styles.filterOptionChipText,
+                                activa && styles.filterOptionChipTextActive,
+                            ]}
+                        >
+                            {sub.nombre}
+                        </ThemedText>
+                    </Pressable>
+                );
+            })}
+        </View>
+    );
+});
+
+// NUEVO: componente para estados del catálogo
+const CatalogStatus = ({
+    loading,
+    errorMessage,
+    hasProductos,
+}: {
+    loading: boolean;
+    errorMessage: string;
+    hasProductos: boolean;
+}) => {
+    if (loading) {
+        return (
+            <View style={styles.centered}>
+                <ActivityIndicator size="large" color="#C83A3A" />
+                <ThemedText style={styles.loadingText}>
+                    Cargando catálogo...
+                </ThemedText>
+            </View>
+        );
+    }
+
+    if (errorMessage) {
+        return (
+            <ThemedText style={styles.errorText}>
+                {errorMessage}
+            </ThemedText>
+        );
+    }
+
+    if (!hasProductos) {
+        return (
+            <ThemedText style={styles.emptyText}>
+                No hay productos para mostrar.
+            </ThemedText>
+        );
+    }
+
+    return null;
+};
+
+
+
 type CatalogHeaderProps = {
     productos: any[];
     categorias: any[];

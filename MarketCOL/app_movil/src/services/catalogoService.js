@@ -42,6 +42,7 @@ const getBackendOrigin = () => {
 
         return backendUrl.origin;
     } catch (error) {
+        console.error('Error al procesar la información:', error);
         return '';
     }
 };
@@ -223,6 +224,7 @@ const catalogoService = {
                     return imageUrl.toString();
                 }
             } catch (error) {
+                void error;
                 return placeholder;
             }
 

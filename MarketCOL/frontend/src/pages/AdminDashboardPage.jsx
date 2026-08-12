@@ -58,12 +58,17 @@ const AdminSidebar = () => {
       </Link>
 
       <button
-        className="mk-sidebar-link"
-        style={{ color: 'var(--red)', marginTop: 4, cursor: 'pointer' }}
-        onClick={() => { logout(); navigate('/login'); }}
-      >
-        <span>🚪</span><span>Cerrar sesión</span>
-      </button>
+            type="button"
+            className="mk-sidebar-link"
+            style={{ color: 'var(--red)', marginTop: 4, cursor: 'pointer' }}
+            onClick={() => {
+              logout();
+              navigate('/login');
+            }}
+          >
+            <span>🚪</span>
+            <span>Cerrar sesión</span>
+</button>
     </div>
   );
 };

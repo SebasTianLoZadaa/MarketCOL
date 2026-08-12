@@ -107,6 +107,7 @@ const ProductCard = memo(({ producto, onAddToCart, showActions = true }) => {
         {/* Acción */}
         {showActions && (
           <button
+        type="button"
             className={`mk-btn ${isOutOfStock ? 'mk-btn-ghost' : 'mk-btn-primary'} mk-btn-w`}
             onClick={handleAddToCart}
             disabled={isOutOfStock}

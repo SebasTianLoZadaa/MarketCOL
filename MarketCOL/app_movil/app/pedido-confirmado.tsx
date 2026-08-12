@@ -89,13 +89,86 @@ const getEstadoBadge = (estado: string): EstadoInfo => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// CARGA DEL PEDIDO
+// ─────────────────────────────────────────────────────────────────────────────
+
+function usePedido(
+  pedidoId: string | string[] | undefined
+) {
+  const [pedido, setPedido] =
+    useState<Pedido | null>(null);
+
+  const [loading, setLoading] =
+    useState(Boolean(pedidoId));
+
+  const [errorMessage, setErrorMessage] =
+    useState('');
+
+  useEffect(() => {
+    if (!pedidoId) {
+      setLoading(false);
+      return;
+    }
+
+    const loadPedido = async () => {
+      setLoading(true);
+      setErrorMessage('');
+
+      try {
+        const data =
+          await pedidoService.getPedidoById(
+            pedidoId as string
+          );
+
+        setPedido(data);
+      } catch (error: unknown) {
+        const message =
+          (error as { message?: string })?.message ||
+          'No se pudo cargar el pedido.';
+
+        setErrorMessage(message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPedido();
+  }, [pedidoId]);
+
+  return {
+    pedido,
+    loading,
+    errorMessage,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ENLACE DE WHATSAPP
+// ─────────────────────────────────────────────────────────────────────────────
+
+function getWhatsAppLink(
+  pedido: Pedido | null
+) {
+  const defaultLink =
+    `https://wa.me/573001234567?text=` +
+    `Hola%20MerkaCiro,%20mi%20pedido%20%23` +
+    `${pedido?.id}%20está%20pendiente%20de%20pago.`;
+
+  return pedido?.linkPago || defaultLink;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // VISTA DE CARGA
 // ─────────────────────────────────────────────────────────────────────────────
 
 function LoadingView() {
   return (
     <View style={styles.centered}>
-      <ActivityIndicator size="large" color="#D92B2B" />
+      <ActivityIndicator
+        size="large"
+        color="#D92B2B"
+      />
+
       <ThemedText>
         Cargando información del pedido...
       </ThemedText>
@@ -210,7 +283,8 @@ type PaymentMethodProps = {
 function PaymentMethod({
   metodoPago,
 }: PaymentMethodProps) {
-  const esWhatsapp = metodoPago === 'whatsapp';
+  const esWhatsapp =
+    metodoPago === 'whatsapp';
 
   return (
     <View style={styles.detailRow}>
@@ -343,7 +417,9 @@ type PedidoNotesProps = {
   notas?: string;
 };
 
-function PedidoNotes({ notas }: PedidoNotesProps) {
+function PedidoNotes({
+  notas,
+}: PedidoNotesProps) {
   if (!notas) {
     return null;
   }
@@ -443,57 +519,17 @@ function MisPedidosButton() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function PedidoConfirmadoScreen() {
-  const { pedidoId } = useLocalSearchParams();
+  const { pedidoId } =
+    useLocalSearchParams();
 
-  const [pedido, setPedido] =
-    useState<Pedido | null>(null);
-
-  const [loading, setLoading] =
-    useState(Boolean(pedidoId));
-
-  const [errorMessage, setErrorMessage] =
-    useState('');
-
-  useEffect(() => {
-    const loadPedido = async () => {
-      if (!pedidoId) {
-        setLoading(false);
-        return;
-      }
-
-      setLoading(true);
-      setErrorMessage('');
-
-      try {
-        const data =
-          await pedidoService.getPedidoById(
-            pedidoId as string
-          );
-
-        setPedido(data);
-      } catch (error: unknown) {
-        const message =
-          (error as { message?: string })
-            ?.message ||
-          'No se pudo cargar el pedido.';
-
-        setErrorMessage(message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadPedido();
-  }, [pedidoId]);
+  const {
+    pedido,
+    loading,
+    errorMessage,
+  } = usePedido(pedidoId);
 
   const handleWhatsApp = () => {
-    const defaultLink =
-      `https://wa.me/573001234567?text=` +
-      `Hola%20MerkaCiro,%20mi%20pedido%20%23` +
-      `${pedido?.id}%20está%20pendiente%20de%20pago.`;
-
-    const link =
-      pedido?.linkPago || defaultLink;
+    const link = getWhatsAppLink(pedido);
 
     Linking.openURL(link).catch(() => {
       Alert.alert(
