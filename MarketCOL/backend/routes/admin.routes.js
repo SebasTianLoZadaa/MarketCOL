@@ -133,6 +133,79 @@ const validarQueryId = (value) => {
  * Valida los parámetros utilizados
  * por GET /productos.
  */
+/**
+ * Valida un parámetro booleano.
+ */
+const esBooleanoValido = (valor) => {
+  return (
+    valor === undefined ||
+    valor === 'true' ||
+    valor === 'false'
+  );
+};
+
+/**
+ * Valida un parámetro numérico positivo.
+ */
+const esNumeroPositivoValido = (valor) => {
+  if (valor === undefined) {
+    return true;
+  }
+
+  if (
+    typeof valor !== 'string' ||
+    !/^\d+$/.test(valor)
+  ) {
+    return false;
+  }
+
+  const numero = Number(valor);
+
+  return (
+    Number.isSafeInteger(numero) &&
+    numero > 0
+  );
+};
+
+/**
+ * Valida el parámetro de búsqueda.
+ */
+const esBusquedaValida = (buscar) => {
+  return (
+    buscar === undefined ||
+    (
+      typeof buscar === 'string' &&
+      buscar.length <= 100
+    )
+  );
+};
+
+/**
+ * Valida la página.
+ */
+const esPaginaValida = (pagina) => {
+  return esNumeroPositivoValido(pagina);
+};
+
+/**
+ * Valida el límite de resultados.
+ */
+const esLimiteValido = (limite) => {
+  if (limite === undefined) {
+    return true;
+  }
+
+  if (!esNumeroPositivoValido(limite)) {
+    return false;
+  }
+
+  return Number(limite) <= 100;
+};
+
+/**
+ * Valida los parámetros utilizados
+ * por GET /productos.
+ */
 const validarParametrosProductos = (
   req,
   res,
@@ -148,20 +221,12 @@ const validarParametrosProductos = (
     limite
   } = req.query;
 
-  // ==========================================
-  // CATEGORÍA
-  // ==========================================
-
   if (!validarQueryId(categoriaId)) {
     return res.status(400).json({
       success: false,
       message: 'El ID de categoría no es válido'
     });
   }
-
-  // ==========================================
-  // SUBCATEGORÍA
-  // ==========================================
 
   if (!validarQueryId(subcategoriaId)) {
     return res.status(400).json({
@@ -170,107 +235,44 @@ const validarParametrosProductos = (
     });
   }
 
-  // ==========================================
-  // ACTIVO
-  // ==========================================
-
-  if (
-    activo !== undefined &&
-    activo !== 'true' &&
-    activo !== 'false'
-  ) {
+  if (!esBooleanoValido(activo)) {
     return res.status(400).json({
       success: false,
-      message: 'El parámetro activo debe ser true o false'
+      message:
+        'El parámetro activo debe ser true o false'
     });
   }
 
-  // ==========================================
-  // CON STOCK
-  // ==========================================
-
-  if (
-    conStock !== undefined &&
-    conStock !== 'true' &&
-    conStock !== 'false'
-  ) {
+  if (!esBooleanoValido(conStock)) {
     return res.status(400).json({
       success: false,
-      message: 'El parámetro conStock debe ser true o false'
+      message:
+        'El parámetro conStock debe ser true o false'
     });
   }
 
-  // ==========================================
-  // BÚSQUEDA
-  // ==========================================
-
-  if (buscar !== undefined) {
-    if (
-      typeof buscar !== 'string' ||
-      buscar.length > 100
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: 'El texto de búsqueda no es válido'
-      });
-    }
+  if (!esBusquedaValida(buscar)) {
+    return res.status(400).json({
+      success: false,
+      message:
+        'El texto de búsqueda no es válido'
+    });
   }
 
-  // ==========================================
-  // PÁGINA
-  // ==========================================
-
-  if (pagina !== undefined) {
-    if (
-      typeof pagina !== 'string' ||
-      !/^\d+$/.test(pagina)
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: 'El número de página no es válido'
-      });
-    }
-
-    const paginaNumber = Number(pagina);
-
-    if (
-      !Number.isSafeInteger(paginaNumber) ||
-      paginaNumber <= 0
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: 'El número de página no es válido'
-      });
-    }
+  if (!esPaginaValida(pagina)) {
+    return res.status(400).json({
+      success: false,
+      message:
+        'El número de página no es válido'
+    });
   }
 
-  // ==========================================
-  // LÍMITE
-  // ==========================================
-
-  if (limite !== undefined) {
-    if (
-      typeof limite !== 'string' ||
-      !/^\d+$/.test(limite)
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: 'El límite no es válido'
-      });
-    }
-
-    const limiteNumber = Number(limite);
-
-    if (
-      !Number.isSafeInteger(limiteNumber) ||
-      limiteNumber <= 0 ||
-      limiteNumber > 100
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: 'El límite debe estar entre 1 y 100'
-      });
-    }
+  if (!esLimiteValido(limite)) {
+    return res.status(400).json({
+      success: false,
+      message:
+        'El límite debe estar entre 1 y 100'
+    });
   }
 
   next();
