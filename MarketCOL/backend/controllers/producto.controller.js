@@ -25,6 +25,18 @@ const { Op } = require('sequelize');
 const { deleteFile } = require('../config/multer');
 
 // ==========================================
+// ERRORES DE VALIDACIÓN
+// ==========================================
+
+class ValidationError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'ValidationError';
+    this.statusCode = 400;
+  }
+}
+
+// ==========================================
 // FUNCIONES AUXILIARES
 // ==========================================
 
@@ -160,6 +172,246 @@ const getStoredImageUrl = (req, imageValue) => {
 };
 
 // ==========================================
+// FUNCIONES AUXILIARES PARA GET PRODUCTOS
+// ==========================================
+
+/**
+ * Valida un ID opcional recibido por query.
+ */
+const parseOptionalId = (value, fieldName) => {
+  if (value === undefined) {
+    return null;
+  }
+
+  const parsedValue = parsePositiveInteger(value);
+
+  if (parsedValue === null) {
+    throw new ValidationError(
+      `El ID de ${fieldName} no es válido`
+    );
+  }
+
+  return parsedValue;
+};
+
+/**
+ * Valida un parámetro booleano opcional.
+ */
+const parseOptionalBoolean = (value, fieldName) => {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  const validValues = ['true', 'false'];
+
+  if (!validValues.includes(value)) {
+    throw new ValidationError(
+      `El parámetro ${fieldName} debe ser true o false`
+    );
+  }
+
+  return value === 'true';
+};
+
+/**
+ * Valida el texto de búsqueda.
+ */
+const parseSearchValue = (value) => {
+  if (value === undefined) {
+    return '';
+  }
+
+  if (typeof value !== 'string') {
+    throw new ValidationError(
+      'El parámetro buscar no es válido'
+    );
+  }
+
+  const searchValue = value.trim();
+
+  if (searchValue.length > 100) {
+    throw new ValidationError(
+      'El texto de búsqueda es demasiado largo'
+    );
+  }
+
+  return searchValue;
+};
+
+/**
+ * Valida los parámetros de paginación.
+ */
+const parsePagination = (pagina, limite) => {
+  const paginaNum = parsePositiveInteger(pagina);
+  const limiteNum = parsePositiveInteger(limite);
+
+  if (paginaNum === null) {
+    throw new ValidationError(
+      'El número de página no es válido'
+    );
+  }
+
+  if (limiteNum === null || limiteNum > 100) {
+    throw new ValidationError(
+      'El límite debe estar entre 1 y 100'
+    );
+  }
+
+  return {
+    paginaNum,
+    limiteNum
+  };
+};
+
+/**
+ * Valida todos los filtros de productos.
+ */
+const validateProductFilters = (query) => {
+  const {
+    categoriaId,
+    subcategoriaId,
+    activo,
+    conStock,
+    buscar,
+    pagina = '1',
+    limite = '100'
+  } = query;
+
+  const categoriaIdNum = parseOptionalId(
+    categoriaId,
+    'categoría'
+  );
+
+  const subcategoriaIdNum = parseOptionalId(
+    subcategoriaId,
+    'subcategoría'
+  );
+
+  const activoValue = parseOptionalBoolean(
+    activo,
+    'activo'
+  );
+
+  const conStockValue = parseOptionalBoolean(
+    conStock,
+    'conStock'
+  );
+
+  const buscarValue = parseSearchValue(buscar);
+
+  const {
+    paginaNum,
+    limiteNum
+  } = parsePagination(
+    pagina,
+    limite
+  );
+
+  return {
+    categoriaIdNum,
+    subcategoriaIdNum,
+    activoValue,
+    conStockValue,
+    buscarValue,
+    paginaNum,
+    limiteNum
+  };
+};
+
+/**
+ * Construye el WHERE de Sequelize.
+ */
+const buildProductWhere = ({
+  categoriaIdNum,
+  subcategoriaIdNum,
+  activoValue,
+  conStockValue,
+  buscarValue
+}) => {
+  const where = {};
+
+  if (categoriaIdNum !== null) {
+    where.categoriaId = categoriaIdNum;
+  }
+
+  if (subcategoriaIdNum !== null) {
+    where.subcategoriaId = subcategoriaIdNum;
+  }
+
+  if (activoValue !== undefined) {
+    where.activo = activoValue;
+  }
+
+  if (conStockValue === true) {
+    where.stock = {
+      [Op.gt]: 0
+    };
+  }
+
+  if (buscarValue) {
+    where[Op.or] = [
+      {
+        nombre: {
+          [Op.like]: `%${buscarValue}%`
+        }
+      },
+      {
+        descripcion: {
+          [Op.like]: `%${buscarValue}%`
+        }
+      }
+    ];
+  }
+
+  return where;
+};
+
+/**
+ * Construye las opciones utilizadas por Sequelize.
+ */
+const buildProductQueryOptions = (
+  where,
+  limiteNum,
+  offset
+) => ({
+  where,
+
+  include: [
+    {
+      model: Categoria,
+      as: 'categoria',
+      attributes: [
+        'id',
+        'nombre'
+      ]
+    },
+    {
+      model: Subcategoria,
+      as: 'subcategoria',
+      attributes: [
+        'id',
+        'nombre'
+      ]
+    },
+    {
+      model: Proveedor,
+      as: 'proveedor',
+      attributes: [
+        'id',
+        'nombre'
+      ]
+    }
+  ],
+
+  limit: limiteNum,
+  offset,
+
+  order: [
+    ['nombre', 'ASC']
+  ]
+});
+
+// ==========================================
 // GET PRODUCTOS
 // ==========================================
 
@@ -180,238 +432,22 @@ const getStoredImageUrl = (req, imageValue) => {
  */
 const getProductos = async (req, res) => {
   try {
-    const {
-      categoriaId,
-      subcategoriaId,
-      activo,
-      conStock,
-      buscar,
-      pagina = '1',
-      limite = '100'
-    } = req.query;
+    const filtros = validateProductFilters(
+      req.query
+    );
 
-    // ==========================================
-    // VALIDAR CATEGORÍA
-    // ==========================================
-
-    const categoriaIdNum =
-      categoriaId !== undefined
-        ? parsePositiveInteger(categoriaId)
-        : null;
-
-    if (
-      categoriaId !== undefined &&
-      categoriaIdNum === null
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: 'El ID de categoría no es válido'
-      });
-    }
-
-    // ==========================================
-    // VALIDAR SUBCATEGORÍA
-    // ==========================================
-
-    const subcategoriaIdNum =
-      subcategoriaId !== undefined
-        ? parsePositiveInteger(subcategoriaId)
-        : null;
-
-    if (
-      subcategoriaId !== undefined &&
-      subcategoriaIdNum === null
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: 'El ID de subcategoría no es válido'
-      });
-    }
-
-    // ==========================================
-    // VALIDAR ACTIVO
-    // ==========================================
-
-    let activoValue;
-
-    if (activo !== undefined) {
-      if (
-        activo !== 'true' &&
-        activo !== 'false'
-      ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            'El parámetro activo debe ser true o false'
-        });
-      }
-
-      activoValue = activo === 'true';
-    }
-
-    // ==========================================
-    // VALIDAR STOCK
-    // ==========================================
-
-    if (
-      conStock !== undefined &&
-      conStock !== 'true' &&
-      conStock !== 'false'
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          'El parámetro conStock debe ser true o false'
-      });
-    }
-
-    // ==========================================
-    // VALIDAR BÚSQUEDA
-    // ==========================================
-
-    let buscarValue = '';
-
-    if (buscar !== undefined) {
-      if (typeof buscar !== 'string') {
-        return res.status(400).json({
-          success: false,
-          message:
-            'El parámetro buscar no es válido'
-        });
-      }
-
-      buscarValue = buscar.trim();
-
-      if (buscarValue.length > 100) {
-        return res.status(400).json({
-          success: false,
-          message:
-            'El texto de búsqueda es demasiado largo'
-        });
-      }
-    }
-
-    // ==========================================
-    // VALIDAR PAGINACIÓN
-    // ==========================================
-
-    const paginaNum =
-      parsePositiveInteger(pagina);
-
-    const limiteNum =
-      parsePositiveInteger(limite);
-
-    if (paginaNum === null) {
-      return res.status(400).json({
-        success: false,
-        message:
-          'El número de página no es válido'
-      });
-    }
-
-    if (
-      limiteNum === null ||
-      limiteNum > 100
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          'El límite debe estar entre 1 y 100'
-      });
-    }
-
-    // ==========================================
-    // CONSTRUIR WHERE
-    // ==========================================
-
-    const where = {};
-
-    if (categoriaIdNum !== null) {
-      where.categoriaId = categoriaIdNum;
-    }
-
-    if (subcategoriaIdNum !== null) {
-      where.subcategoriaId =
-        subcategoriaIdNum;
-    }
-
-    if (activoValue !== undefined) {
-      where.activo = activoValue;
-    }
-
-    if (conStock === 'true') {
-      where.stock = {
-        [Op.gt]: 0
-      };
-    }
-
-    // ==========================================
-    // BÚSQUEDA POR TEXTO
-    // ==========================================
-
-    if (buscarValue) {
-      where[Op.or] = [
-        {
-          nombre: {
-            [Op.like]: `%${buscarValue}%`
-          }
-        },
-        {
-          descripcion: {
-            [Op.like]: `%${buscarValue}%`
-          }
-        }
-      ];
-    }
-
-    // ==========================================
-    // PAGINACIÓN
-    // ==========================================
+    const where = buildProductWhere(filtros);
 
     const offset =
-      (paginaNum - 1) * limiteNum;
+      (filtros.paginaNum - 1) *
+      filtros.limiteNum;
 
-    // ==========================================
-    // OPCIONES SEQUELIZE
-    // ==========================================
-
-    const opciones = {
-      where,
-
-      include: [
-        {
-          model: Categoria,
-          as: 'categoria',
-          attributes: [
-            'id',
-            'nombre'
-          ]
-        },
-        {
-          model: Subcategoria,
-          as: 'subcategoria',
-          attributes: [
-            'id',
-            'nombre'
-          ]
-        },
-        {
-          model: Proveedor,
-          as: 'proveedor',
-          attributes: [
-            'id',
-            'nombre'
-          ]
-        }
-      ],
-
-      limit: limiteNum,
-      offset,
-
-      order: [
-        ['nombre', 'ASC']
-      ]
-    };
+    const opciones =
+      buildProductQueryOptions(
+        where,
+        filtros.limiteNum,
+        offset
+      );
 
     const {
       count,
@@ -420,10 +456,6 @@ const getProductos = async (req, res) => {
       opciones
     );
 
-    // ==========================================
-    // RESPUESTA
-    // ==========================================
-
     res.json({
       success: true,
       data: {
@@ -431,26 +463,32 @@ const getProductos = async (req, res) => {
 
         paginacion: {
           total: count,
-          pagina: paginaNum,
-          limite: limiteNum,
-          totalPaginas:
-            Math.ceil(
-              count / limiteNum
-            )
+          pagina: filtros.paginaNum,
+          limite: filtros.limiteNum,
+          totalPaginas: Math.ceil(
+            count / filtros.limiteNum
+          )
         }
       }
     });
-
   } catch (error) {
+    if (error instanceof ValidationError) {
+      return res.status(
+        error.statusCode
+      ).json({
+        success: false,
+        message: error.message
+      });
+    }
+
     console.error(
       'Error en getProductos:',
       error
     );
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      message:
-        'Error al obtener productos'
+      message: 'Error al obtener productos'
     });
   }
 };
@@ -475,8 +513,7 @@ const getProductoById = async (req, res) => {
     if (productoId === null) {
       return res.status(400).json({
         success: false,
-        message:
-          'ID de producto inválido'
+        message: 'ID de producto inválido'
       });
     }
 
@@ -519,8 +556,7 @@ const getProductoById = async (req, res) => {
     if (!producto) {
       return res.status(404).json({
         success: false,
-        message:
-          'Producto no encontrado'
+        message: 'Producto no encontrado'
       });
     }
 
@@ -530,7 +566,6 @@ const getProductoById = async (req, res) => {
         producto
       }
     });
-
   } catch (error) {
     console.error(
       'Error en getProductoById:',
@@ -539,8 +574,7 @@ const getProductoById = async (req, res) => {
 
     res.status(500).json({
       success: false,
-      message:
-        'Error al obtener producto'
+      message: 'Error al obtener producto'
     });
   }
 };
@@ -555,9 +589,116 @@ const getProductoById = async (req, res) => {
  * Ruta:
  * POST /api/admin/productos
  */
+const validarIdsCrearProducto = (categoriaId, subcategoriaId, proveedorId) => {
+  const categoriaIdNum = parsePositiveInteger(categoriaId);
+
+  if (categoriaIdNum === null) {
+    return { error: 'El ID de categoría no es válido' };
+  }
+
+  const subcategoriaIdNum = parsePositiveInteger(subcategoriaId);
+
+  if (subcategoriaIdNum === null) {
+    return { error: 'El ID de subcategoría no es válido' };
+  }
+
+  let proveedorIdNum = null;
+
+  if (proveedorId !== undefined && proveedorId !== null && proveedorId !== '') {
+    proveedorIdNum = parsePositiveInteger(proveedorId);
+
+    if (proveedorIdNum === null) {
+      return { error: 'El ID de proveedor no es válido' };
+    }
+  }
+
+  return {
+    categoriaIdNum,
+    subcategoriaIdNum,
+    proveedorIdNum,
+    error: null
+  };
+};
+
+const validarPrecioYStock = (precio, stock) => {
+  const precioNum = Number(precio);
+
+  if (!Number.isFinite(precioNum) || precioNum <= 0) {
+    return { error: 'El precio debe ser mayor a 0' };
+  }
+
+  const stockNum =
+    stock === undefined || stock === ''
+      ? 0
+      : Number(stock);
+
+  if (!Number.isInteger(stockNum) || stockNum < 0) {
+    return {
+      error: 'El stock debe ser un número entero no negativo'
+    };
+  }
+
+  return {
+    precioNum,
+    stockNum,
+    error: null
+  };
+};
+
+const validarCategoriaYSubcategoria = async (
+  categoriaIdNum,
+  subcategoriaIdNum
+) => {
+  const categoria = await Categoria.findByPk(categoriaIdNum);
+
+  if (!categoria) {
+    return {
+      error: 'No existe la categoría seleccionada',
+      status: 404
+    };
+  }
+
+  if (!categoria.activo) {
+    return {
+      error: 'La categoría está inactiva',
+      status: 400
+    };
+  }
+
+  const subcategoria = await Subcategoria.findByPk(
+    subcategoriaIdNum
+  );
+
+  if (!subcategoria) {
+    return {
+      error: 'No existe la subcategoría seleccionada',
+      status: 404
+    };
+  }
+
+  if (!subcategoria.activo) {
+    return {
+      error: 'La subcategoría está inactiva',
+      status: 400
+    };
+  }
+
+  if (subcategoria.categoriaId !== categoriaIdNum) {
+    return {
+      error:
+        'La subcategoría no pertenece a la categoría seleccionada',
+      status: 400
+    };
+  }
+
+  return {
+    categoria,
+    subcategoria,
+    error: null
+  };
+};
 const crearProducto = async (req, res) => {
   try {
-
     const {
       nombre,
       descripcion,
@@ -568,297 +709,87 @@ const crearProducto = async (req, res) => {
       proveedorId
     } = req.body;
 
-    // ==========================================
-    // VALIDAR CAMPOS OBLIGATORIOS
-    // ==========================================
-
-    if (
-      !nombre ||
-      !precio ||
-      !categoriaId ||
-      !subcategoriaId
-    ) {
+    if (!nombre || !precio || !categoriaId || !subcategoriaId) {
       return res.status(400).json({
         success: false,
-        message:
-          'Faltan campos requeridos: nombre, precio, categoriaId y subcategoriaId'
+        message: 'Faltan campos obligatorios'
       });
     }
 
-    // ==========================================
-    // VALIDAR IDs
-    // ==========================================
+    const ids = validarIdsCrearProducto(
+      categoriaId,
+      subcategoriaId,
+      proveedorId
+    );
 
-    const categoriaIdNum =
-      parsePositiveInteger(
-        categoriaId
-      );
-
-    const subcategoriaIdNum =
-      parsePositiveInteger(
-        subcategoriaId
-      );
-
-    if (categoriaIdNum === null) {
+    if (ids.error) {
       return res.status(400).json({
         success: false,
-        message:
-          'El ID de categoría no es válido'
+        message: ids.error
       });
     }
 
-    if (subcategoriaIdNum === null) {
+    const valores = validarPrecioYStock(precio, stock);
+
+    if (valores.error) {
       return res.status(400).json({
         success: false,
-        message:
-          'El ID de subcategoría no es válido'
+        message: valores.error
       });
     }
 
-    // ==========================================
-    // VALIDAR PROVEEDOR
-    // ==========================================
+    const relaciones = await validarCategoriaYSubcategoria(
+      ids.categoriaIdNum,
+      ids.subcategoriaIdNum
+    );
 
-    let proveedorIdNum = null;
-
-    if (
-      proveedorId !== undefined &&
-      proveedorId !== null &&
-      proveedorId !== ''
-    ) {
-      proveedorIdNum =
-        parsePositiveInteger(
-          proveedorId
-        );
-
-      if (proveedorIdNum === null) {
-        return res.status(400).json({
-          success: false,
-          message:
-            'El ID de proveedor no es válido'
-        });
-      }
-    }
-
-    // ==========================================
-    // VALIDAR CATEGORÍA
-    // ==========================================
-
-    const categoria =
-      await Categoria.findByPk(
-        categoriaIdNum
-      );
-
-    if (!categoria) {
-      return res.status(404).json({
+    if (relaciones.error) {
+      return res.status(relaciones.status || 400).json({
         success: false,
-        message:
-          'No existe la categoría seleccionada'
+        message: relaciones.error
       });
     }
-
-    if (!categoria.activo) {
-      return res.status(400).json({
-        success: false,
-        message:
-          'La categoría está inactiva'
-      });
-    }
-
-    // ==========================================
-    // VALIDAR SUBCATEGORÍA
-    // ==========================================
-
-    const subcategoria =
-      await Subcategoria.findByPk(
-        subcategoriaIdNum
-      );
-
-    if (!subcategoria) {
-      return res.status(404).json({
-        success: false,
-        message:
-          'No existe la subcategoría seleccionada'
-      });
-    }
-
-    if (!subcategoria.activo) {
-      return res.status(400).json({
-        success: false,
-        message:
-          'La subcategoría está inactiva'
-      });
-    }
-
-    if (
-      subcategoria.categoriaId !==
-      categoriaIdNum
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          'La subcategoría no pertenece a la categoría seleccionada'
-      });
-    }
-
-    // ==========================================
-    // VALIDAR PRECIO
-    // ==========================================
-
-    const precioNum =
-      Number(precio);
-
-    if (
-      !Number.isFinite(precioNum) ||
-      precioNum <= 0
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          'El precio debe ser mayor a 0'
-      });
-    }
-
-    // ==========================================
-    // VALIDAR STOCK
-    // ==========================================
-
-    const stockNum =
-      stock === undefined ||
-      stock === ''
-        ? 0
-        : Number(stock);
-
-    if (
-      !Number.isInteger(stockNum) ||
-      stockNum < 0
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          'El stock debe ser un número entero no negativo'
-      });
-    }
-
-    // ==========================================
-    // IMAGEN
-    // ==========================================
 
     const imagen = req.file
-      ? getStoredImageUrl(
-          req,
-          req.file.filename
-        )
-      : getStoredImageUrl(
-          req,
-          getImagenFromBody(req.body)
-        );
+      ? getStoredImageUrl(req, req.file.filename)
+      : getStoredImageUrl(req, null);
 
-    // ==========================================
-    // CREAR PRODUCTO
-    // ==========================================
-
-    const nuevoProducto =
-      await Producto.create({
-        nombre,
-        descripcion:
-          descripcion || null,
-
-        precio: precioNum,
-
-        stock: stockNum,
-
-        categoriaId:
-          categoriaIdNum,
-
-        subcategoriaId:
-          subcategoriaIdNum,
-
-        proveedorId:
-          proveedorIdNum,
-
-        imagen,
-
-        activo: true
-      });
-
-    // ==========================================
-    // RECARGAR RELACIONES
-    // ==========================================
-
-    await nuevoProducto.reload({
-      include: [
-        {
-          model: Categoria,
-          as: 'categoria',
-          attributes: [
-            'id',
-            'nombre'
-          ]
-        },
-        {
-          model: Subcategoria,
-          as: 'subcategoria',
-          attributes: [
-            'id',
-            'nombre'
-          ]
-        },
-        {
-          model: Proveedor,
-          as: 'proveedor',
-          attributes: [
-            'id',
-            'nombre'
-          ]
-        }
-      ]
+    const nuevoProducto = await Producto.create({
+      nombre: nombre.trim(),
+      descripcion: descripcion || null,
+      precio: valores.precioNum,
+      stock: valores.stockNum,
+      categoriaId: ids.categoriaIdNum,
+      subcategoriaId: ids.subcategoriaIdNum,
+      proveedorId: ids.proveedorIdNum,
+      imagen
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
-      message:
-        'Producto creado exitosamente',
-
+      message: 'Producto creado correctamente',
       data: {
         producto: nuevoProducto
       }
     });
-
   } catch (error) {
+    console.error('Error en crearProducto:', error);
 
-    console.error(
-      'Error en crearProducto:',
-      error
-    );
-
-    // Elimina archivo si falló la creación.
     if (req.file) {
-      deleteFile(
-        req.file.filename
-      );
+      deleteFile(req.file.filename);
     }
 
-    if (
-      error.name ===
-      'SequelizeValidationError'
-    ) {
+    if (error.name === 'SequelizeValidationError') {
       return res.status(400).json({
         success: false,
-        message:
-          'Errores de validación',
-
-        errors:
-          error.errors.map(
-            (e) => e.message
-          )
+        message: 'Datos inválidos',
+        errors: error.errors?.map((item) => item.message)
       });
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      message:
-        'Error al crear producto'
+      message: 'Error interno del servidor'
     });
   }
 };
@@ -873,12 +804,347 @@ const crearProducto = async (req, res) => {
  * Ruta:
  * PUT /api/admin/productos/:id
  */
+// ==========================================
+// FUNCIONES AUXILIARES - ACTUALIZAR PRODUCTO
+// ==========================================
+
+const validarCategoriaActualizacion = async (
+  categoriaId,
+  producto
+) => {
+  let categoriaIdNum = producto.categoriaId;
+
+  if (
+    categoriaId === undefined ||
+    categoriaId === ''
+  ) {
+    return {
+      categoriaIdNum,
+      error: null
+    };
+  }
+
+  categoriaIdNum =
+    parsePositiveInteger(categoriaId);
+
+  if (categoriaIdNum === null) {
+    return {
+      categoriaIdNum: null,
+      error:
+        'El ID de categoría no es válido'
+    };
+  }
+
+  if (
+    categoriaIdNum !==
+    producto.categoriaId
+  ) {
+    const categoria =
+      await Categoria.findByPk(
+        categoriaIdNum
+      );
+
+    if (
+      !categoria ||
+      !categoria.activo
+    ) {
+      return {
+        categoriaIdNum,
+        error:
+          'Categoría inválida o inactiva'
+      };
+    }
+  }
+
+  return {
+    categoriaIdNum,
+    error: null
+  };
+};
+
+
+const validarSubcategoriaActualizacion = async (
+  subcategoriaId,
+  producto,
+  categoriaIdNum
+) => {
+  if (
+    subcategoriaId === undefined ||
+    subcategoriaId === ''
+  ) {
+    return {
+      subcategoriaIdNum:
+        producto.subcategoriaId,
+      error: null
+    };
+  }
+
+  const subcategoriaIdNum =
+    parsePositiveInteger(
+      subcategoriaId
+    );
+
+  if (subcategoriaIdNum === null) {
+    return {
+      subcategoriaIdNum: null,
+      error:
+        'El ID de subcategoría no es válido'
+    };
+  }
+
+  if (
+    subcategoriaIdNum !==
+    producto.subcategoriaId
+  ) {
+    const subcategoria =
+      await Subcategoria.findByPk(
+        subcategoriaIdNum
+      );
+
+    if (
+      !subcategoria ||
+      !subcategoria.activo
+    ) {
+      return {
+        subcategoriaIdNum,
+        error:
+          'Subcategoría inválida o inactiva'
+      };
+    }
+
+    if (
+      subcategoria.categoriaId !==
+      categoriaIdNum
+    ) {
+      return {
+        subcategoriaIdNum,
+        error:
+          'La subcategoría no pertenece a la categoría seleccionada'
+      };
+    }
+  }
+
+  return {
+    subcategoriaIdNum,
+    error: null
+  };
+};
+
+
+const validarPrecioActualizacion = (
+  precio
+) => {
+  if (
+    precio === undefined ||
+    precio === ''
+  ) {
+    return {
+      value: null,
+      error: null
+    };
+  }
+
+  const precioNum = Number(precio);
+
+  if (
+    !Number.isFinite(precioNum) ||
+    precioNum <= 0
+  ) {
+    return {
+      value: null,
+      error:
+        'El precio debe ser mayor a 0'
+    };
+  }
+
+  return {
+    value: precioNum,
+    error: null
+  };
+};
+
+
+const validarStockActualizacion = (
+  stock
+) => {
+  if (
+    stock === undefined ||
+    stock === ''
+  ) {
+    return {
+      value: null,
+      error: null
+    };
+  }
+
+  const stockNum = Number(stock);
+
+  if (
+    !Number.isInteger(stockNum) ||
+    stockNum < 0
+  ) {
+    return {
+      value: null,
+      error:
+        'El stock debe ser un número entero no negativo'
+    };
+  }
+
+  return {
+    value: stockNum,
+    error: null
+  };
+};
+
+
+const validarProveedorActualizacion = (
+  proveedorId
+) => {
+  if (proveedorId === undefined) {
+    return {
+      value: undefined,
+      error: null
+    };
+  }
+
+  if (proveedorId === '') {
+    return {
+      value: null,
+      error: null
+    };
+  }
+
+  const proveedorIdNum =
+    parsePositiveInteger(
+      proveedorId
+    );
+
+  if (proveedorIdNum === null) {
+    return {
+      value: null,
+      error:
+        'El ID de proveedor no es válido'
+    };
+  }
+
+  return {
+    value: proveedorIdNum,
+    error: null
+  };
+};
+
+
+const actualizarImagenProducto = (
+  req,
+  producto
+) => {
+  if (req.file) {
+    if (producto.imagen) {
+      deleteFile(
+        producto.imagen
+      );
+    }
+
+    producto.imagen =
+      getStoredImageUrl(
+        req,
+        req.file.filename
+      );
+
+    return;
+  }
+
+  const tieneImagenEnBody =
+    Object.prototype.hasOwnProperty.call(
+      req.body,
+      'imagen'
+    ) ||
+    Object.prototype.hasOwnProperty.call(
+      req.body,
+      'image'
+    ) ||
+    Object.prototype.hasOwnProperty.call(
+      req.body,
+      'imagenUrl'
+    ) ||
+    Object.prototype.hasOwnProperty.call(
+      req.body,
+      'imageUrl'
+    );
+
+  if (tieneImagenEnBody) {
+    producto.imagen =
+      getStoredImageUrl(
+        req,
+        getImagenFromBody(req.body)
+      );
+  }
+};
+
+
+const actualizarCamposProducto = (
+  producto,
+  datos,
+  categoriaIdNum,
+  subcategoriaIdNum
+) => {
+  const {
+    nombre,
+    descripcion,
+    categoriaId,
+    subcategoriaId,
+    activo
+  } = datos;
+
+  if (nombre !== undefined) {
+    producto.nombre = nombre;
+  }
+
+  if (descripcion !== undefined) {
+    producto.descripcion =
+      descripcion;
+  }
+
+  if (
+    categoriaId !== undefined &&
+    categoriaId !== ''
+  ) {
+    producto.categoriaId =
+      categoriaIdNum;
+  }
+
+  if (
+    subcategoriaId !== undefined &&
+    subcategoriaId !== ''
+  ) {
+    producto.subcategoriaId =
+      subcategoriaIdNum;
+  }
+
+  if (activo !== undefined) {
+    producto.activo =
+      typeof activo === 'string'
+        ? [
+            'true',
+            '1',
+            'on'
+          ].includes(
+            activo.toLowerCase()
+          )
+        : Boolean(activo);
+  }
+};
+
+
+// ==========================================
+// ACTUALIZAR PRODUCTO
+// ==========================================
+
 const actualizarProducto = async (
   req,
   res
 ) => {
   try {
-
     const productoId =
       parsePositiveInteger(
         req.params.id
@@ -903,10 +1169,6 @@ const actualizarProducto = async (
       activo
     } = req.body;
 
-    // ==========================================
-    // BUSCAR PRODUCTO
-    // ==========================================
-
     const producto =
       await Producto.findByPk(
         productoId
@@ -924,295 +1186,145 @@ const actualizarProducto = async (
     // VALIDAR CATEGORÍA
     // ==========================================
 
-    let categoriaIdNum =
-      producto.categoriaId;
+    const categoriaResultado =
+      await validarCategoriaActualizacion(
+        categoriaId,
+        producto
+      );
 
-    if (
-      categoriaId !== undefined &&
-      categoriaId !== ''
-    ) {
-      categoriaIdNum =
-        parsePositiveInteger(
-          categoriaId
-        );
-
-      if (categoriaIdNum === null) {
-        return res.status(400).json({
-          success: false,
-          message:
-            'El ID de categoría no es válido'
-        });
-      }
-
-      if (
-        categoriaIdNum !==
-        producto.categoriaId
-      ) {
-        const categoria =
-          await Categoria.findByPk(
-            categoriaIdNum
-          );
-
-        if (
-          !categoria ||
-          !categoria.activo
-        ) {
-          return res.status(400).json({
-            success: false,
-            message:
-              'Categoría inválida o inactiva'
-          });
-        }
-      }
+    if (categoriaResultado.error) {
+      return res.status(400).json({
+        success: false,
+        message:
+          categoriaResultado.error
+      });
     }
+
+    const {
+      categoriaIdNum
+    } = categoriaResultado;
 
     // ==========================================
     // VALIDAR SUBCATEGORÍA
     // ==========================================
 
-    if (
-      subcategoriaId !== undefined &&
-      subcategoriaId !== ''
-    ) {
+    const subcategoriaResultado =
+      await validarSubcategoriaActualizacion(
+        subcategoriaId,
+        producto,
+        categoriaIdNum
+      );
 
-      const subcategoriaIdNum =
-        parsePositiveInteger(
-          subcategoriaId
-        );
-
-      if (subcategoriaIdNum === null) {
-        return res.status(400).json({
-          success: false,
-          message:
-            'El ID de subcategoría no es válido'
-        });
-      }
-
-      if (
-        subcategoriaIdNum !==
-        producto.subcategoriaId
-      ) {
-
-        const subcategoria =
-          await Subcategoria.findByPk(
-            subcategoriaIdNum
-          );
-
-        if (
-          !subcategoria ||
-          !subcategoria.activo
-        ) {
-          return res.status(400).json({
-            success: false,
-            message:
-              'Subcategoría inválida o inactiva'
-          });
-        }
-
-        if (
-          subcategoria.categoriaId !==
-          categoriaIdNum
-        ) {
-          return res.status(400).json({
-            success: false,
-            message:
-              'La subcategoría no pertenece a la categoría seleccionada'
-          });
-        }
-      }
+    if (subcategoriaResultado.error) {
+      return res.status(400).json({
+        success: false,
+        message:
+          subcategoriaResultado.error
+      });
     }
+
+    const {
+      subcategoriaIdNum
+    } = subcategoriaResultado;
 
     // ==========================================
     // VALIDAR PRECIO
     // ==========================================
 
+    const precioResultado =
+      validarPrecioActualizacion(
+        precio
+      );
+
+    if (precioResultado.error) {
+      return res.status(400).json({
+        success: false,
+        message:
+          precioResultado.error
+      });
+    }
+
     if (
-      precio !== undefined &&
-      precio !== ''
+      precioResultado.value !== null
     ) {
-      const precioNum =
-        Number(precio);
-
-      if (
-        !Number.isFinite(precioNum) ||
-        precioNum <= 0
-      ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            'El precio debe ser mayor a 0'
-        });
-      }
-
       producto.precio =
-        precioNum;
+        precioResultado.value;
     }
 
     // ==========================================
     // VALIDAR STOCK
     // ==========================================
 
+    const stockResultado =
+      validarStockActualizacion(
+        stock
+      );
+
+    if (stockResultado.error) {
+      return res.status(400).json({
+        success: false,
+        message:
+          stockResultado.error
+      });
+    }
+
     if (
-      stock !== undefined &&
-      stock !== ''
+      stockResultado.value !== null
     ) {
-      const stockNum =
-        Number(stock);
-
-      if (
-        !Number.isInteger(stockNum) ||
-        stockNum < 0
-      ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            'El stock debe ser un número entero no negativo'
-        });
-      }
-
       producto.stock =
-        stockNum;
+        stockResultado.value;
     }
 
     // ==========================================
     // VALIDAR PROVEEDOR
     // ==========================================
 
+    const proveedorResultado =
+      validarProveedorActualizacion(
+        proveedorId
+      );
+
+    if (proveedorResultado.error) {
+      return res.status(400).json({
+        success: false,
+        message:
+          proveedorResultado.error
+      });
+    }
+
     if (
-      proveedorId !== undefined
+      proveedorResultado.value !==
+      undefined
     ) {
-
-      if (proveedorId === '') {
-
-        producto.proveedorId =
-          null;
-
-      } else {
-
-        const proveedorIdNum =
-          parsePositiveInteger(
-            proveedorId
-          );
-
-        if (
-          proveedorIdNum === null
-        ) {
-          return res.status(400).json({
-            success: false,
-            message:
-              'El ID de proveedor no es válido'
-          });
-        }
-
-        producto.proveedorId =
-          proveedorIdNum;
-      }
+      producto.proveedorId =
+        proveedorResultado.value;
     }
 
     // ==========================================
     // IMAGEN
     // ==========================================
 
-    if (req.file) {
-
-      if (producto.imagen) {
-        deleteFile(
-          producto.imagen
-        );
-      }
-
-      producto.imagen =
-        getStoredImageUrl(
-          req,
-          req.file.filename
-        );
-
-    } else if (
-      Object.prototype.hasOwnProperty.call(
-        req.body,
-        'imagen'
-      ) ||
-      Object.prototype.hasOwnProperty.call(
-        req.body,
-        'image'
-      ) ||
-      Object.prototype.hasOwnProperty.call(
-        req.body,
-        'imagenUrl'
-      ) ||
-      Object.prototype.hasOwnProperty.call(
-        req.body,
-        'imageUrl'
-      )
-    ) {
-
-      producto.imagen =
-        getStoredImageUrl(
-          req,
-          getImagenFromBody(req.body)
-        );
-    }
+    actualizarImagenProducto(
+      req,
+      producto
+    );
 
     // ==========================================
     // ACTUALIZAR CAMPOS
     // ==========================================
 
-    if (
-      nombre !== undefined
-    ) {
-      producto.nombre =
-        nombre;
-    }
-
-    if (
-      descripcion !== undefined
-    ) {
-      producto.descripcion =
-        descripcion;
-    }
-
-    if (
-      categoriaId !== undefined &&
-      categoriaId !== ''
-    ) {
-      producto.categoriaId =
-        categoriaIdNum;
-    }
-
-    if (
-      subcategoriaId !== undefined &&
-      subcategoriaId !== ''
-    ) {
-
-      producto.subcategoriaId =
-        parsePositiveInteger(
-          subcategoriaId
-        );
-    }
-
-    if (
-      activo !== undefined
-    ) {
-
-      if (
-        typeof activo === 'string'
-      ) {
-
-        producto.activo =
-          [
-            'true',
-            '1',
-            'on'
-          ].includes(
-            activo.toLowerCase()
-          );
-
-      } else {
-
-        producto.activo =
-          Boolean(activo);
-      }
-    }
+    actualizarCamposProducto(
+      producto,
+      {
+        nombre,
+        descripcion,
+        categoriaId,
+        subcategoriaId,
+        activo
+      },
+      categoriaIdNum,
+      subcategoriaIdNum
+    );
 
     // ==========================================
     // GUARDAR
@@ -1257,14 +1369,11 @@ const actualizarProducto = async (
       success: true,
       message:
         'Producto actualizado exitosamente',
-
       data: {
         producto
       }
     });
-
   } catch (error) {
-
     console.error(
       'Error en actualizarProducto:',
       error
@@ -1284,7 +1393,6 @@ const actualizarProducto = async (
         success: false,
         message:
           'Errores de validación',
-
         errors:
           error.errors.map(
             (e) => e.message
@@ -1315,7 +1423,6 @@ const toggleProducto = async (
   res
 ) => {
   try {
-
     const productoId =
       parsePositiveInteger(
         req.params.id
@@ -1355,14 +1462,11 @@ const toggleProducto = async (
             ? 'activado'
             : 'desactivado'
         } exitosamente`,
-
       data: {
         producto
       }
     });
-
   } catch (error) {
-
     console.error(
       'Error en toggleProducto:',
       error
@@ -1391,7 +1495,6 @@ const eliminarProducto = async (
   res
 ) => {
   try {
-
     const productoId =
       parsePositiveInteger(
         req.params.id
@@ -1425,9 +1528,7 @@ const eliminarProducto = async (
       message:
         'Producto eliminado exitosamente'
     });
-
   } catch (error) {
-
     console.error(
       'Error en eliminarProducto:',
       error
@@ -1467,7 +1568,6 @@ const actualizarStock = async (
   res
 ) => {
   try {
-
     const productoId =
       parsePositiveInteger(
         req.params.id
@@ -1571,9 +1671,7 @@ const actualizarStock = async (
     // ==========================================
 
     switch (operacion) {
-
       case 'aumentar':
-
         await producto.aumentarStock(
           cantidadNum
         );
@@ -1584,7 +1682,6 @@ const actualizarStock = async (
         break;
 
       case 'reducir':
-
         if (
           cantidadNum >
           producto.stock
@@ -1606,7 +1703,6 @@ const actualizarStock = async (
         break;
 
       case 'establecer':
-
         producto.stock =
           cantidadNum;
 
@@ -1618,7 +1714,6 @@ const actualizarStock = async (
         break;
 
       default:
-
         return res.status(400).json({
           success: false,
           message:
@@ -1647,17 +1742,17 @@ const actualizarStock = async (
     // RESPUESTA
     // ==========================================
 
+    const mensajesOperacion = {
+      aumentar: 'aumentado',
+      reducir: 'reducido',
+      establecer: 'establecido'
+    };
+
     res.json({
       success: true,
 
       message:
-        `Stock ${
-          operacion === 'aumentar'
-            ? 'aumentado'
-            : operacion === 'reducir'
-              ? 'reducido'
-              : 'establecido'
-        } exitosamente`,
+        `Stock ${mensajesOperacion[operacion]} exitosamente`,
 
       data: {
         productoId:
@@ -1675,9 +1770,7 @@ const actualizarStock = async (
           producto.stock
       }
     });
-
   } catch (error) {
-
     console.error(
       'Error en actualizarStock:',
       error

@@ -129,7 +129,6 @@ const RegisterPage = () => {
           </div>
 
           <Field label="Teléfono" name="telefono" placeholder="3001234567" hint="10 dígitos, iniciando con 3" value={formData.telefono} onChange={handleChange} />
-          //:v
           <div className="mk-field">
             <label htmlFor="direccion" className="mk-label">Dirección (opcional)</label>
             <textarea
