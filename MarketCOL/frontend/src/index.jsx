@@ -12,7 +12,7 @@ import ReactDOM from 'react-dom/client';
 // Importar estilos de Bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css';
 // Importar íconos de Bootstrap
-import 'bootstrap-icons/font/bootstrap-icons.css';
+
 // Importar estilos personalizados
 import './index.css';
 

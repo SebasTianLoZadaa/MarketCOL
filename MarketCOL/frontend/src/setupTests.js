@@ -1,5 +1,5 @@
 // Polyfill para TextEncoder/TextDecoder en Jest
-import { TextEncoder, TextDecoder } from 'util';
+import { TextEncoder, TextDecoder } from 'node:util';
 
 // jest-dom adds custom jest matchers for asserting on DOM nodes.
 // allows you to do things like:
