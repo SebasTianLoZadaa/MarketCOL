@@ -22,6 +22,7 @@ const Proveedor = require('../models/Proveedor');
 /**
  * Función principal del seeder
  */
+
 const seedDatosCompletos = async () => {
   try {
     console.log('\n🌱 ========================================');

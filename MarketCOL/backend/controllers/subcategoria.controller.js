@@ -239,101 +239,249 @@ const crearSubcategoria = async (req, res) => {
  * Ruta: PUT /api/admin/subcategorias/:id
  * Body JSON: { nombre, descripcion, categoriaId, activo }
  */
+// ==========================================
+// FUNCIONES AUXILIARES PARA ACTUALIZAR
+// ==========================================
+
+const validarCategoriaActualizacion = async (
+  categoriaId,
+  categoriaActual
+) => {
+  if (
+    !categoriaId ||
+    categoriaId === categoriaActual
+  ) {
+    return null;
+  }
+
+  const nuevaCategoria =
+    await Categoria.findByPk(categoriaId);
+
+  if (!nuevaCategoria) {
+    return {
+      status: 404,
+      message:
+        `No existe una categoría con ID ${categoriaId}`
+    };
+  }
+
+  if (!nuevaCategoria.activo) {
+    return {
+      status: 400,
+      message:
+        `La categoría "${nuevaCategoria.nombre}" está inactiva`
+    };
+  }
+
+  return null;
+};
+
+const validarNombreActualizacion = async (
+  nombre,
+  nombreActual,
+  categoriaId
+) => {
+  if (
+    !nombre ||
+    nombre === nombreActual
+  ) {
+    return null;
+  }
+
+  const subcategoriaExistente =
+    await Subcategoria.findOne({
+      where: {
+        nombre,
+        categoriaId
+      }
+    });
+
+  if (subcategoriaExistente) {
+    return {
+      status: 400,
+      message:
+        `Ya existe una subcategoría con el nombre "${nombre}" en esta categoría`
+    };
+  }
+
+  return null;
+};
+
+const aplicarCambiosSubcategoria = (
+  subcategoria,
+  {
+    nombre,
+    descripcion,
+    categoriaId,
+    activo
+  }
+) => {
+  if (nombre !== undefined) {
+    subcategoria.nombre = nombre;
+  }
+
+  if (descripcion !== undefined) {
+    subcategoria.descripcion =
+      descripcion;
+  }
+
+  if (categoriaId !== undefined) {
+    subcategoria.categoriaId =
+      categoriaId;
+  }
+
+  if (activo !== undefined) {
+    subcategoria.activo = activo;
+  }
+};
 const actualizarSubcategoria = async (req, res) => {
   try {
-    const { id } = req.params;   // ID desde la URL
-    const { nombre, descripcion, categoriaId, activo } = req.body;
-    
-    // Busca la subcategoría por su ID
-    const subcategoria = await Subcategoria.findByPk(id);
-    
+    const { id } = req.params;
+
+    const {
+      nombre,
+      descripcion,
+      categoriaId,
+      activo
+    } = req.body;
+
+    // ==========================================
+    // BUSCAR SUBCATEGORÍA
+    // ==========================================
+
+    const subcategoria =
+      await Subcategoria.findByPk(id);
+
     if (!subcategoria) {
       return res.status(404).json({
         success: false,
-        message: 'Subcategoría no encontrada'
+        message:
+          'Subcategoría no encontrada'
       });
     }
-    
-    // VALIDACIÓN: Si se cambia la categoría padre, verifica que la nueva exista y esté activa
-    if (categoriaId && categoriaId !== subcategoria.categoriaId) {
-      const nuevaCategoria = await Categoria.findByPk(categoriaId);
-      
-      if (!nuevaCategoria) {
-        return res.status(404).json({
-          success: false,
-          message: `No existe una categoría con ID ${categoriaId}`
-        });
-      }
-      
-      if (!nuevaCategoria.activo) {
-        return res.status(400).json({
-          success: false,
-          message: `La categoría "${nuevaCategoria.nombre}" está inactiva`
-        });
-      }
-    }
-    
-    // VALIDACIÓN: Si se cambia el nombre, verifica que no exista otra con ese nombre en la categoría.
-    // Usa la nueva categoría si se envió, o la actual.
-    if (nombre && nombre !== subcategoria.nombre) {
-      const categoriaFinal = categoriaId || subcategoria.categoriaId;
-      
-      const subcategoriaConMismoNombre = await Subcategoria.findOne({
-        where: { 
-          nombre,
-          categoriaId: categoriaFinal
-        }
+
+    // ==========================================
+    // VALIDAR CATEGORÍA
+    // ==========================================
+
+    const errorCategoria =
+      await validarCategoriaActualizacion(
+        categoriaId,
+        subcategoria.categoriaId
+      );
+
+    if (errorCategoria) {
+      return res.status(
+        errorCategoria.status
+      ).json({
+        success: false,
+        message:
+          errorCategoria.message
       });
-      
-      if (subcategoriaConMismoNombre) {
-        return res.status(400).json({
-          success: false,
-          message: `Ya existe una subcategoría con el nombre "${nombre}" en esta categoría`
-        });
-      }
     }
-    
-    // Actualiza SOLO los campos que se enviaron
-    if (nombre !== undefined) subcategoria.nombre = nombre;
-    if (descripcion !== undefined) subcategoria.descripcion = descripcion;
-    if (categoriaId !== undefined) subcategoria.categoriaId = categoriaId;
-    if (activo !== undefined) subcategoria.activo = activo;
-    
-    // save() ejecuta UPDATE en la BD. También dispara hooks del modelo.
+
+    // ==========================================
+    // DETERMINAR CATEGORÍA FINAL
+    // ==========================================
+
+    const categoriaFinal =
+      categoriaId ||
+      subcategoria.categoriaId;
+
+    // ==========================================
+    // VALIDAR NOMBRE
+    // ==========================================
+
+    const errorNombre =
+      await validarNombreActualizacion(
+        nombre,
+        subcategoria.nombre,
+        categoriaFinal
+      );
+
+    if (errorNombre) {
+      return res.status(
+        errorNombre.status
+      ).json({
+        success: false,
+        message:
+          errorNombre.message
+      });
+    }
+
+    // ==========================================
+    // ACTUALIZAR CAMPOS
+    // ==========================================
+
+    aplicarCambiosSubcategoria(
+      subcategoria,
+      {
+        nombre,
+        descripcion,
+        categoriaId,
+        activo
+      }
+    );
+
+    // ==========================================
+    // GUARDAR
+    // ==========================================
+
     await subcategoria.save();
-    
-    // Recarga con los datos de la categoría padre actualizados
+
+    // ==========================================
+    // RECARGAR RELACIÓN
+    // ==========================================
+
     await subcategoria.reload({
       include: [{
         model: Categoria,
         as: 'categoria',
-        attributes: ['id', 'nombre']
+        attributes: [
+          'id',
+          'nombre'
+        ]
       }]
     });
-    
-    // Responde con la subcategoría actualizada
+
+    // ==========================================
+    // RESPUESTA
+    // ==========================================
+
     res.json({
       success: true,
-      message: 'Subcategoría actualizada exitosamente',
+      message:
+        'Subcategoría actualizada exitosamente',
       data: {
         subcategoria
       }
     });
-    
+
   } catch (error) {
-    console.error('Error en actualizarSubcategoria:', error);
-    
-    if (error.name === 'SequelizeValidationError') {
+    console.error(
+      'Error en actualizarSubcategoria:',
+      error
+    );
+
+    if (
+      error.name ===
+      'SequelizeValidationError'
+    ) {
       return res.status(400).json({
         success: false,
-        message: 'Errores de validación',
-        errors: error.errors.map(e => e.message)
+        message:
+          'Errores de validación',
+        errors:
+          error.errors.map(
+            (e) => e.message
+          )
       });
     }
-    
+
     res.status(500).json({
       success: false,
-      message: 'Error al actualizar subcategoría',
+      message:
+        'Error al actualizar subcategoría',
       error: error.message
     });
   }

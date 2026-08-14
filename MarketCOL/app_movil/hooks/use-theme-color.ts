@@ -3,7 +3,7 @@
  * Adaptado a la estructura plana de MarketCOL
  */
 
-import { Colors, getThemeColor } from '../constants/theme';
+import { getThemeColor } from '../constants/theme';
 import { useColorScheme } from '../hooks/use-color-scheme';
 
 // Lista de nombres de color válidos para el tema

@@ -93,7 +93,7 @@ function ProductosHeader({
     errorMessage,
     setFiltroCategoria,
     fetchProductos
-}: ProductosHeaderProps) {
+}: ProductosHeaderProps, Readonly) {
     return (
         <>
             {canManageProductos && (

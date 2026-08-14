@@ -219,76 +219,177 @@ const crearProveedor = async (req, res) => {
  * Body: campos a actualizar (todos opcionales)
  * Acceso: Solo administrador
  */
+// ==========================================
+// FUNCIONES AUXILIARES PARA ACTUALIZAR PROVEEDOR
+// ==========================================
+
+const esEmailValido = (email) => {
+  if (email === undefined || email === null || email.trim() === '') {
+    return true;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const validarNombreProveedor = async (nombre, proveedor) => {
+  if (
+    nombre === undefined ||
+    nombre.trim() === '' ||
+    nombre === proveedor.nombre
+  ) {
+    return true;
+  }
+
+  const proveedorExistente = await Proveedor.findOne({
+    where: { nombre: nombre.trim() }
+  });
+
+  return !proveedorExistente ||
+    proveedorExistente.id === proveedor.id;
+};
+
+const actualizarCamposProveedor = (
+  proveedor,
+  {
+    nombre,
+    contacto,
+    telefono,
+    email,
+    direccion
+  }
+) => {
+  if (nombre !== undefined) {
+    proveedor.nombre = nombre.trim();
+  }
+
+  if (contacto !== undefined) {
+    proveedor.contacto = contacto || null;
+  }
+
+  if (telefono !== undefined) {
+    proveedor.telefono = telefono || null;
+  }
+
+  if (email !== undefined) {
+    proveedor.email = email || null;
+  }
+
+  if (direccion !== undefined) {
+    proveedor.direccion = direccion || null;
+  }
+};
+
+/**
+ * Actualizar un proveedor existente
+ *
+ * Ruta: PUT /api/admin/proveedores/:id
+ * Body: campos a actualizar (todos opcionales)
+ * Acceso: Solo administrador
+ */
 const actualizarProveedor = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nombre, contacto, telefono, email, direccion } = req.body;
-    
-    // Buscar proveedor
+    const {
+      nombre,
+      contacto,
+      telefono,
+      email,
+      direccion
+    } = req.body;
+
+    // ==========================================
+    // BUSCAR PROVEEDOR
+    // ==========================================
+
     const proveedor = await Proveedor.findByPk(id);
-    
+
     if (!proveedor) {
       return res.status(404).json({
         success: false,
         message: 'Proveedor no encontrado'
       });
     }
-    
-    // Validar email si se está actualizando
-    if (email !== undefined) {
-      if (email && email.trim() !== '') {
-        const emailRegex = /^[^\s@]++@[^\s@]++\.[^\s@]++$/;
-        if (!emailRegex.test(email)) {
-          return res.status(400).json({
-            success: false,
-            message: 'Formato de email inválido'
-          });
-        }
-      }
-    }
-    
-    // Verificar unicidad de nombre si se está cambiando
-    if (nombre && nombre !== proveedor.nombre) {
-      const proveedorExistente = await Proveedor.findOne({
-        where: { nombre }
-      });
-      
-      if (proveedorExistente && proveedorExistente.id !== proveedor.id) {
-        return res.status(400).json({
-          success: false,
-          message: 'Ya existe otro proveedor con ese nombre'
-        });
-      }
-    }
-    
-    // Actualizar solo los campos proporcionados
-    if (nombre !== undefined) proveedor.nombre = nombre.trim();
-    if (contacto !== undefined) proveedor.contacto = contacto || null;
-    if (telefono !== undefined) proveedor.telefono = telefono || null;
-    if (email !== undefined) proveedor.email = email || null;
-    if (direccion !== undefined) proveedor.direccion = direccion || null;
-    
-    await proveedor.save();
-    
-    res.json({
-      success: true,
-      message: 'Proveedor actualizado exitosamente',
-      data: { proveedor }
-    });
-    
-  } catch (error) {
-    console.error('Error en actualizarProveedor:', error);
-    
-    if (error.name === 'SequelizeUniqueConstraintError') {
+
+    // ==========================================
+    // VALIDAR EMAIL
+    // ==========================================
+
+    if (!esEmailValido(email)) {
       return res.status(400).json({
         success: false,
-        message: 'Ya existe un proveedor con ese nombre o email'
+        message: 'Formato de email inválido'
       });
     }
-    
+
+    // ==========================================
+    // VALIDAR NOMBRE ÚNICO
+    // ==========================================
+
+    const nombreDisponible =
+      await validarNombreProveedor(
+        nombre,
+        proveedor
+      );
+
+    if (!nombreDisponible) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'Ya existe otro proveedor con ese nombre'
+      });
+    }
+
+    // ==========================================
+    // ACTUALIZAR CAMPOS
+    // ==========================================
+
+    actualizarCamposProveedor(
+      proveedor,
+      {
+        nombre,
+        contacto,
+        telefono,
+        email,
+        direccion
+      }
+    );
+
+    // ==========================================
+    // GUARDAR
+    // ==========================================
+
+    await proveedor.save();
+
+    res.json({
+      success: true,
+      message:
+        'Proveedor actualizado exitosamente',
+      data: {
+        proveedor
+      }
+    });
+  } catch (error) {
+    console.error(
+      'Error en actualizarProveedor:',
+      error
+    );
+
+    if (
+      error.name ===
+      'SequelizeUniqueConstraintError'
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'Ya existe un proveedor con ese nombre o email'
+      });
+    }
+
     res.status(500).json({
       success: false,
-      message: 'Error al actualizar proveedor',
+      message:
+        'Error al actualizar proveedor',
       error: error.message
     });
   }

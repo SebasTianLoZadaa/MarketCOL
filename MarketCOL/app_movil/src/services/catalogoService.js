@@ -223,8 +223,7 @@ const catalogoService = {
                 if (imageUrl.protocol === 'https:') {
                     return imageUrl.toString();
                 }
-            } catch (error) {
-                void error;
+            } catch {
                 return placeholder;
             }
 
