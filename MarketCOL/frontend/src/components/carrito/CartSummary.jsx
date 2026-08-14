@@ -19,9 +19,10 @@ const CartSummary = ({ items, total, onUpdate }) => {
     try {
       await api.delete('/cliente/carrito');
       onUpdate();
-    } catch (error) {
-      alert('Error al vaciar el carrito');
-    }
+    } } catch (error) {
+    console.error('Error al vaciar el carrito:', error);
+    alert('Error al vaciar el carrito');
+}
   };
 
   const handleCheckout = () => {

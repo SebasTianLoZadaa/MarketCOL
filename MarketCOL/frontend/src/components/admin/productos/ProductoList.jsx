@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Table, Button, Badge, Form, Pagination, Alert } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+
 import api from '../../../services/api';
 import StockManager from './StockManager';
 import ProductoForm from './ProductoForm';
@@ -17,7 +17,7 @@ const ProductoList = () => {
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Filtros
   const [filtros, setFiltros] = useState({
     categoriaId: '',
@@ -27,7 +27,7 @@ const ProductoList = () => {
     limite: 12
   });
   const [paginacion, setPaginacion] = useState({ total: 0, totalPaginas: 0 });
-  
+
   // Modal
   const [showForm, setShowForm] = useState(false);
   const [productoEditar, setProductoEditar] = useState(null);
@@ -57,7 +57,7 @@ const ProductoList = () => {
       if (!params.categoriaId) delete params.categoriaId;
       if (!params.activo) delete params.activo;
       if (!params.buscar) delete params.buscar;
-      
+
       const res = await api.get('/admin/productos', { params });
       setProductos(res.data.data.productos || []);
       setPaginacion(res.data.data.paginacion || { total: 0, totalPaginas: 0 });
@@ -124,7 +124,7 @@ const ProductoList = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1>Gestión de Productos</h1>
         <Button variant="primary" onClick={handleCreate}>
-          <i className="bi bi-plus-circle me-2"></i>
+          <i className="bi bi-plus-circle me-2" aria-hidden="true"></i>
           Nuevo Producto
         </Button>
       </div>
@@ -150,6 +150,7 @@ const ProductoList = () => {
                 </Form.Select>
               </Form.Group>
             </Col>
+
             <Col md={4}>
               <Form.Group>
                 <Form.Label>Estado</Form.Label>
@@ -164,6 +165,7 @@ const ProductoList = () => {
                 </Form.Select>
               </Form.Group>
             </Col>
+
             <Col md={4}>
               <Form.Group>
                 <Form.Label>Buscar</Form.Label>
@@ -196,6 +198,7 @@ const ProductoList = () => {
                 <th>Acciones</th>
               </tr>
             </thead>
+
             <tbody>
               {loading ? (
                 <tr>
@@ -213,6 +216,7 @@ const ProductoList = () => {
                 productos.map(prod => (
                   <tr key={prod.id}>
                     <td>#{prod.id}</td>
+
                     <td>
                       {prod.imagen ? (
                         <img
@@ -222,26 +226,36 @@ const ProductoList = () => {
                           className="rounded"
                         />
                       ) : (
-                        <div className="bg-light d-flex align-items-center justify-content-center rounded" style={{ width: '50px', height: '50px' }}>
-                          <i className="bi bi-image text-muted"></i>
+                        <div
+                          className="bg-light d-flex align-items-center justify-content-center rounded"
+                          style={{ width: '50px', height: '50px' }}
+                        >
+                          <i className="bi bi-image text-muted" aria-hidden="true"></i>
                         </div>
                       )}
                     </td>
+
                     <td>
                       <strong>{prod.nombre}</strong>
                       <div className="small text-muted">
-                        {prod.proveedor?.nombre || prod.proveedorId && ( // fallback si no está la relación
+                        {prod.proveedor?.nombre || prod.proveedorId && (
                           (typeof proveedores !== 'undefined' && proveedores.find?.(p => p.id === prod.proveedorId)?.nombre) || '—'
                         )}
                       </div>
                     </td>
+
                     <td>{prod.Categoria?.nombre || '—'}</td>
+
                     <td>{formatearPrecio(prod.precio)}</td>
+
                     <td>
                       <div className="d-flex align-items-center gap-2">
-                        <Badge bg={prod.stock > 10 ? 'success' : prod.stock > 0 ? 'warning' : 'danger'}>
+                        <Badge
+                          bg={prod.stock > 10 ? 'success' : prod.stock > 0 ? 'warning' : 'danger'}
+                        >
                           {prod.stock}
                         </Badge>
+
                         <StockManager
                           productoId={prod.id}
                           stockActual={prod.stock}
@@ -249,11 +263,13 @@ const ProductoList = () => {
                         />
                       </div>
                     </td>
+
                     <td>
                       <Badge bg={prod.activo ? 'success' : 'secondary'}>
                         {prod.activo ? 'Activo' : 'Inactivo'}
                       </Badge>
                     </td>
+
                     <td>
                       <Button
                         variant="outline-primary"
@@ -261,23 +277,28 @@ const ProductoList = () => {
                         className="me-1"
                         onClick={() => handleEdit(prod)}
                       >
-                        <i className="bi bi-pencil"></i>
+                        <i className="bi bi-pencil" aria-hidden="true"></i>
                       </Button>
+
                       <Button
                         variant="outline-warning"
                         size="sm"
                         className="me-1"
                         onClick={() => handleToggle(prod.id)}
                       >
-                        <i className={`bi bi-${prod.activo ? 'eye-slash' : 'eye'}`}></i>
+                        <i
+                          className={`bi bi-${prod.activo ? 'eye-slash' : 'eye'}`}
+                          aria-hidden="true"
+                        ></i>
                       </Button>
+
                       {isAdmin && (
                         <Button
                           variant="outline-danger"
                           size="sm"
                           onClick={() => handleDelete(prod.id)}
                         >
-                          <i className="bi bi-trash"></i>
+                          <i className="bi bi-trash" aria-hidden="true"></i>
                         </Button>
                       )}
                     </td>
@@ -287,7 +308,7 @@ const ProductoList = () => {
             </tbody>
           </Table>
         </Card.Body>
-        
+
         {/* Paginación */}
         {paginacion.totalPaginas > 1 && (
           <Card.Footer>
@@ -296,10 +317,12 @@ const ProductoList = () => {
                 disabled={filtros.pagina === 1}
                 onClick={() => handlePageChange(1)}
               />
+
               <Pagination.Prev
                 disabled={filtros.pagina === 1}
                 onClick={() => handlePageChange(filtros.pagina - 1)}
               />
+
               {[...Array(paginacion.totalPaginas).keys()].map(page => (
                 <Pagination.Item
                   key={page + 1}
@@ -309,10 +332,12 @@ const ProductoList = () => {
                   {page + 1}
                 </Pagination.Item>
               ))}
+
               <Pagination.Next
                 disabled={filtros.pagina === paginacion.totalPaginas}
                 onClick={() => handlePageChange(filtros.pagina + 1)}
               />
+
               <Pagination.Last
                 disabled={filtros.pagina === paginacion.totalPaginas}
                 onClick={() => handlePageChange(paginacion.totalPaginas)}
