@@ -228,7 +228,7 @@ const esEmailValido = (email) => {
     return true;
   }
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[^\s@]++@[^\s@]++\.[^\s@]++$/;
   return emailRegex.test(email);
 };
 
