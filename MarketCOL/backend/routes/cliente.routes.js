@@ -128,7 +128,7 @@ router.put('/cliente/carrito/:id', verificarAuth, carritoController.actualizarIt
 // Controlador: eliminarItemCarrito → elimina el registro con Carrito.destroy()
 router.delete('/cliente/carrito/:id', verificarAuth, carritoController.eliminarItemCarrito);
 
-// DELETE /api/cliente/carrito → Vacía TODO el carrito del usuario
+// DELETE /api/cliente/carrito → Vacía todo el carrito del usuario
 // SIN :id → usa la misma ruta base pero elimina TODOS los items
 // verificarAuth → verifica token
 // Controlador: vaciarCarrito → usa Carrito.vaciarCarrito(req.usuario.id) que hace DELETE WHERE usuarioId=X

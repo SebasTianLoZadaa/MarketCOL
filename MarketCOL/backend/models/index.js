@@ -354,7 +354,7 @@ module.exports = {
  * ============================================
  * 
  * 1. CASCADE en Carrito (eliminación en cascada):
- *    - Si se elimina un usuario → se elimina TODO su carrito automáticamente
+ *    - Si se elimina un usuario → se elimina todo su carrito automáticamente
  *    - Si se elimina un producto → se elimina de TODOS los carritos
  *    - Razón: el carrito es temporal, no hay problema en perder esos datos
  * 
