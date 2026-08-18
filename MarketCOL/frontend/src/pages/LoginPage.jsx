@@ -127,7 +127,7 @@ const LoginPage = () => {
 
           <form onSubmit={handleSubmit}>
             <div className="mk-field">
-              <label HtmlFor="email" className="mk-label">Correo electrónico</label>
+              <label htmlFor="email" className="mk-label">Correo electrónico</label>
               <input
                 id="email"
                 className="mk-input"
@@ -138,7 +138,7 @@ const LoginPage = () => {
             </div>
 
             <div className="mk-field">
-              <label HtmlFor="password" className="mk-label">Contraseña</label>
+              <label htmlFor="password" className="mk-label">Contraseña</label>
               <input
                 id="password"
                 className="mk-input"
@@ -157,7 +157,7 @@ const LoginPage = () => {
               {loading ? (
                 <>
                   <span className="mk-spinner" style={{ width: 16, height: 16, borderWidth: 2 }} />
-                  Iniciando sesión...
+                  <span>Iniciando sesión...</span>
                 </>
               ) : 'Iniciar sesión'}
             </button>
