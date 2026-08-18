@@ -1,11 +1,25 @@
 /**
+ * ============================================
+ * COMPONENTE: PRODUCT LIST
+ * ============================================
  * Componente: ProductoList.jsx
- * Descripción: Lista de productos en el panel de administración con opciones para crear, editar, eliminar y activar/desactivar
+ * Descripción: Lista de productos en el panel de administración
+ * con opciones para crear, editar, eliminar y activar/desactivar
  */
 
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Table, Button, Badge, Form, Pagination, Alert } from 'react-bootstrap';
-
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Table,
+  Button,
+  Badge,
+  Form,
+  Pagination,
+  Alert
+} from 'react-bootstrap';
 import api from '../../../services/api';
 import StockManager from './StockManager';
 import ProductoForm from './ProductoForm';
@@ -13,6 +27,7 @@ import { useAuth } from '../../../context/AuthContext';
 
 const ProductoList = () => {
   const { isAdmin } = useAuth();
+
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,7 +41,11 @@ const ProductoList = () => {
     pagina: 1,
     limite: 12
   });
-  const [paginacion, setPaginacion] = useState({ total: 0, totalPaginas: 0 });
+
+  const [paginacion, setPaginacion] = useState({
+    total: 0,
+    totalPaginas: 0
+  });
 
   // Modal
   const [showForm, setShowForm] = useState(false);
@@ -38,6 +57,7 @@ const ProductoList = () => {
 
   useEffect(() => {
     fetchProductos();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtros]);
 
@@ -52,15 +72,32 @@ const ProductoList = () => {
 
   const fetchProductos = async () => {
     setLoading(true);
+
     try {
       const params = { ...filtros };
-      if (!params.categoriaId) delete params.categoriaId;
-      if (!params.activo) delete params.activo;
-      if (!params.buscar) delete params.buscar;
+
+      if (!params.categoriaId) {
+        delete params.categoriaId;
+      }
+
+      if (!params.activo) {
+        delete params.activo;
+      }
+
+      if (!params.buscar) {
+        delete params.buscar;
+      }
 
       const res = await api.get('/admin/productos', { params });
+
       setProductos(res.data.data.productos || []);
-      setPaginacion(res.data.data.paginacion || { total: 0, totalPaginas: 0 });
+
+      setPaginacion(
+        res.data.data.paginacion || {
+          total: 0,
+          totalPaginas: 0
+        }
+      );
     } catch (err) {
       setError('Error al cargar productos');
       console.error(err);
@@ -71,11 +108,19 @@ const ProductoList = () => {
 
   const handleFiltroChange = (e) => {
     const { name, value } = e.target;
-    setFiltros(prev => ({ ...prev, [name]: value, pagina: 1 }));
+
+    setFiltros((prev) => ({
+      ...prev,
+      [name]: value,
+      pagina: 1
+    }));
   };
 
   const handlePageChange = (page) => {
-    setFiltros(prev => ({ ...prev, pagina: page }));
+    setFiltros((prev) => ({
+      ...prev,
+      pagina: page
+    }));
   };
 
   const handleToggle = async (id) => {
@@ -83,17 +128,26 @@ const ProductoList = () => {
       await api.patch(`/admin/productos/${id}/toggle`);
       fetchProductos();
     } catch (err) {
-      alert(err.response?.data?.message || 'Error al cambiar estado');
+      alert(
+        err.response?.data?.message ||
+        'Error al cambiar estado'
+      );
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('¿Eliminar este producto?')) return;
+    if (!window.confirm('¿Eliminar este producto?')) {
+      return;
+    }
+
     try {
       await api.delete(`/admin/productos/${id}`);
       fetchProductos();
     } catch (err) {
-      alert(err.response?.data?.message || 'Error al eliminar');
+      alert(
+        err.response?.data?.message ||
+        'Error al eliminar'
+      );
     }
   };
 
@@ -115,60 +169,94 @@ const ProductoList = () => {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
-      minimumFractionDigits: 0,
+      minimumFractionDigits: 0
     }).format(precio);
   };
 
   return (
     <Container fluid className="py-4">
+
+      {/* ENCABEZADO */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1>Gestión de Productos</h1>
-        <Button variant="primary" onClick={handleCreate}>
-          <i className="bi bi-plus-circle me-2" aria-hidden="true"></i>
-          Nuevo Producto
+
+        <Button variant="primary" className="gap-2" onClick={handleCreate}>
+          <i
+            className="bi bi-plus-circle"
+            aria-hidden="true"
+          />
+          <span>Nuevo Producto</span>
         </Button>
       </div>
 
-      {error && <Alert variant="danger">{error}</Alert>}
+      {/* MENSAJE DE ERROR */}
+      {error && (
+        <Alert variant="danger">
+          {error}
+        </Alert>
+      )}
 
-      {/* Filtros */}
+      {/* FILTROS */}
       <Card className="mb-4 shadow-sm">
         <Card.Body>
           <Row>
+
+            {/* CATEGORÍA */}
             <Col md={4}>
               <Form.Group>
                 <Form.Label>Categoría</Form.Label>
+
                 <Form.Select
                   name="categoriaId"
                   value={filtros.categoriaId}
                   onChange={handleFiltroChange}
                 >
-                  <option value="">Todas las categorías</option>
-                  {categorias.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.nombre}</option>
+                  <option value="">
+                    Todas las categorías
+                  </option>
+
+                  {categorias.map((cat) => (
+                    <option
+                      key={cat.id}
+                      value={cat.id}
+                    >
+                      {cat.nombre}
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
             </Col>
 
+            {/* ESTADO */}
             <Col md={4}>
               <Form.Group>
                 <Form.Label>Estado</Form.Label>
+
                 <Form.Select
                   name="activo"
                   value={filtros.activo}
                   onChange={handleFiltroChange}
                 >
-                  <option value="">Todos</option>
-                  <option value="true">Activos</option>
-                  <option value="false">Inactivos</option>
+                  <option value="">
+                    Todos
+                  </option>
+
+                  <option value="true">
+                    Activos
+                  </option>
+
+                  <option value="false">
+                    Inactivos
+                  </option>
                 </Form.Select>
               </Form.Group>
             </Col>
 
+            {/* BUSCAR */}
             <Col md={4}>
               <Form.Group>
                 <Form.Label>Buscar</Form.Label>
+
                 <Form.Control
                   type="text"
                   name="buscar"
@@ -178,14 +266,17 @@ const ProductoList = () => {
                 />
               </Form.Group>
             </Col>
+
           </Row>
         </Card.Body>
       </Card>
 
-      {/* Tabla de productos */}
+      {/* TABLA DE PRODUCTOS */}
       <Card className="shadow-sm">
         <Card.Body className="p-0">
+
           <Table responsive hover className="mb-0">
+
             <thead className="bg-light">
               <tr>
                 <th>ID</th>
@@ -200,58 +291,110 @@ const ProductoList = () => {
             </thead>
 
             <tbody>
+
+              {/* CARGANDO */}
               {loading ? (
                 <tr>
-                  <td colSpan="8" className="text-center py-4">
+                  <td
+                    colSpan="8"
+                    className="text-center py-4"
+                  >
                     Cargando productos...
                   </td>
                 </tr>
+
               ) : productos.length === 0 ? (
+
+                /* SIN PRODUCTOS */
                 <tr>
-                  <td colSpan="8" className="text-center py-4">
+                  <td
+                    colSpan="8"
+                    className="text-center py-4"
+                  >
                     No hay productos que mostrar
                   </td>
                 </tr>
-              ) : (
-                productos.map(prod => (
-                  <tr key={prod.id}>
-                    <td>#{prod.id}</td>
 
+              ) : (
+
+                /* PRODUCTOS */
+                productos.map((prod) => (
+                  <tr key={prod.id}>
+
+                    {/* ID */}
+                    <td>
+                      #{prod.id}
+                    </td>
+
+                    {/* IMAGEN */}
                     <td>
                       {prod.imagen ? (
                         <img
                           src={`${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${prod.imagen}`}
                           alt={prod.nombre}
-                          style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                          style={{
+                            width: '50px',
+                            height: '50px',
+                            objectFit: 'cover'
+                          }}
                           className="rounded"
                         />
                       ) : (
                         <div
                           className="bg-light d-flex align-items-center justify-content-center rounded"
-                          style={{ width: '50px', height: '50px' }}
+                          style={{
+                            width: '50px',
+                            height: '50px'
+                          }}
                         >
-                          <i className="bi bi-image text-muted" aria-hidden="true"></i>
+                          <i
+                            className="bi bi-image text-muted"
+                            aria-hidden="true"
+                          />
                         </div>
                       )}
                     </td>
 
+                    {/* NOMBRE */}
                     <td>
-                      <strong>{prod.nombre}</strong>
+                      <strong>
+                        {prod.nombre}
+                      </strong>
+
                       <div className="small text-muted">
-                        {prod.proveedor?.nombre || prod.proveedorId && (
-                          (typeof proveedores !== 'undefined' && proveedores.find?.(p => p.id === prod.proveedorId)?.nombre) || '—'
-                        )}
+                        {prod.proveedor?.nombre ||
+                          (prod.proveedorId && (
+                            (typeof proveedores !== 'undefined' &&
+                              proveedores.find?.(
+                                (p) => p.id === prod.proveedorId
+                              )?.nombre) ||
+                            '—'
+                          ))}
                       </div>
                     </td>
 
-                    <td>{prod.Categoria?.nombre || '—'}</td>
+                    {/* CATEGORÍA */}
+                    <td>
+                      {prod.Categoria?.nombre || '—'}
+                    </td>
 
-                    <td>{formatearPrecio(prod.precio)}</td>
+                    {/* PRECIO */}
+                    <td>
+                      {formatearPrecio(prod.precio)}
+                    </td>
 
+                    {/* STOCK */}
                     <td>
                       <div className="d-flex align-items-center gap-2">
+
                         <Badge
-                          bg={prod.stock > 10 ? 'success' : prod.stock > 0 ? 'warning' : 'danger'}
+                          bg={
+                            prod.stock > 10
+                              ? 'success'
+                              : prod.stock > 0
+                                ? 'warning'
+                                : 'danger'
+                          }
                         >
                           {prod.stock}
                         </Badge>
@@ -261,58 +404,92 @@ const ProductoList = () => {
                           stockActual={prod.stock}
                           onStockUpdated={fetchProductos}
                         />
+
                       </div>
                     </td>
 
+                    {/* ESTADO */}
                     <td>
-                      <Badge bg={prod.activo ? 'success' : 'secondary'}>
-                        {prod.activo ? 'Activo' : 'Inactivo'}
+                      <Badge
+                        bg={
+                          prod.activo
+                            ? 'success'
+                            : 'secondary'
+                        }
+                      >
+                        {prod.activo
+                          ? 'Activo'
+                          : 'Inactivo'}
                       </Badge>
                     </td>
 
+                    {/* ACCIONES */}
                     <td>
+
+                      {/* EDITAR */}
                       <Button
                         variant="outline-primary"
                         size="sm"
                         className="me-1"
                         onClick={() => handleEdit(prod)}
+                        aria-label={`Editar ${prod.nombre}`}
                       >
-                        <i className="bi bi-pencil" aria-hidden="true"></i>
+                        <i
+                          className="bi bi-pencil"
+                          aria-hidden="true"
+                        />
                       </Button>
 
+                      {/* ACTIVAR / DESACTIVAR */}
                       <Button
                         variant="outline-warning"
                         size="sm"
                         className="me-1"
                         onClick={() => handleToggle(prod.id)}
+                        aria-label={
+                          prod.activo
+                            ? `Desactivar ${prod.nombre}`
+                            : `Activar ${prod.nombre}`
+                        }
                       >
                         <i
                           className={`bi bi-${prod.activo ? 'eye-slash' : 'eye'}`}
                           aria-hidden="true"
-                        ></i>
+                        />
                       </Button>
 
+                      {/* ELIMINAR */}
                       {isAdmin && (
                         <Button
                           variant="outline-danger"
                           size="sm"
                           onClick={() => handleDelete(prod.id)}
+                          aria-label={`Eliminar ${prod.nombre}`}
                         >
-                          <i className="bi bi-trash" aria-hidden="true"></i>
+                          <i
+                            className="bi bi-trash"
+                            aria-hidden="true"
+                          />
                         </Button>
                       )}
+
                     </td>
+
                   </tr>
                 ))
               )}
+
             </tbody>
           </Table>
+
         </Card.Body>
 
-        {/* Paginación */}
+        {/* PAGINACIÓN */}
         {paginacion.totalPaginas > 1 && (
           <Card.Footer>
+
             <Pagination className="justify-content-center mb-0">
+
               <Pagination.First
                 disabled={filtros.pagina === 1}
                 onClick={() => handlePageChange(1)}
@@ -320,40 +497,66 @@ const ProductoList = () => {
 
               <Pagination.Prev
                 disabled={filtros.pagina === 1}
-                onClick={() => handlePageChange(filtros.pagina - 1)}
+                onClick={() =>
+                  handlePageChange(filtros.pagina - 1)
+                }
               />
 
-              {[...Array(paginacion.totalPaginas).keys()].map(page => (
+              {[
+                ...new Array(paginacion.totalPaginas).keys()
+              ].map((page) => (
                 <Pagination.Item
                   key={page + 1}
-                  active={page + 1 === filtros.pagina}
-                  onClick={() => handlePageChange(page + 1)}
+                  active={
+                    page + 1 === filtros.pagina
+                  }
+                  onClick={() =>
+                    handlePageChange(page + 1)
+                  }
                 >
                   {page + 1}
                 </Pagination.Item>
               ))}
 
               <Pagination.Next
-                disabled={filtros.pagina === paginacion.totalPaginas}
-                onClick={() => handlePageChange(filtros.pagina + 1)}
+                disabled={
+                  filtros.pagina ===
+                  paginacion.totalPaginas
+                }
+                onClick={() =>
+                  handlePageChange(
+                    filtros.pagina + 1
+                  )
+                }
               />
 
               <Pagination.Last
-                disabled={filtros.pagina === paginacion.totalPaginas}
-                onClick={() => handlePageChange(paginacion.totalPaginas)}
+                disabled={
+                  filtros.pagina ===
+                  paginacion.totalPaginas
+                }
+                onClick={() =>
+                  handlePageChange(
+                    paginacion.totalPaginas
+                  )
+                }
               />
+
             </Pagination>
+
           </Card.Footer>
         )}
+
       </Card>
 
-      {/* Modal de formulario */}
+      {/* MODAL DE FORMULARIO */}
       <ProductoForm
         show={showForm}
         onHide={() => setShowForm(false)}
         producto={productoEditar}
         onSave={handleFormSave}
       />
+
     </Container>
   );
 };

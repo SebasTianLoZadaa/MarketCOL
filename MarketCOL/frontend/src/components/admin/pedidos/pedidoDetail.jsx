@@ -177,11 +177,11 @@ const PedidoDetail = () => {
     <Container className="py-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1>
-          <i className="bi bi-receipt me-2"></i>
+          <span className="bi bi-receipt me-2" aria-hidden="true"></span>
           Pedido #{pedido.id}
         </h1>
         <Button variant="outline-secondary" onClick={() => navigate(-1)}>
-          <i className="bi bi-arrow-left me-2"></i>
+         <span className="bi bi-arrow-left me-2" aria-hidden="true"></span>
           Volver
         </Button>
       </div>
@@ -348,7 +348,7 @@ const PedidoDetail = () => {
                     onClick={handleConfirmarPago}
                     disabled={actionLoading}
                   >
-                    <i className="bi bi-check-circle me-2"></i>
+                    <span className="bi bi-check-circle me-2" aria-hidden="true"></span>
                     Confirmar Pago
                   </Button>
                 )}
@@ -413,7 +413,7 @@ const PedidoDetail = () => {
                     href={`https://wa.me/${process.env.REACT_APP_WHATSAPP_NUMBER || '573203097032'}?text=Hola%20MerkaCiro,%20mi%20pedido%20%23${pedido.id}%20está%20pendiente%20de%20pago.%20Total:%20${formatearPrecio(pedido.total)}`}
                     target="_blank"
                   >
-                    <i className="bi bi-whatsapp me-2"></i>
+                   <span className="bi bi-whatsapp me-2" aria-hidden="true"></span>
                     Coordinar Pago por WhatsApp
                   </Button>
                 )}

@@ -7,7 +7,8 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Container, Row, Col, Card, Table, Button, Badge, Form, Pagination, Alert, Modal, Dropdown } from 'react-bootstrap';
+import { Container, Row, Col, Card, Table, Button, Badge, Form, Pagination, Alert, Modal, Dropdown
+} from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -15,15 +16,16 @@ import { exportarPedidosAPDF, exportarPedidosAExcel } from '../utils/exportUtils
 
 const AdminPedidosPage = () => {
   const navigate = useNavigate();
+
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
-  
+
   // Modal de detalle
   const [showModal, setShowModal] = useState(false);
   const [pedidoSeleccionado, setPedidoSeleccionado] = useState(null);
-  
+
   // Filtros
   const [filtros, setFiltros] = useState({
     estado: '',
@@ -34,26 +36,37 @@ const AdminPedidosPage = () => {
     pagina: 1,
     limite: 20
   });
-  
-  const [paginacion, setPaginacion] = useState({ total: 0, totalPaginas: 0 });
+
+  const [paginacion, setPaginacion] = useState({
+    total: 0,
+    totalPaginas: 0
+  });
+
   const [tipoExportacion, setTipoExportacion] = useState('pdf');
 
   const cargarPedidos = useCallback(async () => {
     setLoading(true);
     setError(null);
+
     try {
       const params = { ...filtros };
+
       if (!params.estado) delete params.estado;
       if (!params.estadoPago) delete params.estadoPago;
       if (!params.buscar) delete params.buscar;
       if (!params.fechaInicio) delete params.fechaInicio;
       if (!params.fechaFin) delete params.fechaFin;
-      
+
       const response = await api.get('/admin/pedidos', { params });
-      
+
       if (response.data.success) {
         setPedidos(response.data.data.pedidos || []);
-        setPaginacion(response.data.data.paginacion || { total: 0, totalPaginas: 0 });
+        setPaginacion(
+          response.data.data.paginacion || {
+            total: 0,
+            totalPaginas: 0
+          }
+        );
       } else {
         setError('Error al cargar pedidos');
       }
@@ -71,19 +84,37 @@ const AdminPedidosPage = () => {
 
   const handleFiltroChange = (e) => {
     const { name, value } = e.target;
-    setFiltros(prev => ({ ...prev, [name]: value, pagina: 1 }));
+
+    setFiltros(prev => ({
+      ...prev,
+      [name]: value,
+      pagina: 1
+    }));
   };
 
   const handlePageChange = (page) => {
-    setFiltros(prev => ({ ...prev, pagina: page }));
+    setFiltros(prev => ({
+      ...prev,
+      pagina: page
+    }));
   };
 
   const handleConfirmarPago = async (id) => {
-    if (!window.confirm('¿Confirmar que el cliente ha pagado? El pedido pasará a estado "preparando".')) return;
+    if (
+      !window.confirm(
+        '¿Confirmar que el cliente ha pagado? El pedido pasará a estado "preparando".'
+      )
+    ) {
+      return;
+    }
+
     setActionLoading(true);
+
     try {
       await api.put(`/admin/pedidos/${id}/confirmar-pago`);
+
       cargarPedidos();
+
       if (showModal && pedidoSeleccionado?.id === id) {
         const res = await api.get(`/admin/pedidos/${id}`);
         setPedidoSeleccionado(res.data.data.pedido);
@@ -97,9 +128,14 @@ const AdminPedidosPage = () => {
 
   const handleCambiarEstado = async (id, nuevoEstado) => {
     setActionLoading(true);
+
     try {
-      await api.put(`/admin/pedidos/${id}/estado`, { estado: nuevoEstado });
+      await api.put(`/admin/pedidos/${id}/estado`, {
+        estado: nuevoEstado
+      });
+
       cargarPedidos();
+
       if (showModal && pedidoSeleccionado?.id === id) {
         const res = await api.get(`/admin/pedidos/${id}`);
         setPedidoSeleccionado(res.data.data.pedido);
@@ -131,6 +167,7 @@ const AdminPedidosPage = () => {
 
   const formatearFecha = (fecha) => {
     if (!fecha) return '—';
+
     return new Date(fecha).toLocaleString('es-CO', {
       year: 'numeric',
       month: 'short',
@@ -142,23 +179,25 @@ const AdminPedidosPage = () => {
 
   const getEstadoBadge = (estado) => {
     const mapping = {
-      'pendiente': 'warning',
-      'preparando': 'info',
-      'listo': 'primary',
-      'entregado': 'success',
-      'cancelado': 'danger'
+      pendiente: 'warning',
+      preparando: 'info',
+      listo: 'primary',
+      entregado: 'success',
+      cancelado: 'danger'
     };
+
     return mapping[estado] || 'secondary';
   };
 
   const getEstadoTexto = (estado) => {
     const mapping = {
-      'pendiente': 'Pendiente',
-      'preparando': 'Preparando',
-      'listo': 'Pedido listo',
-      'entregado': 'Entregado',
-      'cancelado': 'Cancelado'
+      pendiente: 'Pendiente',
+      preparando: 'Preparando',
+      listo: 'Pedido listo',
+      entregado: 'Entregado',
+      cancelado: 'Cancelado'
     };
+
     return mapping[estado] || estado;
   };
 
@@ -179,26 +218,41 @@ const AdminPedidosPage = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1>
           <i className="bi bi-receipt me-2"></i>
-          Gestión de Pedidos
+          <span>Gestión de Pedidos</span>
         </h1>
+
         <div>
-          <Button variant="outline-secondary" onClick={() => navigate('/admin')} className="me-2">
+          <Button
+            variant="outline-secondary"
+            onClick={() => navigate('/admin')}
+            className="me-2"
+          >
             <i className="bi bi-arrow-left me-1"></i>
-            Volver
+            <span>Volver</span>
           </Button>
+
           <Dropdown className="d-inline-block">
-            <Dropdown.Toggle variant="success" id="dropdown-exportar-pedidos">
+            <Dropdown.Toggle
+              variant="success"
+              id="dropdown-exportar-pedidos"
+            >
               <i className="bi bi-download me-1"></i>
-              Exportar
+              <span>Exportar</span>
             </Dropdown.Toggle>
+
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => exportarPedidosAPDF(pedidos)}>
+              <Dropdown.Item
+                onClick={() => exportarPedidosAPDF(pedidos)}
+              >
                 <i className="bi bi-file-earmark-pdf me-2"></i>
-                Exportar a PDF
+                <span>Exportar a PDF</span>
               </Dropdown.Item>
-              <Dropdown.Item onClick={() => exportarPedidosAExcel(pedidos)}>
+
+              <Dropdown.Item
+                onClick={() => exportarPedidosAExcel(pedidos)}
+              >
                 <i className="bi bi-file-earmark-excel me-2"></i>
-                Exportar a Excel
+                <span>Exportar a Excel</span>
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
@@ -214,7 +268,12 @@ const AdminPedidosPage = () => {
             <Col md={3}>
               <Form.Group className="mb-3">
                 <Form.Label>Estado del pedido</Form.Label>
-                <Form.Select name="estado" value={filtros.estado} onChange={handleFiltroChange}>
+
+                <Form.Select
+                  name="estado"
+                  value={filtros.estado}
+                  onChange={handleFiltroChange}
+                >
                   <option value="">Todos</option>
                   <option value="pendiente">Pendientes</option>
                   <option value="preparando">Preparando</option>
@@ -224,19 +283,27 @@ const AdminPedidosPage = () => {
                 </Form.Select>
               </Form.Group>
             </Col>
+
             <Col md={3}>
               <Form.Group className="mb-3">
                 <Form.Label>Estado de pago</Form.Label>
-                <Form.Select name="estadoPago" value={filtros.estadoPago} onChange={handleFiltroChange}>
+
+                <Form.Select
+                  name="estadoPago"
+                  value={filtros.estadoPago}
+                  onChange={handleFiltroChange}
+                >
                   <option value="">Todos</option>
                   <option value="pendiente">Pendiente</option>
                   <option value="confirmado">Confirmado</option>
                 </Form.Select>
               </Form.Group>
             </Col>
+
             <Col md={3}>
               <Form.Group className="mb-3">
                 <Form.Label>Buscar cliente</Form.Label>
+
                 <Form.Control
                   type="text"
                   name="buscar"
@@ -246,9 +313,11 @@ const AdminPedidosPage = () => {
                 />
               </Form.Group>
             </Col>
+
             <Col md={3}>
               <Form.Group className="mb-3">
                 <Form.Label>Desde</Form.Label>
+
                 <Form.Control
                   type="date"
                   name="fechaInicio"
@@ -258,10 +327,12 @@ const AdminPedidosPage = () => {
               </Form.Group>
             </Col>
           </Row>
+
           <Row>
             <Col md={3}>
               <Form.Group className="mb-3">
                 <Form.Label>Hasta</Form.Label>
+
                 <Form.Control
                   type="date"
                   name="fechaFin"
@@ -270,16 +341,28 @@ const AdminPedidosPage = () => {
                 />
               </Form.Group>
             </Col>
+
             <Col md={9} className="d-flex align-items-end">
-              <Button 
-                variant="outline-secondary" 
-                onClick={() => setFiltros({ estado: '', estadoPago: '', buscar: '', fechaInicio: '', fechaFin: '', pagina: 1, limite: 20 })}
+              <Button
+                variant="outline-secondary"
+                onClick={() =>
+                  setFiltros({
+                    estado: '',
+                    estadoPago: '',
+                    buscar: '',
+                    fechaInicio: '',
+                    fechaFin: '',
+                    pagina: 1,
+                    limite: 20
+                  })
+                }
               >
                 <i className="bi bi-x-circle me-1"></i>
-                Limpiar filtros
+                <span>Limpiar filtros</span>
               </Button>
             </Col>
           </Row>
+
           <div className="text-muted mt-2">
             Mostrando {pedidos.length} de {paginacion.total} pedidos
           </div>
@@ -301,10 +384,14 @@ const AdminPedidosPage = () => {
                 <th>Acciones</th>
               </tr>
             </thead>
+
             <tbody>
               {pedidos.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="text-center py-4 text-muted">
+                  <td
+                    colSpan="7"
+                    className="text-center py-4 text-muted"
+                  >
                     No hay pedidos que mostrar
                   </td>
                 </tr>
@@ -312,22 +399,35 @@ const AdminPedidosPage = () => {
                 pedidos.map(pedido => (
                   <tr key={pedido.id}>
                     <td>#{pedido.id}</td>
+
                     <td>
-                      {pedido.usuario?.nombre} {pedido.usuario?.apellido}<br />
-                      <small className="text-muted">{pedido.usuario?.email}</small>
+                      {pedido.usuario?.nombre} {pedido.usuario?.apellido}
+                      <br />
+                      <small className="text-muted">
+                        {pedido.usuario?.email}
+                      </small>
                     </td>
+
                     <td>{formatearFecha(pedido.createdAt)}</td>
-                    <td><strong>{formatearPrecio(pedido.total)}</strong></td>
+
+                    <td>
+                      <strong>
+                        {formatearPrecio(pedido.total)}
+                      </strong>
+                    </td>
+
                     <td>
                       <Badge bg={getEstadoBadge(pedido.estado)}>
                         {getEstadoTexto(pedido.estado)}
                       </Badge>
                     </td>
+
                     <td>
                       <Badge bg={getEstadoPagoBadge(pedido.estadoPago)}>
                         {getEstadoPagoTexto(pedido.estadoPago)}
                       </Badge>
                     </td>
+
                     <td>
                       <Button
                         variant="outline-primary"
@@ -337,23 +437,32 @@ const AdminPedidosPage = () => {
                       >
                         <i className="bi bi-eye"></i>
                       </Button>
+
                       {pedido.estadoPago === 'pendiente' && (
                         <Button
                           variant="outline-success"
                           size="sm"
                           className="me-1"
-                          onClick={() => handleConfirmarPago(pedido.id)}
+                          onClick={() =>
+                            handleConfirmarPago(pedido.id)
+                          }
                           disabled={actionLoading}
                           title="Confirmar pago"
                         >
                           <i className="bi bi-cash"></i>
                         </Button>
                       )}
+
                       {pedido.estado === 'listo' && (
                         <Button
                           variant="outline-success"
                           size="sm"
-                          onClick={() => handleCambiarEstado(pedido.id, 'entregado')}
+                          onClick={() =>
+                            handleCambiarEstado(
+                              pedido.id,
+                              'entregado'
+                            )
+                          }
                           disabled={actionLoading}
                           title="Marcar como entregado"
                         >
@@ -367,65 +476,153 @@ const AdminPedidosPage = () => {
             </tbody>
           </Table>
         </Card.Body>
-        
+
         {/* Paginación */}
         {paginacion.totalPaginas > 1 && (
           <Card.Footer>
             <Pagination className="justify-content-center mb-0">
-              <Pagination.First disabled={filtros.pagina === 1} onClick={() => handlePageChange(1)} />
-              <Pagination.Prev disabled={filtros.pagina === 1} onClick={() => handlePageChange(filtros.pagina - 1)} />
-              {[...Array(paginacion.totalPaginas).keys()].map(page => (
-                <Pagination.Item
-                  key={page + 1}
-                  active={page + 1 === filtros.pagina}
-                  onClick={() => handlePageChange(page + 1)}
-                >
-                  {page + 1}
-                </Pagination.Item>
-              ))}
-              <Pagination.Next disabled={filtros.pagina === paginacion.totalPaginas} onClick={() => handlePageChange(filtros.pagina + 1)} />
-              <Pagination.Last disabled={filtros.pagina === paginacion.totalPaginas} onClick={() => handlePageChange(paginacion.totalPaginas)} />
+              <Pagination.First
+                disabled={filtros.pagina === 1}
+                onClick={() => handlePageChange(1)}
+              />
+
+              <Pagination.Prev
+                disabled={filtros.pagina === 1}
+                onClick={() =>
+                  handlePageChange(filtros.pagina - 1)
+                }
+              />
+
+              {[...Array(paginacion.totalPaginas).keys()].map(
+                page => (
+                  <Pagination.Item
+                    key={page + 1}
+                    active={page + 1 === filtros.pagina}
+                    onClick={() =>
+                      handlePageChange(page + 1)
+                    }
+                  >
+                    {page + 1}
+                  </Pagination.Item>
+                )
+              )}
+
+              <Pagination.Next
+                disabled={
+                  filtros.pagina === paginacion.totalPaginas
+                }
+                onClick={() =>
+                  handlePageChange(filtros.pagina + 1)
+                }
+              />
+
+              <Pagination.Last
+                disabled={
+                  filtros.pagina === paginacion.totalPaginas
+                }
+                onClick={() =>
+                  handlePageChange(paginacion.totalPaginas)
+                }
+              />
             </Pagination>
           </Card.Footer>
         )}
       </Card>
 
       {/* Modal de detalle */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
+      <Modal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        size="lg"
+      >
         <Modal.Header closeButton>
-          <Modal.Title>Pedido #{pedidoSeleccionado?.id}</Modal.Title>
+          <Modal.Title>
+            Pedido #{pedidoSeleccionado?.id}
+          </Modal.Title>
         </Modal.Header>
+
         <Modal.Body>
           {pedidoSeleccionado && (
             <>
               <Row className="mb-3">
                 <Col md={6}>
                   <h6>Cliente</h6>
-                  <p className="mb-1"><strong>{pedidoSeleccionado.usuario?.nombre} {pedidoSeleccionado.usuario?.apellido}</strong></p>
-                  <p className="mb-1">{pedidoSeleccionado.usuario?.email}</p>
-                  <p className="mb-1">Tel: {pedidoSeleccionado.telefono}</p>
-                  {pedidoSeleccionado.usuario?.cedula && <p>Cédula: {pedidoSeleccionado.usuario.cedula}</p>}
+
+                  <p className="mb-1">
+                    <strong>
+                      {pedidoSeleccionado.usuario?.nombre}{' '}
+                      {pedidoSeleccionado.usuario?.apellido}
+                    </strong>
+                  </p>
+
+                  <p className="mb-1">
+                    {pedidoSeleccionado.usuario?.email}
+                  </p>
+
+                  <p className="mb-1">
+                    Tel: {pedidoSeleccionado.telefono}
+                  </p>
+
+                  {pedidoSeleccionado.usuario?.cedula && (
+                    <p>
+                      Cédula: {pedidoSeleccionado.usuario.cedula}
+                    </p>
+                  )}
                 </Col>
+
                 <Col md={6}>
                   <h6>Detalles del pedido</h6>
-                  <p className="mb-1">Fecha: {formatearFecha(pedidoSeleccionado.createdAt)}</p>
+
                   <p className="mb-1">
-                    Estado: <Badge bg={getEstadoBadge(pedidoSeleccionado.estado)}>{getEstadoTexto(pedidoSeleccionado.estado)}</Badge>
+                    Fecha:{' '}
+                    {formatearFecha(
+                      pedidoSeleccionado.createdAt
+                    )}
                   </p>
+
                   <p className="mb-1">
-                    Pago: <Badge bg={getEstadoPagoBadge(pedidoSeleccionado.estadoPago)}>{getEstadoPagoTexto(pedidoSeleccionado.estadoPago)}</Badge> ({pedidoSeleccionado.metodoPago})
+                    Estado:{' '}
+                    <Badge
+                      bg={getEstadoBadge(
+                        pedidoSeleccionado.estado
+                      )}
+                    >
+                      {getEstadoTexto(
+                        pedidoSeleccionado.estado
+                      )}
+                    </Badge>
                   </p>
-                  <p className="mb-1">Modalidad: {pedidoSeleccionado.modalidadEntrega}</p>
+
+                  <p className="mb-1">
+                    Pago:{' '}
+                    <Badge
+                      bg={getEstadoPagoBadge(
+                        pedidoSeleccionado.estadoPago
+                      )}
+                    >
+                      {getEstadoPagoTexto(
+                        pedidoSeleccionado.estadoPago
+                      )}
+                    </Badge>{' '}
+                    ({pedidoSeleccionado.metodoPago})
+                  </p>
+
+                  <p className="mb-1">
+                    Modalidad:{' '}
+                    {pedidoSeleccionado.modalidadEntrega}
+                  </p>
                 </Col>
               </Row>
-              
+
               {pedidoSeleccionado.notas && (
                 <Alert variant="info">
-                  <strong>Notas:</strong> {pedidoSeleccionado.notas}
+                  <strong>Notas:</strong>{' '}
+                  {pedidoSeleccionado.notas}
                 </Alert>
               )}
 
               <h6>Productos</h6>
+
               <Table size="sm">
                 <thead>
                   <tr>
@@ -435,50 +632,138 @@ const AdminPedidosPage = () => {
                     <th className="text-end">Subtotal</th>
                   </tr>
                 </thead>
+
                 <tbody>
-                  {pedidoSeleccionado.detalles?.map((detalle, idx) => (
-                    <tr key={idx}>
-                      <td>{detalle.producto?.nombre || 'Producto eliminado'}</td>
-                      <td className="text-center">{detalle.cantidad}</td>
-                      <td className="text-end">{formatearPrecio(detalle.precioUnitario)}</td>
-                      <td className="text-end">{formatearPrecio(detalle.precioUnitario * detalle.cantidad)}</td>
-                    </tr>
-                  ))}
+                  {pedidoSeleccionado.detalles?.map(
+                    (detalle, idx) => (
+                      <tr key={idx}>
+                        <td>
+                          {detalle.producto?.nombre ||
+                            'Producto eliminado'}
+                        </td>
+
+                        <td className="text-center">
+                          {detalle.cantidad}
+                        </td>
+
+                        <td className="text-end">
+                          {formatearPrecio(
+                            detalle.precioUnitario
+                          )}
+                        </td>
+
+                        <td className="text-end">
+                          {formatearPrecio(
+                            detalle.precioUnitario *
+                              detalle.cantidad
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  )}
                 </tbody>
+
                 <tfoot>
                   <tr>
-                    <th colSpan="3" className="text-end">Total:</th>
-                    <th className="text-end">{formatearPrecio(pedidoSeleccionado.total)}</th>
+                    <th
+                      colSpan="3"
+                      className="text-end"
+                    >
+                      Total:
+                    </th>
+
+                    <th className="text-end">
+                      {formatearPrecio(
+                        pedidoSeleccionado.total
+                      )}
+                    </th>
                   </tr>
                 </tfoot>
               </Table>
 
               <div className="mt-4">
                 <h6>Acciones</h6>
+
                 <div className="d-flex flex-wrap gap-2">
-                  {pedidoSeleccionado.estadoPago === 'pendiente' && (
-                    <Button variant="success" onClick={() => handleConfirmarPago(pedidoSeleccionado.id)} disabled={actionLoading}>
-                      <i className="bi bi-cash me-2"></i>Confirmar Pago
+                  {pedidoSeleccionado.estadoPago ===
+                    'pendiente' && (
+                    <Button
+                      variant="success"
+                      onClick={() =>
+                        handleConfirmarPago(
+                          pedidoSeleccionado.id
+                        )
+                      }
+                      disabled={actionLoading}
+                    >
+                      <i className="bi bi-cash me-2"></i>
+                      <span>Confirmar Pago</span>
                     </Button>
                   )}
-                  {pedidoSeleccionado.estado === 'pendiente' && pedidoSeleccionado.estadoPago === 'confirmado' && (
-                    <Button variant="info" onClick={() => handleCambiarEstado(pedidoSeleccionado.id, 'preparando')} disabled={actionLoading}>
-                      Marcar como Preparando
+
+                  {pedidoSeleccionado.estado === 'pendiente' &&
+                    pedidoSeleccionado.estadoPago ===
+                      'confirmado' && (
+                      <Button
+                        variant="info"
+                        onClick={() =>
+                          handleCambiarEstado(
+                            pedidoSeleccionado.id,
+                            'preparando'
+                          )
+                        }
+                        disabled={actionLoading}
+                      >
+                        <span>Marcar como Preparando</span>
+                      </Button>
+                    )}
+
+                  {pedidoSeleccionado.estado ===
+                    'preparando' && (
+                    <Button
+                      variant="primary"
+                      onClick={() =>
+                        handleCambiarEstado(
+                          pedidoSeleccionado.id,
+                          'listo'
+                        )
+                      }
+                      disabled={actionLoading}
+                    >
+                      <span>Marcar como Pedido listo</span>
                     </Button>
                   )}
-                  {pedidoSeleccionado.estado === 'preparando' && (
-                    <Button variant="primary" onClick={() => handleCambiarEstado(pedidoSeleccionado.id, 'listo')} disabled={actionLoading}>
-                      Marcar como Pedido listo
-                    </Button>
-                  )}
+
                   {pedidoSeleccionado.estado === 'listo' && (
-                    <Button variant="success" onClick={() => handleCambiarEstado(pedidoSeleccionado.id, 'entregado')} disabled={actionLoading}>
-                      Marcar como Entregado
+                    <Button
+                      variant="success"
+                      onClick={() =>
+                        handleCambiarEstado(
+                          pedidoSeleccionado.id,
+                          'entregado'
+                        )
+                      }
+                      disabled={actionLoading}
+                    >
+                      <span>Marcar como Entregado</span>
                     </Button>
                   )}
-                  {(pedidoSeleccionado.estado === 'pendiente' || pedidoSeleccionado.estado === 'preparando') && (
-                    <Button variant="danger" onClick={() => handleCambiarEstado(pedidoSeleccionado.id, 'cancelado')} disabled={actionLoading}>
-                      Cancelar Pedido
+
+                  {(pedidoSeleccionado.estado ===
+                    'pendiente' ||
+                    pedidoSeleccionado.estado ===
+                      'preparando') && (
+                    <Button
+                      variant="danger"
+                      onClick={() =>
+                        handleCambiarEstado(
+                          pedidoSeleccionado.id,
+                          'cancelado'
+                        )
+                      }
+                      disabled={actionLoading}
+                    >
+                      <span>Cancelar Pedido</span>
                     </Button>
                   )}
                 </div>
@@ -486,8 +771,14 @@ const AdminPedidosPage = () => {
             </>
           )}
         </Modal.Body>
+
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cerrar</Button>
+          <Button
+            variant="secondary"
+            onClick={() => setShowModal(false)}
+          >
+            <span>Cerrar</span>
+          </Button>
         </Modal.Footer>
       </Modal>
     </Container>

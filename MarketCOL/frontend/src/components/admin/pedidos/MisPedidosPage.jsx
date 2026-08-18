@@ -24,22 +24,33 @@ const MisPedidosPage = () => {
       navigate('/login');
       return;
     }
+
     loadPedidos();
   }, [isAuthenticated, navigate]);
 
   const loadPedidos = async () => {
     setLoading(true);
+
     try {
       const response = await pedidoService.getMisPedidos();
+
       if (response.success) {
-        // El backend devuelve { success: true, data: { pedidos: [...], paginacion: {...} } }
+        // El backend devuelve:
+        // { success: true, data: { pedidos: [...], paginacion: {...} } }
         setPedidos(response.data.pedidos || response.data || []);
       } else {
-        setMensaje({ tipo: 'danger', texto: response.message || 'Error al cargar pedidos' });
+        setMensaje({
+          tipo: 'danger',
+          texto: response.message || 'Error al cargar pedidos'
+        });
       }
     } catch (error) {
       console.error('Error al cargar pedidos:', error);
-      setMensaje({ tipo: 'danger', texto: 'Error al cargar los pedidos' });
+
+      setMensaje({
+        tipo: 'danger',
+        texto: 'Error al cargar los pedidos'
+      });
     } finally {
       setLoading(false);
     }
@@ -49,7 +60,7 @@ const MisPedidosPage = () => {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
-      minimumFractionDigits: 0,
+      minimumFractionDigits: 0
     }).format(precio);
   };
 
@@ -65,23 +76,25 @@ const MisPedidosPage = () => {
 
   const getEstadoBadge = (estado) => {
     const badges = {
-      'pendiente': 'warning',
-      'preparando': 'info',
-      'listo': 'primary',
-      'entregado': 'success',
-      'cancelado': 'danger'
+      pendiente: 'warning',
+      preparando: 'info',
+      listo: 'primary',
+      entregado: 'success',
+      cancelado: 'danger'
     };
+
     return badges[estado] || 'secondary';
   };
 
   const getEstadoTexto = (estado) => {
     const textos = {
-      'pendiente': 'Pendiente',
-      'preparando': 'Preparando',
-      'listo': 'Pedido listo',
-      'entregado': 'Entregado',
-      'cancelado': 'Cancelado'
+      pendiente: 'Pendiente',
+      preparando: 'Preparando',
+      listo: 'Pedido listo',
+      entregado: 'Entregado',
+      cancelado: 'Cancelado'
     };
+
     return textos[estado] || estado;
   };
 
@@ -94,16 +107,24 @@ const MisPedidosPage = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1>
           <i className="bi bi-box-seam me-2"></i>
-          Mis Pedidos
+          {' '}Mis Pedidos
         </h1>
-        <Button variant="primary" onClick={() => navigate('/catalogo')}>
+
+        <Button
+          variant="primary"
+          onClick={() => navigate('/catalogo')}
+        >
           <i className="bi bi-shop me-2"></i>
-          Seguir Comprando
+          {' '}Seguir Comprando
         </Button>
       </div>
 
       {mensaje.texto && (
-        <Alert variant={mensaje.tipo} dismissible onClose={() => setMensaje({ tipo: '', texto: '' })}>
+        <Alert
+          variant={mensaje.tipo}
+          dismissible
+          onClose={() => setMensaje({ tipo: '', texto: '' })}
+        >
           {mensaje.texto}
         </Alert>
       )}
@@ -112,11 +133,21 @@ const MisPedidosPage = () => {
         <Card className="text-center py-5">
           <Card.Body>
             <i className="bi bi-inbox display-1 text-muted"></i>
-            <h3 className="mt-3">No tienes pedidos aún</h3>
-            <p className="text-muted">Comienza a comprar para ver tu historial de pedidos aquí</p>
-            <Button variant="primary" onClick={() => navigate('/catalogo')}>
+
+            <h3 className="mt-3">
+              No tienes pedidos aún
+            </h3>
+
+            <p className="text-muted">
+              Comienza a comprar para ver tu historial de pedidos aquí
+            </p>
+
+            <Button
+              variant="primary"
+              onClick={() => navigate('/catalogo')}
+            >
               <i className="bi bi-shop me-2"></i>
-              Ir al Catálogo
+              {' '}Ir al Catálogo
             </Button>
           </Card.Body>
         </Card>
@@ -133,36 +164,46 @@ const MisPedidosPage = () => {
                   <th className="text-center">Acciones</th>
                 </tr>
               </thead>
+
               <tbody>
                 {pedidos.map((pedido) => (
                   <tr key={pedido.id}>
                     <td className="align-middle">
                       <div>
                         <strong>#{pedido.id}</strong>
+
                         <div className="small text-muted">
                           {pedido.detalles?.length || 0} producto(s)
                         </div>
                       </div>
                     </td>
+
                     <td className="align-middle">
                       {formatearFecha(pedido.createdAt)}
                     </td>
+
                     <td className="align-middle">
                       <Badge bg={getEstadoBadge(pedido.estado)}>
                         {getEstadoTexto(pedido.estado)}
                       </Badge>
                     </td>
+
                     <td className="align-middle text-end">
-                      <strong>{formatearPrecio(pedido.total)}</strong>
+                      <strong>
+                        {formatearPrecio(pedido.total)}
+                      </strong>
                     </td>
+
                     <td className="align-middle text-center">
                       <Button
                         variant="outline-primary"
                         size="sm"
-                        onClick={() => navigate(`/pedido-confirmado/${pedido.id}`)}
+                        onClick={() =>
+                          navigate(`/pedido-confirmado/${pedido.id}`)
+                        }
                       >
                         <i className="bi bi-eye me-1"></i>
-                        Ver Detalle
+                        {' '}Ver Detalle
                       </Button>
                     </td>
                   </tr>

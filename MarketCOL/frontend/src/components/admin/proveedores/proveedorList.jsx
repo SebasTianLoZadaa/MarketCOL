@@ -1,18 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Table, Button, Badge, Form, Pagination, Alert, Dropdown } from 'react-bootstrap';
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Table,
+  Button,
+  Badge,
+  Form,
+  Pagination,
+  Alert,
+  Dropdown
+} from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../services/api';
 import ProveedorForm from './proveedorForm';
 import { useAuth } from '../../../context/AuthContext';
-import { exportarProveedoresAPDF, exportarProveedoresAExcel } from '../../../utils/exportUtils';
+import {
+  exportarProveedoresAPDF,
+  exportarProveedoresAExcel
+} from '../../../utils/exportUtils';
 
 const ProveedorList = () => {
   const { isAdmin } = useAuth();
   const navigate = useNavigate();
+
   const [proveedores, setProveedores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Filtros
   const [filtros, setFiltros] = useState({
     buscar: '',
@@ -20,8 +36,12 @@ const ProveedorList = () => {
     pagina: 1,
     limite: 10
   });
-  const [paginacion, setPaginacion] = useState({ total: 0, totalPaginas: 0 });
-  
+
+  const [paginacion, setPaginacion] = useState({
+    total: 0,
+    totalPaginas: 0
+  });
+
   // Modal
   const [showForm, setShowForm] = useState(false);
   const [proveedorEditar, setProveedorEditar] = useState(null);
@@ -34,14 +54,28 @@ const ProveedorList = () => {
   const fetchProveedores = async () => {
     setLoading(true);
     setError(null);
+
     try {
       const params = { ...filtros };
-      if (!params.activo) delete params.activo;
-      if (!params.buscar) delete params.buscar;
-      
+
+      if (!params.activo) {
+        delete params.activo;
+      }
+
+      if (!params.buscar) {
+        delete params.buscar;
+      }
+
       const res = await api.get('/admin/proveedores', { params });
+
       setProveedores(res.data.data.proveedores || []);
-      setPaginacion(res.data.data.paginacion || { total: 0, totalPaginas: 0 });
+
+      setPaginacion(
+        res.data.data.paginacion || {
+          total: 0,
+          totalPaginas: 0
+        }
+      );
     } catch (err) {
       setError('Error al cargar proveedores');
       console.error(err);
@@ -52,15 +86,28 @@ const ProveedorList = () => {
 
   const handleFiltroChange = (e) => {
     const { name, value } = e.target;
-    setFiltros(prev => ({ ...prev, [name]: value, pagina: 1 }));
+
+    setFiltros((prev) => ({
+      ...prev,
+      [name]: value,
+      pagina: 1
+    }));
   };
 
   const handlePageChange = (page) => {
-    setFiltros(prev => ({ ...prev, pagina: page }));
+    setFiltros((prev) => ({
+      ...prev,
+      pagina: page
+    }));
   };
 
   const handleClearFilters = () => {
-    setFiltros({ buscar: '', activo: '', pagina: 1, limite: 10 });
+    setFiltros({
+      buscar: '',
+      activo: '',
+      pagina: 1,
+      limite: 10
+    });
   };
 
   const handleToggle = async (id) => {
@@ -68,17 +115,30 @@ const ProveedorList = () => {
       await api.patch(`/admin/proveedores/${id}/toggle`);
       fetchProveedores();
     } catch (err) {
-      alert(err.response?.data?.message || 'Error al cambiar estado');
+      alert(
+        err.response?.data?.message ||
+        'Error al cambiar estado'
+      );
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('¿Eliminar este proveedor? Se eliminará solo si no tiene productos asociados.')) return;
+    if (
+      !window.confirm(
+        '¿Eliminar este proveedor? Se eliminará solo si no tiene productos asociados.'
+      )
+    ) {
+      return;
+    }
+
     try {
       await api.delete(`/admin/proveedores/${id}`);
       fetchProveedores();
     } catch (err) {
-      alert(err.response?.data?.message || 'Error al eliminar proveedor');
+      alert(
+        err.response?.data?.message ||
+        'Error al eliminar proveedor'
+      );
     }
   };
 
@@ -98,51 +158,81 @@ const ProveedorList = () => {
 
   return (
     <Container className="py-4">
+
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h1>
             <i className="bi bi-truck me-2"></i>
-            Gestión de Proveedores
+            <span>Gestión de Proveedores</span>
           </h1>
+
           <p className="text-muted mb-0">
             Administra los proveedores del sistema
           </p>
         </div>
+
         <div>
           <Dropdown className="d-inline-block me-2">
-            <Dropdown.Toggle variant="success" id="dropdown-exportar-proveedores">
+            <Dropdown.Toggle
+              variant="success"
+              id="dropdown-exportar-proveedores"
+            >
               <i className="bi bi-download me-1"></i>
-              Exportar
+              <span>Exportar</span>
             </Dropdown.Toggle>
+
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => exportarProveedoresAPDF(proveedores)}>
+              <Dropdown.Item
+                onClick={() =>
+                  exportarProveedoresAPDF(proveedores)
+                }
+              >
                 <i className="bi bi-file-earmark-pdf me-2"></i>
-                Exportar a PDF
+                <span>Exportar a PDF</span>
               </Dropdown.Item>
-              <Dropdown.Item onClick={async () => exportarProveedoresAExcel(proveedores)}>
+
+              <Dropdown.Item
+                onClick={() =>
+                  exportarProveedoresAExcel(proveedores)
+                }
+              >
                 <i className="bi bi-file-earmark-excel me-2"></i>
-                Exportar a Excel
+                <span>Exportar a Excel</span>
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
-          <Button variant="outline-secondary" onClick={() => navigate('/admin')} className="me-2">
+
+          <Button
+            variant="outline-secondary"
+            onClick={() => navigate('/admin')}
+            className="me-2"
+          >
             <i className="bi bi-arrow-left me-1"></i>
-            Volver
+            <span>Volver</span>
           </Button>
+
           {isAdmin && (
-            <Button variant="primary" onClick={handleCreate}>
+            <Button
+              variant="primary"
+              onClick={handleCreate}
+            >
               <i className="bi bi-plus-circle me-2"></i>
-              Nuevo Proveedor
+              <span>Nuevo Proveedor</span>
             </Button>
           )}
         </div>
       </div>
 
       <p className="text-muted mb-3">
-        Total: {paginacion.total} proveedor{paginacion.total !== 1 ? 'es' : ''}
+        Total: {paginacion.total} proveedor
+        {paginacion.total !== 1 ? 'es' : ''}
       </p>
 
-      {error && <Alert variant="danger">{error}</Alert>}
+      {error && (
+        <Alert variant="danger">
+          {error}
+        </Alert>
+      )}
 
       {/* Filtros */}
       <Card className="mb-4 shadow-sm">
@@ -150,11 +240,13 @@ const ProveedorList = () => {
           <i className="bi bi-funnel me-2"></i>
           <strong>Filtros</strong>
         </Card.Header>
+
         <Card.Body>
           <Row>
             <Col md={6}>
               <Form.Group>
                 <Form.Label>Buscar</Form.Label>
+
                 <Form.Control
                   type="text"
                   name="buscar"
@@ -164,9 +256,11 @@ const ProveedorList = () => {
                 />
               </Form.Group>
             </Col>
+
             <Col md={3}>
               <Form.Group>
                 <Form.Label>Estado</Form.Label>
+
                 <Form.Select
                   name="activo"
                   value={filtros.activo}
@@ -178,11 +272,18 @@ const ProveedorList = () => {
                 </Form.Select>
               </Form.Group>
             </Col>
-            <Col md={3} className="d-flex align-items-end">
+
+            <Col
+              md={3}
+              className="d-flex align-items-end"
+            >
               <div>
-                <Button variant="outline-secondary" onClick={handleClearFilters}>
+                <Button
+                  variant="outline-secondary"
+                  onClick={handleClearFilters}
+                >
                   <i className="bi bi-arrow-clockwise me-1"></i>
-                  Limpiar filtros
+                  <span>Limpiar filtros</span>
                 </Button>
               </div>
             </Col>
@@ -193,7 +294,11 @@ const ProveedorList = () => {
       {/* Tabla de proveedores */}
       <Card className="shadow-sm">
         <Card.Body className="p-0">
-          <Table responsive hover className="mb-0">
+          <Table
+            responsive
+            hover
+            className="mb-0"
+          >
             <thead className="bg-light">
               <tr>
                 <th>ID</th>
@@ -205,56 +310,104 @@ const ProveedorList = () => {
                 <th>Acciones</th>
               </tr>
             </thead>
+
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="7" className="text-center py-4">
+                  <td
+                    colSpan="7"
+                    className="text-center py-4"
+                  >
                     Cargando proveedores...
                   </td>
                 </tr>
               ) : proveedores.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="text-center py-4">
+                  <td
+                    colSpan="7"
+                    className="text-center py-4"
+                  >
                     No hay proveedores que mostrar
                   </td>
                 </tr>
               ) : (
-                proveedores.map(prov => (
+                proveedores.map((prov) => (
                   <tr key={prov.id}>
                     <td>#{prov.id}</td>
+
                     <td>
                       <strong>{prov.nombre}</strong>
                     </td>
-                    <td>{prov.contacto || '—'}</td>
-                    <td>{prov.telefono || '—'}</td>
-                    <td>{prov.email || '—'}</td>
+
                     <td>
-                      <Badge bg={prov.activo ? 'success' : 'secondary'}>
-                        {prov.activo ? 'Activo' : 'Inactivo'}
+                      {prov.contacto || '—'}
+                    </td>
+
+                    <td>
+                      {prov.telefono || '—'}
+                    </td>
+
+                    <td>
+                      {prov.email || '—'}
+                    </td>
+
+                    <td>
+                      <Badge
+                        bg={
+                          prov.activo
+                            ? 'success'
+                            : 'secondary'
+                        }
+                      >
+                        {prov.activo
+                          ? 'Activo'
+                          : 'Inactivo'}
                       </Badge>
                     </td>
+
                     <td>
                       <Button
                         variant="outline-primary"
                         size="sm"
                         className="me-1"
-                        onClick={() => handleEdit(prov)}
+                        onClick={() =>
+                          handleEdit(prov)
+                        }
+                        aria-label="Editar proveedor"
                       >
                         <i className="bi bi-pencil"></i>
                       </Button>
+
                       <Button
                         variant="outline-warning"
                         size="sm"
                         className="me-1"
-                        onClick={() => handleToggle(prov.id)}
+                        onClick={() =>
+                          handleToggle(prov.id)
+                        }
+                        aria-label={
+                          prov.activo
+                            ? 'Desactivar proveedor'
+                            : 'Activar proveedor'
+                        }
                       >
-                        <i className={`bi bi-${prov.activo ? 'eye-slash' : 'eye'}`}></i>
+                        <i
+                          className={`bi bi-${
+                            prov.activo
+                              ? 'eye-slash'
+                              : 'eye'
+                          }`}
+                        ></i>
                       </Button>
+
                       {isAdmin && (
                         <Button
                           variant="outline-danger"
                           size="sm"
-                          onClick={() => handleDelete(prov.id)}
+                          onClick={() =>
+                            handleDelete(prov.id)
+                          }
+                          aria-label="Eliminar proveedor"
                         >
                           <i className="bi bi-trash"></i>
                         </Button>
@@ -266,7 +419,7 @@ const ProveedorList = () => {
             </tbody>
           </Table>
         </Card.Body>
-        
+
         {/* Paginación */}
         {paginacion.totalPaginas > 1 && (
           <Card.Footer>
@@ -275,26 +428,54 @@ const ProveedorList = () => {
                 disabled={filtros.pagina === 1}
                 onClick={() => handlePageChange(1)}
               />
+
               <Pagination.Prev
                 disabled={filtros.pagina === 1}
-                onClick={() => handlePageChange(filtros.pagina - 1)}
+                onClick={() =>
+                  handlePageChange(
+                    filtros.pagina - 1
+                  )
+                }
               />
-              {[...Array(paginacion.totalPaginas).keys()].map(page => (
-                <Pagination.Item
-                  key={page + 1}
-                  active={page + 1 === filtros.pagina}
-                  onClick={() => handlePageChange(page + 1)}
-                >
-                  {page + 1}
-                </Pagination.Item>
-              ))}
+
+              {[...new Array(paginacion.totalPaginas).keys()].map(
+                (page) => (
+                  <Pagination.Item
+                    key={page + 1}
+                    active={
+                      page + 1 === filtros.pagina
+                    }
+                    onClick={() =>
+                      handlePageChange(page + 1)
+                    }
+                  >
+                    {page + 1}
+                  </Pagination.Item>
+                )
+              )}
+
               <Pagination.Next
-                disabled={filtros.pagina === paginacion.totalPaginas}
-                onClick={() => handlePageChange(filtros.pagina + 1)}
+                disabled={
+                  filtros.pagina ===
+                  paginacion.totalPaginas
+                }
+                onClick={() =>
+                  handlePageChange(
+                    filtros.pagina + 1
+                  )
+                }
               />
+
               <Pagination.Last
-                disabled={filtros.pagina === paginacion.totalPaginas}
-                onClick={() => handlePageChange(paginacion.totalPaginas)}
+                disabled={
+                  filtros.pagina ===
+                  paginacion.totalPaginas
+                }
+                onClick={() =>
+                  handlePageChange(
+                    paginacion.totalPaginas
+                  )
+                }
               />
             </Pagination>
           </Card.Footer>
