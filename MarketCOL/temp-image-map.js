@@ -25,7 +25,7 @@ const findBest = img => {
   if (prefix.length) return prefix[0];
   const distances = actualNorm.map(a => {
     const b = a.norm;
-    const dp = Array.from({ length: candidate.length + 1 }, (_, i) => Array(b.length + 1).fill(0));
+    const dp = Array.from({ length: candidate.length + 1 }, (_, i) => new Array(b.length + 1).fill(0));
     for (let i = 0; i <= candidate.length; i++) dp[i][0] = i;
     for (let j = 0; j <= b.length; j++) dp[0][j] = j;
     for (let i = 1; i <= candidate.length; i++) {

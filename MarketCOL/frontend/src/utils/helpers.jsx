@@ -53,8 +53,7 @@ export const formatDateTime = (dateString) => {
  */
 const normalizeImagePath = (imagePath) => {
   if (typeof imagePath !== 'string') return '';
-  return imagePath.trim().replace(/\\\\/g, '/').replace(/^\/+/, '');
-};
+return imagePath.trim().replaceAll('\\', '/').replace(/^\/+/, '');};
 
 const encodeImageUrl = (url) => {
   try {

@@ -493,7 +493,7 @@ const AdminPedidosPage = () => {
                 }
               />
 
-              {[...Array(paginacion.totalPaginas).keys()].map(
+              {[...new Array(paginacion.totalPaginas).keys()].map(
                 page => (
                   <Pagination.Item
                     key={page + 1}
