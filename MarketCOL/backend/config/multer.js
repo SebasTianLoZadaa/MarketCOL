@@ -13,11 +13,11 @@ const multer = require('multer');
 
 // Importa el módulo 'path' de Node.js (módulo nativo, no necesita instalación).
 // Provee utilidades para trabajar con rutas de archivos y directorios.
-const path = require('path');
+const path = require('node:path');
 
 // Importa el módulo 'fs' (File System) de Node.js (módulo nativo).
 // Permite leer, escribir, crear y eliminar archivos y carpetas del sistema.
-const fs = require('fs');
+const fs = require('node:fs');
 
 // Carga las variables del archivo .env en process.env.
 require('dotenv').config();
