@@ -182,7 +182,7 @@ const PedidoDetail = () => {
         </h1>
         <Button variant="outline-secondary" onClick={() => navigate(-1)}>
          <span className="bi bi-arrow-left me-2" aria-hidden="true"></span>
-          Volver
+          <span>Volver</span>
         </Button>
       </div>
 
@@ -349,7 +349,7 @@ const PedidoDetail = () => {
                     disabled={actionLoading}
                   >
                     <span className="bi bi-check-circle me-2" aria-hidden="true"></span>
-                    Confirmar Pago
+                    <span>Confirmar Pago</span>
                   </Button>
                 )}
 
@@ -414,7 +414,7 @@ const PedidoDetail = () => {
                     target="_blank"
                   >
                    <span className="bi bi-whatsapp me-2" aria-hidden="true"></span>
-                    Coordinar Pago por WhatsApp
+                    <span>Coordinar Pago por WhatsApp</span>
                   </Button>
                 )}
               </div>
