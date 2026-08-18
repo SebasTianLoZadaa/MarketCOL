@@ -291,8 +291,7 @@ const AdminCategoriasPage = () => {
                   exportarCategoriasAPDF(categoriasFiltradas);
                 }}
               >
-                <i className="bi bi-file-earmark-pdf me-2"></i>
-                Exportar a PDF
+              <i className="bi bi-file-earmark-pdf me-2"></i><span>Tu texto aquí</span>                Exportar a PDF
               </Dropdown.Item>
 
               <Dropdown.Item
