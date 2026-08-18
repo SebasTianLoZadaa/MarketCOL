@@ -263,8 +263,11 @@ const AdminCategoriasPage = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h1>
-            <i className="bi bi-folder me-2"></i>
-            Gestión de Categorías
+            <i
+              className="bi bi-folder"
+              aria-hidden="true"
+            />{' '}
+            Gestión de Categorías   
           </h1>
 
           <p className="text-muted mb-0">
@@ -278,7 +281,7 @@ const AdminCategoriasPage = () => {
               variant="success"
               id="dropdown-exportar-categorias"
             >
-              <i className="bi bi-download me-1"></i>
+            <button><i className="bi bi-download me-1"></i>Descargar</button>
               Exportar
             </Dropdown.Toggle>
 

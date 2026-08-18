@@ -4,7 +4,6 @@
  * ============================================
  * Gestión CRUD de productos con soporte para proveedores
  */
-
 import React, { useEffect, useState, useMemo, useCallback, memo, useRef } from 'react';
 import { Container, Card, Table, Button, Form, Alert, Badge, Row, Col, Dropdown, ButtonGroup, InputGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
@@ -30,14 +29,14 @@ const ProductImage = memo(({ imagen, nombre }) => {
     setImgSrc(getImageUrl(imagen));
     hasError.current = false;
   }, [imagen]);
-  
+
   const handleImageError = useCallback(() => {
     if (!hasError.current) {
       hasError.current = true;
       setImgSrc('/images/producto-default.svg');
     }
   }, []);
-  
+
   return (
     <img
       src={imgSrc}
@@ -62,7 +61,7 @@ const AdminProductosPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [editando, setEditando] = useState(null);
   const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });
-  
+
   // Estados para filtros
   const [busqueda, setBusqueda] = useState('');
   const [filtroCategoria, setFiltroCategoria] = useState('');
@@ -71,7 +70,7 @@ const AdminProductosPage = () => {
   const [precioMax, setPrecioMax] = useState('');
   const [paginaActual, setPaginaActual] = useState(1);
   const ITEMS_POR_PAGINA = 25;
-  
+
   const [formData, setFormData] = useState({
     nombre: '',
     descripcion: '',
@@ -79,25 +78,25 @@ const AdminProductosPage = () => {
     stock: '',
     categoriaId: '',
     subcategoriaId: '',
-    proveedorId: '',    // NUEVO campo
+    proveedorId: '', // NUEVO campo
     imagen: '',
     activo: true
   });
-  
+
   // Productos filtrados
   const productosFiltrados = useMemo(() => {
     return productos.filter(prod => {
-      const coincideBusqueda = busqueda === '' || 
+      const coincideBusqueda = busqueda === '' ||
         prod.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
         prod.descripcion?.toLowerCase().includes(busqueda.toLowerCase());
-      
+
       const coincideCategoria = filtroCategoria === '' || prod.categoriaId === Number.parseInt(filtroCategoria);
       const coincideSubcategoria = filtroSubcategoria === '' || prod.subcategoriaId === Number.parseInt(filtroSubcategoria);
-      
+
       const min = precioMin === '' ? 0 : Number.parseFloat(precioMin);
       const max = precioMax === '' ? Infinity : Number.parseFloat(precioMax);
       const coincidePrecio = prod.precio >= min && prod.precio <= max;
-      
+
       return coincideBusqueda && coincideCategoria && coincideSubcategoria && coincidePrecio;
     }).sort((a, b) => a.id - b.id);
   }, [productos, busqueda, filtroCategoria, filtroSubcategoria, precioMin, precioMax]);
@@ -106,6 +105,7 @@ const AdminProductosPage = () => {
   const totalPaginas = Math.ceil(productosFiltrados.length / ITEMS_POR_PAGINA);
   const indiceInicio = (paginaActual - 1) * ITEMS_POR_PAGINA;
   const indiceFin = indiceInicio + ITEMS_POR_PAGINA;
+
   const productosPaginados = useMemo(() => {
     return productosFiltrados.slice(indiceInicio, indiceFin);
   }, [productosFiltrados, indiceInicio, indiceFin]);
@@ -116,6 +116,7 @@ const AdminProductosPage = () => {
       const timer = setTimeout(() => {
         setMensaje({ tipo: '', texto: '' });
       }, 5000);
+
       return () => clearTimeout(timer);
     }
   }, [mensaje]);
@@ -127,19 +128,20 @@ const AdminProductosPage = () => {
 
   const loadData = useCallback(async () => {
     setLoading(true);
+
     try {
       const [prodResponse, catResponse, subcatResponse, provResponse] = await Promise.all([
         api.get('/admin/productos?limite=1000'),
         api.get('/admin/categorias'),
         api.get('/admin/subcategorias'),
-        api.get('/admin/proveedores?activo=true')  // Cargar proveedores activos
+        api.get('/admin/proveedores?activo=true') // Cargar proveedores activos
       ]);
-      
+
       const productos = prodResponse.data?.data?.productos || prodResponse.data?.productos || prodResponse.data?.data || [];
       const categorias = catResponse.data?.data?.categorias || catResponse.data?.categorias || catResponse.data?.data || [];
       const subcategorias = subcatResponse.data?.data?.subcategorias || subcatResponse.data?.subcategorias || subcatResponse.data?.data || [];
       const proveedores = provResponse.data?.data?.proveedores || provResponse.data?.proveedores || provResponse.data?.data || [];
-      
+
       setTimeout(() => {
         setProductos(Array.isArray(productos) ? productos : []);
         setCategorias(Array.isArray(categorias) ? categorias : []);
@@ -191,6 +193,7 @@ const AdminProductosPage = () => {
         activo: true
       });
     }
+
     setShowModal(true);
   };
 
@@ -212,6 +215,7 @@ const AdminProductosPage = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? checked : value
@@ -229,8 +233,14 @@ const AdminProductosPage = () => {
       formDataToSend.append('stock', formData.stock);
       formDataToSend.append('categoriaId', formData.categoriaId);
       formDataToSend.append('subcategoriaId', formData.subcategoriaId || '');
-      if (formData.proveedorId) formDataToSend.append('proveedorId', formData.proveedorId);
-      if (formData.imagen) formDataToSend.append('imagen', formData.imagen.trim());
+
+      if (formData.proveedorId) {
+        formDataToSend.append('proveedorId', formData.proveedorId);
+      }
+
+      if (formData.imagen) {
+        formDataToSend.append('imagen', formData.imagen.trim());
+      }
 
       if (editando) {
         await api.put(`/admin/productos/${editando.id}`, formDataToSend);
@@ -253,16 +263,16 @@ const AdminProductosPage = () => {
 
   const handleDelete = async (id) => {
     if (!window.confirm('¿Estás seguro de eliminar este producto?')) return;
-    
+
     try {
       await api.delete(`/admin/productos/${id}`);
       setMensaje({ tipo: 'success', texto: 'Producto eliminado exitosamente' });
       loadData();
     } catch (error) {
       console.error('Error al eliminar producto:', error);
-      setMensaje({ 
-        tipo: 'danger', 
-        texto: error.response?.data?.message || 'Error al eliminar el producto' 
+      setMensaje({
+        tipo: 'danger',
+        texto: error.response?.data?.message || 'Error al eliminar el producto'
       });
     }
   };
@@ -280,16 +290,16 @@ const AdminProductosPage = () => {
         imagen: producto.imagen,
         activo: !producto.activo
       });
-      
-      setProductos(prevProductos => 
-        prevProductos.map(p => 
+
+      setProductos(prevProductos =>
+        prevProductos.map(p =>
           p.id === producto.id ? { ...p, activo: !p.activo } : p
         )
       );
-      
-      setMensaje({ 
-        tipo: 'success', 
-        texto: `Producto ${!producto.activo ? 'activado' : 'desactivado'} exitosamente` 
+
+      setMensaje({
+        tipo: 'success',
+        texto: `Producto ${!producto.activo ? 'activado' : 'desactivado'} exitosamente`
       });
     } catch (error) {
       console.error('Error al cambiar estado:', error);
@@ -319,45 +329,45 @@ const AdminProductosPage = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h1>
-            <i className="bi bi-box-seam me-2"></i>
-            Gestión de Productos
+            <i className="bi bi-box-seam me-2"></i>Gestión de Productos
           </h1>
+
           <p className="text-muted mb-0">
             Total: {productosFiltrados.length} de {productos.length} producto{productos.length !== 1 ? 's' : ''}
           </p>
         </div>
+
         <div>
           <Dropdown className="d-inline-block me-2">
             <Dropdown.Toggle variant="success" id="dropdown-exportar-productos">
-              <i className="bi bi-download me-1"></i>
-              Exportar
+              <i className="bi bi-download me-1"></i>Exportar
             </Dropdown.Toggle>
+
             <Dropdown.Menu>
-              <Dropdown.Item 
+              <Dropdown.Item
                 onClick={() => {
                   exportarProductosAPDF(productosFiltrados);
                 }}
               >
-                <i className="bi bi-file-earmark-pdf me-2"></i>
-                Exportar a PDF
+                <i className="bi bi-file-earmark-pdf me-2"></i>Exportar a PDF
               </Dropdown.Item>
-              <Dropdown.Item 
+
+              <Dropdown.Item
                 onClick={async () => {
                   await exportarProductosAExcel(productosFiltrados);
                 }}
               >
-                <i className="bi bi-file-earmark-excel me-2"></i>
-                Exportar a Excel
+                <i className="bi bi-file-earmark-excel me-2"></i>Exportar a Excel
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
+
           <Button variant="outline-secondary" onClick={() => navigate('/admin')} className="me-2">
-            <i className="bi bi-arrow-left me-1"></i>
-            Volver
+            <i className="bi bi-arrow-left me-1"></i>Volver
           </Button>
+
           <Button variant="primary" onClick={() => handleShowModal()}>
-            <i className="bi bi-plus-circle me-1"></i>
-            Nuevo Producto
+            <i className="bi bi-plus-circle me-1"></i>Nuevo Producto
           </Button>
         </div>
       </div>
@@ -372,17 +382,19 @@ const AdminProductosPage = () => {
       <Card className="mb-4">
         <Card.Body>
           <h5 className="mb-3">
-            <i className="bi bi-funnel me-2"></i>
-            Filtros
+            <i className="bi bi-funnel me-2"></i>Filtros
           </h5>
+
           <Row className="g-3">
             <Col md={6}>
               <Form.Group>
                 <Form.Label className="small mb-1">Buscar</Form.Label>
+
                 <InputGroup>
                   <InputGroup.Text>
                     <i className="bi bi-search"></i>
                   </InputGroup.Text>
+
                   <Form.Control
                     placeholder="Nombre o descripción..."
                     value={busqueda}
@@ -391,9 +403,11 @@ const AdminProductosPage = () => {
                 </InputGroup>
               </Form.Group>
             </Col>
+
             <Col md={6}>
               <Form.Group>
                 <Form.Label className="small mb-1">Categoría</Form.Label>
+
                 <Form.Select
                   value={filtroCategoria}
                   onChange={(e) => {
@@ -408,9 +422,11 @@ const AdminProductosPage = () => {
                 </Form.Select>
               </Form.Group>
             </Col>
+
             <Col md={6}>
               <Form.Group>
                 <Form.Label className="small mb-1">Subcategoría</Form.Label>
+
                 <Form.Select
                   value={filtroSubcategoria}
                   onChange={(e) => setFiltroSubcategoria(e.target.value)}
@@ -426,9 +442,11 @@ const AdminProductosPage = () => {
                 </Form.Select>
               </Form.Group>
             </Col>
+
             <Col md={6}>
               <Form.Group>
                 <Form.Label className="small mb-1">Rango de Precio</Form.Label>
+
                 <Row className="g-2">
                   <Col xs={6}>
                     <Form.Control
@@ -439,6 +457,7 @@ const AdminProductosPage = () => {
                       min="0"
                     />
                   </Col>
+
                   <Col xs={6}>
                     <Form.Control
                       type="number"
@@ -451,6 +470,7 @@ const AdminProductosPage = () => {
                 </Row>
               </Form.Group>
             </Col>
+
             <Col md={12}>
               <Button
                 variant="outline-secondary"
@@ -464,8 +484,7 @@ const AdminProductosPage = () => {
                   setPaginaActual(1);
                 }}
               >
-                <i className="bi bi-arrow-clockwise me-1"></i>
-                Limpiar filtros
+                <i className="bi bi-arrow-clockwise me-1"></i>Limpiar filtros
               </Button>
             </Col>
           </Row>
@@ -488,41 +507,53 @@ const AdminProductosPage = () => {
                 <th className="text-center">Acciones</th>
               </tr>
             </thead>
+
             <tbody>
               {productosPaginados.length === 0 ? (
-              <tr>
-                <td colSpan="9" className="text-center py-4 text-muted">
-                  No hay productos registrados
-                </td>
-              </tr>
+                <tr>
+                  <td colSpan="9" className="text-center py-4 text-muted">
+                    No hay productos registrados
+                  </td>
+                </tr>
               ) : (
                 productosPaginados.map((prod) => (
                   <tr key={prod.id}>
                     <td className="align-middle">{prod.id}</td>
+
                     <td className="align-middle">
                       <ProductImage imagen={prod.imagen} nombre={prod.nombre} />
                     </td>
+
                     <td className="align-middle fw-bold">{prod.nombre}</td>
+
                     <td className="align-middle">
                       <Badge bg="info">{prod.categoria?.nombre || 'N/A'}</Badge>
                       {prod.subcategoria && (
-                        <><br /><small className="text-muted">{prod.subcategoria.nombre}</small></>
+                        <>
+                          <br />
+                          <small className="text-muted">{prod.subcategoria.nombre}</small>
+                        </>
                       )}
                     </td>
+
                     <td className="align-middle">
                       {prod.proveedor?.nombre || proveedores.find(p => p.id === prod.proveedorId)?.nombre || '—'}
                     </td>
+
                     <td className="align-middle">{formatearPrecio(prod.precio)}</td>
+
                     <td className="align-middle">
                       <Badge bg={prod.stock > 10 ? 'success' : prod.stock > 0 ? 'warning' : 'danger'}>
                         {prod.stock}
                       </Badge>
                     </td>
+
                     <td className="align-middle">
                       <Badge bg={prod.activo ? 'success' : 'secondary'}>
                         {prod.activo ? 'Activo' : 'Inactivo'}
                       </Badge>
                     </td>
+
                     <td className="align-middle text-center">
                       <Button
                         variant="outline-primary"
@@ -532,6 +563,7 @@ const AdminProductosPage = () => {
                       >
                         <i className="bi bi-pencil"></i>
                       </Button>
+
                       <Button
                         variant={prod.activo ? 'outline-warning' : 'outline-success'}
                         size="sm"
@@ -540,6 +572,7 @@ const AdminProductosPage = () => {
                       >
                         <i className={`bi bi-${prod.activo ? 'x-circle' : 'check-circle'}`}></i>
                       </Button>
+
                       <Button
                         variant="outline-danger"
                         size="sm"
@@ -554,13 +587,13 @@ const AdminProductosPage = () => {
             </tbody>
           </Table>
         </Card.Body>
+
         <Card.Footer className="text-muted">
           <div className="d-flex justify-content-between align-items-center">
             <small>
-              <i className="bi bi-file-text me-1"></i>
-              Mostrando <strong>{indiceInicio + 1}-{Math.min(indiceFin, productosFiltrados.length)}</strong> de <strong>{productosFiltrados.length}</strong> producto{productosFiltrados.length !== 1 ? 's' : ''}
+              <i className="bi bi-file-text me-1"></i>Mostrando <strong>{indiceInicio + 1}-{Math.min(indiceFin, productosFiltrados.length)}</strong> de <strong>{productosFiltrados.length}</strong> producto{productosFiltrados.length !== 1 ? 's' : ''}
             </small>
-            
+
             <div className="d-flex gap-2 align-items-center">
               <Button
                 variant="outline-secondary"
@@ -570,11 +603,11 @@ const AdminProductosPage = () => {
               >
                 <i className="bi bi-chevron-left"></i>
               </Button>
-              
+
               <span className="text-nowrap">
                 Página <strong>{paginaActual}</strong> de <strong>{totalPaginas || 1}</strong>
               </span>
-              
+
               <Button
                 variant="outline-secondary"
                 size="sm"
