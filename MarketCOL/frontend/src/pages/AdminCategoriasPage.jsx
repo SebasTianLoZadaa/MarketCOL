@@ -281,7 +281,10 @@ const AdminCategoriasPage = () => {
               variant="success"
               id="dropdown-exportar-categorias"
             >
-            <button><i className="bi bi-download me-1"></i>Descargar</button>
+            <button type="button">
+  <i className="bi bi-download me-1"></i>
+  Descargar
+</button>
               Exportar
             </Dropdown.Toggle>
 

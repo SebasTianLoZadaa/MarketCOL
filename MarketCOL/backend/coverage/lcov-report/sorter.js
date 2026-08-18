@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable no-unused-vars, no-case-declarations */
 var addSorting = (function() {
     'use strict';
     var cols,
