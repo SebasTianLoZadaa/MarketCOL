@@ -116,8 +116,7 @@ const formatDate = (value?: string) => {
     });
 };
 
-function ProductosPedido({ detalles, total }: ProductosPedidoProps) {
-    return (
+function ProductosPedido({ detalles, total }: Readonly<ProductosPedidoProps>) {    return (
         <View style={styles.card}>
             <View style={styles.sectionHeader}>
                 <Ionicons name="cube-outline" size={16} color="#28a745" />
