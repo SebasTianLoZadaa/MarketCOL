@@ -784,7 +784,7 @@ const crearUsuariosPrincipales = async () => {
     {
       nombre: 'Administrador',
       apellido: 'Sistema',
-      email: 'admin@ecommerce.com',
+      email: 'admin@MarketCOL.com',
       password: 'admin1234',
       rol: 'administrador',
       telefono: '3001234567',
@@ -799,7 +799,7 @@ const crearUsuariosPrincipales = async () => {
     {
       nombre: 'Auxiliar',
       apellido: 'Soporte',
-      email: 'auxiliar@ecommerce.com',
+      email: 'auxiliar@MarketCOL.com',
       password: 'aux123',
       rol: 'auxiliar',
       telefono: '3009876543',
