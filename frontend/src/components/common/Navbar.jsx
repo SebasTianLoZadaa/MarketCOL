@@ -54,13 +54,13 @@ const NavigationBar = memo(() => {
               fontFamily: 'var(--font-display)', fontWeight: 800,
               fontSize: 17, color: 'var(--carbon)', lineHeight: 1,
             }}>
-              MarketCol
+              MerkaCiro
             </div>
             <div style={{
               fontSize: 10, color: 'var(--gray)',
               letterSpacing: '0.8px', textTransform: 'uppercase', lineHeight: 1.2,
             }}>
-              MerkaCiro
+              MarketCOL
             </div>
           </div>
         </Navbar.Brand>
