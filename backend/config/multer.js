@@ -144,6 +144,7 @@ const getUploadFilename = (imageValue) => {
 
       return path.basename(url.pathname);
     } catch (error) {
+      console.error('Error al parsear la URL de la imagen:', error.message);
       return null;
     }
   }

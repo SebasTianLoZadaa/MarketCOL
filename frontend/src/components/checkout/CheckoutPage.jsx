@@ -37,9 +37,9 @@ const CheckoutPage = () => {
   if (loading) {
     return (
       <Container className="py-5 text-center">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Cargando...</span>
-        </div>
+        <output className="spinner-border text-primary">
+  <span className="visually-hidden">Cargando...</span>
+</output>
       </Container>
     );
   }

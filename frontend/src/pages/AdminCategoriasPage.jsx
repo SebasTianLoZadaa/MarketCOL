@@ -267,7 +267,7 @@ const AdminCategoriasPage = () => {
               className="bi bi-folder"
               aria-hidden="true"
             />{' '}
-            Gestión de Categorías   
+            Gestión de Categorías
           </h1>
 
           <p className="text-muted mb-0">
@@ -277,14 +277,11 @@ const AdminCategoriasPage = () => {
 
         <div>
           <Dropdown className="d-inline-block me-2">
-            <Dropdown.Toggle
+                      <Dropdown.Toggle
               variant="success"
               id="dropdown-exportar-categorias"
             >
-            <button type="button">
-  <i className="bi bi-download me-1"></i>
-  Descargar
-</button>
+              <i className="bi bi-download me-1"></i>{' '}
               Exportar
             </Dropdown.Toggle>
 
@@ -297,12 +294,12 @@ const AdminCategoriasPage = () => {
               <i className="bi bi-file-earmark-pdf me-2"></i><span>Tu texto aquí</span>                Exportar a PDF
               </Dropdown.Item>
 
-              <Dropdown.Item
+                          <Dropdown.Item
                 onClick={async () => {
                   await exportarCategoriasAExcel(categoriasFiltradas);
                 }}
               >
-                <i className="bi bi-file-earmark-excel me-2"></i>
+                <i className="bi bi-file-earmark-excel me-2"></i>{' '}
                 Exportar a Excel
               </Dropdown.Item>
             </Dropdown.Menu>
@@ -313,7 +310,7 @@ const AdminCategoriasPage = () => {
             onClick={() => navigate('/admin')}
             className="me-2"
           >
-            <i className="bi bi-arrow-left me-1"></i>
+            <i className="bi bi-arrow-left me-1"></i>{' '}
             Volver
           </Button>
 
@@ -321,7 +318,7 @@ const AdminCategoriasPage = () => {
             variant="primary"
             onClick={() => handleShowModal()}
           >
-            <i className="bi bi-plus-circle me-1"></i>
+            <i className="bi bi-plus-circle me-1"></i>{' '}
             Nueva Categoría
           </Button>
         </div>
@@ -394,7 +391,7 @@ const AdminCategoriasPage = () => {
               md={3}
               className="d-flex align-items-end"
             >
-              <Button
+                            <Button
                 variant="outline-secondary"
                 onClick={() =>
                   setFiltros({
@@ -404,7 +401,7 @@ const AdminCategoriasPage = () => {
                 }
                 className="w-100"
               >
-                <i className="bi bi-x-circle me-1"></i>
+                <i className="bi bi-x-circle me-1"></i>{' '}
                 Limpiar filtros
               </Button>
             </Col>
@@ -532,8 +529,8 @@ const AdminCategoriasPage = () => {
           <Card.Body>
             <div className="d-flex justify-content-between align-items-center">
               <div>
-                <small className="text-muted">
-                  <i className="bi bi-file-text me-1"></i>
+                  <small className="text-muted">
+                  <i className="bi bi-file-text me-1"></i>{' '}
                   Página <strong>{paginaActual}</strong> de{' '}
                   <strong>{totalPaginas}</strong> - Mostrando{' '}
                   <strong>
@@ -558,7 +555,7 @@ const AdminCategoriasPage = () => {
                   <i className="bi bi-chevron-bar-left"></i>
                 </Button>
 
-                <Button
+                              <Button
                   variant="outline-primary"
                   size="sm"
                   onClick={() =>
@@ -567,7 +564,7 @@ const AdminCategoriasPage = () => {
                   disabled={paginaActual === 1}
                   title="Página anterior"
                 >
-                  <i className="bi bi-chevron-left me-1"></i>
+                  <i className="bi bi-chevron-left me-1"></i>{' '}
                   Anterior
                 </Button>
 
@@ -590,7 +587,7 @@ const AdminCategoriasPage = () => {
                   }
                   title="Página siguiente"
                 >
-                  Siguiente
+                  Siguiente{' '}
                   <i className="bi bi-chevron-right ms-1"></i>
                 </Button>
 

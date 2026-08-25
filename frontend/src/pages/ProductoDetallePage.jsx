@@ -109,7 +109,7 @@ const ProductoDetallePage = () => {
       <div className="d-flex justify-content-between align-items-center gap-3 mb-4 flex-wrap">
         <div>
           <Button variant="outline-secondary" onClick={() => navigate(-1)} className="mb-3">
-            <i className="bi bi-arrow-left me-2"></i>
+            <i className="bi bi-arrow-left me-2"></i>{' '}
             Volver
           </Button>
           <h1 className="mb-2">{producto.nombre}</h1>

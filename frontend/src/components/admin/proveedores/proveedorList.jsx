@@ -156,6 +156,119 @@ const ProveedorList = () => {
     fetchProveedores();
   };
 
+  const renderFilasProveedores = () => {
+    if (loading) {
+      return (
+        <tr>
+          <td
+            colSpan="7"
+            className="text-center py-4"
+          >
+            Cargando proveedores...
+          </td>
+        </tr>
+      );
+    }
+
+    if (proveedores.length === 0) {
+      return (
+        <tr>
+          <td
+            colSpan="7"
+            className="text-center py-4"
+          >
+            No hay proveedores que mostrar
+          </td>
+        </tr>
+      );
+    }
+
+    return proveedores.map((prov) => (
+      <tr key={prov.id}>
+        <td>#{prov.id}</td>
+
+        <td>
+          <strong>{prov.nombre}</strong>
+        </td>
+
+        <td>
+          {prov.contacto || '—'}
+        </td>
+
+        <td>
+          {prov.telefono || '—'}
+        </td>
+
+        <td>
+          {prov.email || '—'}
+        </td>
+
+        <td>
+          <Badge
+            bg={
+              prov.activo
+                ? 'success'
+                : 'secondary'
+            }
+          >
+            {prov.activo
+              ? 'Activo'
+              : 'Inactivo'}
+          </Badge>
+        </td>
+
+        <td>
+          <Button
+            variant="outline-primary"
+            size="sm"
+            className="me-1"
+            onClick={() =>
+              handleEdit(prov)
+            }
+            aria-label="Editar proveedor"
+          >
+            <i className="bi bi-pencil"></i>
+          </Button>
+
+          <Button
+            variant="outline-warning"
+            size="sm"
+            className="me-1"
+            onClick={() =>
+              handleToggle(prov.id)
+            }
+            aria-label={
+              prov.activo
+                ? 'Desactivar proveedor'
+                : 'Activar proveedor'
+            }
+          >
+            <i
+              className={`bi bi-${
+                prov.activo
+                  ? 'eye-slash'
+                  : 'eye'
+              }`}
+            ></i>
+          </Button>
+
+          {isAdmin && (
+            <Button
+              variant="outline-danger"
+              size="sm"
+              onClick={() =>
+                handleDelete(prov.id)
+              }
+              aria-label="Eliminar proveedor"
+            >
+              <i className="bi bi-trash"></i>
+            </Button>
+          )}
+        </td>
+      </tr>
+    ));
+  };
+
   return (
     <Container className="py-4">
 
@@ -312,110 +425,7 @@ const ProveedorList = () => {
             </thead>
 
             <tbody>
-              {loading ? (
-                <tr>
-                  <td
-                    colSpan="7"
-                    className="text-center py-4"
-                  >
-                    Cargando proveedores...
-                  </td>
-                </tr>
-              ) : proveedores.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan="7"
-                    className="text-center py-4"
-                  >
-                    No hay proveedores que mostrar
-                  </td>
-                </tr>
-              ) : (
-                proveedores.map((prov) => (
-                  <tr key={prov.id}>
-                    <td>#{prov.id}</td>
-
-                    <td>
-                      <strong>{prov.nombre}</strong>
-                    </td>
-
-                    <td>
-                      {prov.contacto || '—'}
-                    </td>
-
-                    <td>
-                      {prov.telefono || '—'}
-                    </td>
-
-                    <td>
-                      {prov.email || '—'}
-                    </td>
-
-                    <td>
-                      <Badge
-                        bg={
-                          prov.activo
-                            ? 'success'
-                            : 'secondary'
-                        }
-                      >
-                        {prov.activo
-                          ? 'Activo'
-                          : 'Inactivo'}
-                      </Badge>
-                    </td>
-
-                    <td>
-                      <Button
-                        variant="outline-primary"
-                        size="sm"
-                        className="me-1"
-                        onClick={() =>
-                          handleEdit(prov)
-                        }
-                        aria-label="Editar proveedor"
-                      >
-                        <i className="bi bi-pencil"></i>
-                      </Button>
-
-                      <Button
-                        variant="outline-warning"
-                        size="sm"
-                        className="me-1"
-                        onClick={() =>
-                          handleToggle(prov.id)
-                        }
-                        aria-label={
-                          prov.activo
-                            ? 'Desactivar proveedor'
-                            : 'Activar proveedor'
-                        }
-                      >
-                        <i
-                          className={`bi bi-${
-                            prov.activo
-                              ? 'eye-slash'
-                              : 'eye'
-                          }`}
-                        ></i>
-                      </Button>
-
-                      {isAdmin && (
-                        <Button
-                          variant="outline-danger"
-                          size="sm"
-                          onClick={() =>
-                            handleDelete(prov.id)
-                          }
-                          aria-label="Eliminar proveedor"
-                        >
-                          <i className="bi bi-trash"></i>
-                        </Button>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              )}
+              {renderFilasProveedores()}
             </tbody>
           </Table>
         </Card.Body>

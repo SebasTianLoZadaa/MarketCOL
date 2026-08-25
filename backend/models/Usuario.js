@@ -249,7 +249,7 @@ Usuario.prototype.compararPassword = async function(passwordIngresado) {
 Usuario.prototype.toJSON = function() {
   // this.get() obtiene todos los valores de la instancia como objeto plano
   // Object.assign({}, ...) crea una COPIA (para no modificar el original)
-  const valores = Object.assign({}, this.get());
+  const valores = { ...this.get() };
   
   // Elimina la contraseña de la copia
   delete valores.password;

@@ -58,7 +58,7 @@ const carritoService = {
     } else {
       // Usuario no autenticado: agregar en localStorage
       if (!productoInfo) {
-        throw new Error({ success: false, message: 'Se requiere información del producto' });
+      throw new Error('Se requiere información del producto');
       }
 
       const carritoLocal = JSON.parse(localStorage.getItem(CARRITO_LOCAL_KEY) || '[]');
@@ -116,7 +116,7 @@ const carritoService = {
         return { success: true, message: 'Cantidad actualizada' };
       }
       
-      throw new Error({ success: false, message: 'Producto no encontrado' });
+      throw new Error('Producto no encontrado');
     }
   },
 

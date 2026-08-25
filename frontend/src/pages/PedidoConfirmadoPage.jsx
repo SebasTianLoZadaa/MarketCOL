@@ -174,7 +174,7 @@ const PedidoConfirmadoPage = () => {
           <Card className="mb-4">
             <Card.Header className="bg-white">
               <h5 className="mb-0">
-                <i className="bi bi-box-seam me-2"></i>
+                <i className="bi bi-box-seam me-2"></i>{' '}
                 Productos del Pedido
               </h5>
             </Card.Header>
@@ -231,7 +231,7 @@ const PedidoConfirmadoPage = () => {
           <Card className="mb-4">
             <Card.Header className="bg-white">
               <h5 className="mb-0">
-                <i className="bi bi-info-circle me-2"></i>
+                <i className="bi bi-info-circle me-2"></i>{' '}
                 Información de Contacto
               </h5>
             </Card.Header>
@@ -244,7 +244,7 @@ const PedidoConfirmadoPage = () => {
                 <Col md={6}>
                   <h6 className="text-muted mb-2">Modalidad</h6>
                   <p className="mb-0">
-                    <i className="bi bi-shop me-1 text-success"></i>
+                    <i className="bi bi-shop me-1 text-success"></i>{' '}
                     Aliste y recoja
                   </p>
                 </Col>
@@ -276,7 +276,7 @@ const PedidoConfirmadoPage = () => {
                 <ListGroup.Item className="px-0 d-flex justify-content-between">
                   <span>Modalidad:</span>
                   <span className="text-success">
-                    <i className="bi bi-shop me-1"></i>
+                    <i className="bi bi-shop me-1"></i>{' '}
                     Aliste y recoja
                   </span>
                 </ListGroup.Item>
@@ -291,8 +291,8 @@ const PedidoConfirmadoPage = () => {
               </ListGroup>
 
               {mostrarWhatsApp && (
-                <Alert variant="success" className="mb-3">
-                  <i className="bi bi-whatsapp me-2"></i>
+                  <Alert variant="success" className="mb-3">
+                  <i className="bi bi-whatsapp me-2"></i>{' '}
                   <strong>Pago pendiente</strong>
                   <p className="mb-2 mt-1">
                     Coordina tu pago por WhatsApp para que preparemos tu pedido.
@@ -302,7 +302,7 @@ const PedidoConfirmadoPage = () => {
                     className="w-100"
                     onClick={handleWhatsApp}
                   >
-                    <i className="bi bi-whatsapp me-2"></i>
+                    <i className="bi bi-whatsapp me-2"></i>{' '}
                     Contactar por WhatsApp
                   </Button>
                 </Alert>
@@ -310,14 +310,14 @@ const PedidoConfirmadoPage = () => {
 
               {pedido.estadoPago === 'pendiente' && pedido.metodoPago !== 'whatsapp' && (
                 <Alert variant="warning">
-                  <i className="bi bi-hourglass-split me-2"></i>
+                  <i className="bi bi-hourglass-split me-2"></i>{' '}
                   Tu pedido está pendiente de pago. Por favor, realiza el pago en tienda al recoger.
                 </Alert>
               )}
 
               {pedido.estado === 'listo' && (
                 <Alert variant="info">
-                  <i className="bi bi-check-circle me-2"></i>
+                  <i className="bi bi-check-circle me-2"></i>{' '}
                   ¡Tu pedido está listo! Puedes pasar a recogerlo en la tienda.
                 </Alert>
               )}
@@ -327,21 +327,21 @@ const PedidoConfirmadoPage = () => {
                   variant="primary"
                   onClick={() => navigate('/mis-pedidos')}
                 >
-                  <i className="bi bi-list-ul me-2"></i>
+                  <i className="bi bi-list-ul me-2"></i>{' '}
                   Ver Mis Pedidos
                 </Button>
                 <Button
                   variant="outline-primary"
                   onClick={handleImprimir}
                 >
-                  <i className="bi bi-printer me-2"></i>
+                  <i className="bi bi-printer me-2"></i>{' '}
                   Imprimir Comprobante
                 </Button>
-                <Button
+                                <Button
                   variant="outline-secondary"
                   onClick={() => navigate('/catalogo')}
                 >
-                  <i className="bi bi-arrow-left me-2"></i>
+                  <i className="bi bi-arrow-left me-2"></i>{' '}
                   Seguir Comprando
                 </Button>
               </div>

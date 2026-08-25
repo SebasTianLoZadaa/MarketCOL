@@ -205,7 +205,7 @@ const PedidoDetail = () => {
                 </thead>
                 <tbody>
                   {productos.map((item, index) => (
-                    <tr key={index}>
+                    <tr key={item.id}>
                       <td>
                         <div className="d-flex align-items-center">
                           {item.producto?.imagen && (

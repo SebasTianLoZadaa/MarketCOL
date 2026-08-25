@@ -146,7 +146,7 @@ const RegisterPage = () => {
           >
             {loading ? (
               <>
-                <span className="mk-spinner" style={{ width: 16, height: 16, borderWidth: 2 }} />
+                <span className="mk-spinner" style={{ width: 16, height: 16, borderWidth: 2 }} />{' '}
                 Registrando...
               </>
             ) : 'Crear mi cuenta'}
