@@ -62,10 +62,8 @@ const AdminSubcategoriasPage = () => {
 
         const coincide =
           sub.nombre.toLowerCase().includes(busqueda) ||
-          (sub.descripcion &&
-            sub.descripcion.toLowerCase().includes(busqueda)) ||
-          (categoria &&
-            categoria.nombre.toLowerCase().includes(busqueda));
+          sub.descripcion?.toLowerCase().includes(busqueda) ||
+          categoria?.nombre.toLowerCase().includes(busqueda);
 
         if (!coincide) {
           return false;

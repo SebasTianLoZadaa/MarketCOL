@@ -5,7 +5,7 @@
  * Gestión CRUD de productos con soporte para proveedores
  */
 import React, { useEffect, useState, useMemo, useCallback, memo, useRef } from 'react';
-import { Container, Card, Table, Button, Form, Alert, Badge, Row, Col, Dropdown, ButtonGroup, InputGroup } from 'react-bootstrap';
+import { Container, Card, Table, Button, Form, Alert, Badge, Row, Col, Dropdown, InputGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -51,7 +51,6 @@ const ProductImage = memo(({ imagen, nombre }) => {
 ProductImage.displayName = 'ProductImage';
 
 const AdminProductosPage = () => {
-  const { isAdmin, isAuxiliar } = useAuth();
   const navigate = useNavigate();
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
@@ -213,54 +212,6 @@ const AdminProductosPage = () => {
     });
   };
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const formDataToSend = new FormData();
-      formDataToSend.append('nombre', formData.nombre);
-      formDataToSend.append('descripcion', formData.descripcion);
-      formDataToSend.append('precio', formData.precio);
-      formDataToSend.append('stock', formData.stock);
-      formDataToSend.append('categoriaId', formData.categoriaId);
-      formDataToSend.append('subcategoriaId', formData.subcategoriaId || '');
-
-      if (formData.proveedorId) {
-        formDataToSend.append('proveedorId', formData.proveedorId);
-      }
-
-      if (formData.imagen) {
-        formDataToSend.append('imagen', formData.imagen.trim());
-      }
-
-      if (editando) {
-        await api.put(`/admin/productos/${editando.id}`, formDataToSend);
-        setMensaje({ tipo: 'success', texto: 'Producto actualizado exitosamente' });
-      } else {
-        await api.post('/admin/productos', formDataToSend);
-        setMensaje({ tipo: 'success', texto: 'Producto creado exitosamente' });
-      }
-
-      handleCloseModal();
-      loadData();
-    } catch (error) {
-      console.error('Error al guardar producto:', error);
-      setMensaje({
-        tipo: 'danger',
-        texto: error.response?.data?.message || 'Error al guardar el producto'
-      });
-    }
-  };
-
   const handleDelete = async (id) => {
     if (!window.confirm('¿Estás seguro de eliminar este producto?')) return;
 
@@ -315,10 +266,11 @@ const AdminProductosPage = () => {
     }).format(precio);
   };
 
-  // Subcategorías para el formulario (basadas en categoría seleccionada)
-  const subcategoriasFiltradas = useMemo(() => {
-    return subcategorias.filter(sub => sub.categoriaId === Number.parseInt(formData.categoriaId));
-  }, [subcategorias, formData.categoriaId]);
+  const getColorStock = (stock) => {
+    if (stock > 10) return 'success';
+    if (stock > 0) return 'warning';
+    return 'danger';
+  };
 
   if (loading) {
     return <LoadingSpinner message="Cargando productos..." />;
@@ -543,7 +495,7 @@ const AdminProductosPage = () => {
                     <td className="align-middle">{formatearPrecio(prod.precio)}</td>
 
                     <td className="align-middle">
-                      <Badge bg={prod.stock > 10 ? 'success' : prod.stock > 0 ? 'warning' : 'danger'}>
+                      <Badge bg={getColorStock(prod.stock)}>
                         {prod.stock}
                       </Badge>
                     </td>

@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 // Leer todos los archivos de images
 const imagesFolder = path.join(__dirname, 'frontend', 'public', 'images');
@@ -14,9 +14,12 @@ function walk(dir, category = '') {
       actualFiles[catName] = actualFiles[catName] || [];
       walk(filePath, catName);
     } else {
-      if (category) {
-        actualFiles[category].push(file.name);
-      }
+     if (file.isDirectory()) {
+      const catName = file.name;
+      actualFiles[catName] = actualFiles[catName] || [];
+      walk(filePath, catName);
+    } else if (category) {
+      actualFiles[category].push(file.name);
     }
   }
 }
@@ -102,3 +105,4 @@ console.log(JSON.stringify(replacements, null, 2));
 // Mostrar resumen
 const total = Object.keys(replacements).length;
 console.log(`\nTotal de rutas a actualizar: ${total}`);
+};

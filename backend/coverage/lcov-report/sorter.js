@@ -37,8 +37,7 @@ var addSorting = (function() {
             searchRegex = null;
         }
 
-        for (let i = 0; i < rows.length; i++) {
-            const row = rows[i];
+       for (const row of rows) {
             let isMatch = false;
 
             if (searchRegex) {
@@ -117,12 +116,18 @@ var addSorting = (function() {
         }
     }
     // sorts the table using the data for the ith column
-    function sortByIndex(index, desc) {
+    function compareValues(a, b) {
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0;
+}
+
+function sortByIndex(index, desc) {
         var key = cols[index].key,
             sorter = function(a, b) {
                 a = a.data[key];
                 b = b.data[key];
-                return a < b ? -1 : a > b ? 1 : 0;
+                return compareValues(a, b);
             },
             finalSorter = sorter,
             tableBody = document.querySelector('.coverage-summary tbody'),
@@ -138,7 +143,7 @@ var addSorting = (function() {
 
         for (i = 0; i < rowNodes.length; i += 1) {
             rows.push(rowNodes[i]);
-            tableBody.removeChild(rowNodes[i]);
+            rowNodes[i].remove();
         }
 
         rows.sort(finalSorter);

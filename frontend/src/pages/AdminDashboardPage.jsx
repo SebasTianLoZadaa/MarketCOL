@@ -236,8 +236,8 @@ const AdminDashboardPage = () => {
                 { to: '/admin/proveedores', label: 'Proveedores' },
               ],
             },
-          ].map((block, i) => (
-            <div key={i} className="mk-card" style={{ padding: '22px 22px' }}>
+                    ].map((block) => (
+            <div key={block.title} className="mk-card" style={{ padding: '22px 22px' }}>
               <h5 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16, color: 'var(--carbon)', marginBottom: 8 }}>
                 {block.title}
               </h5>
@@ -245,8 +245,8 @@ const AdminDashboardPage = () => {
                 {block.desc}
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {block.links.map((l, j) => (
-                  <Link key={j} to={l.to}
+              {block.links.map((l) => (
+                  <Link key={l.to} to={l.to}
                     className={`mk-btn ${l.primary ? 'mk-btn-primary' : 'mk-btn-ghost'} mk-btn-sm`}
                     style={{ textDecoration: 'none', justifyContent: 'center' }}>
                     {l.label}

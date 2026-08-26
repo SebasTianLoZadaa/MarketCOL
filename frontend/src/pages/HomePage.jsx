@@ -43,6 +43,34 @@ const HomePage = () => {
     })();
   }, []);
 
+  const renderProductosDestacados = () => {
+    if (loading) {
+      return <LoadingSpinner message="Cargando productos..." />;
+    }
+
+    if (productos.length > 0) {
+      return (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+          gap: 20,
+        }}>
+          {productos.map((p, i) => (
+            <div key={p.id} className={`fade-up fade-up-d${Math.min(i + 1, 4)}`}>
+              <ProductCard producto={p} showActions={true} />
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <p style={{ textAlign: 'center', color: 'var(--gray)' }}>
+        No hay productos disponibles en este momento.
+      </p>
+    );
+  };
+
   return (
     <>
       {/* ── Hero ── */}
@@ -109,8 +137,8 @@ const HomePage = () => {
 
             {/* Stats */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }} className="fade-up fade-up-d2">
-              {STATS.map((s, i) => (
-                <div key={i} style={{
+              {STATS.map((s) => (
+                <div key={s.label} style={{
                   background: 'rgba(255,255,255,0.05)',
                   border: '1px solid rgba(255,255,255,0.1)',
                   borderRadius: 'var(--radius-md)', padding: '16px 24px',
@@ -138,8 +166,8 @@ const HomePage = () => {
             display: 'flex', justifyContent: 'space-around',
             flexWrap: 'wrap', gap: 12,
           }}>
-            {FEATURES.map((f, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'white' }}>
+            {FEATURES.map((f) => (
+              <div key={f.text} style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'white' }}>
                 <span style={{ fontSize: 20 }}>{f.icon}</span>
                 <span style={{ fontSize: 14, fontWeight: 500 }}>{f.text}</span>
               </div>
@@ -168,25 +196,7 @@ const HomePage = () => {
           </Link>
         </div>
 
-        {loading ? (
-          <LoadingSpinner message="Cargando productos..." />
-        ) : productos.length > 0 ? (
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-            gap: 20,
-          }}>
-            {productos.map((p, i) => (
-              <div key={p.id} className={`fade-up fade-up-d${Math.min(i + 1, 4)}`}>
-                <ProductCard producto={p} showActions={true} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p style={{ textAlign: 'center', color: 'var(--gray)' }}>
-            No hay productos disponibles en este momento.
-          </p>
-        )}
+        {renderProductosDestacados()}
 
         {/* CTA para no autenticados */}
         {!isAuthenticated && (

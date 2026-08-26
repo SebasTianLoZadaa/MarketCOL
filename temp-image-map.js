@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 const seedFile = path.join(__dirname, 'backend', 'seeders', 'datosCompletos.seeder.js');
 const text = fs.readFileSync(seedFile, 'utf8');
 const regex = /imagen:\s*'([^']+)'/g;

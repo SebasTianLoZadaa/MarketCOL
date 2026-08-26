@@ -173,6 +173,192 @@ const ProductoList = () => {
     }).format(precio);
   };
 
+  const getColorStock = (stock) => {
+    if (stock > 10) return 'success';
+    if (stock > 0) return 'warning';
+    return 'danger';
+  };
+
+  const renderFilasProductos = () => {
+    if (loading) {
+      return (
+        <tr>
+          <td
+            colSpan="8"
+            className="text-center py-4"
+          >
+            Cargando productos...
+          </td>
+        </tr>
+      );
+    }
+
+    if (productos.length === 0) {
+      return (
+        <tr>
+          <td
+            colSpan="8"
+            className="text-center py-4"
+          >
+            No hay productos que mostrar
+          </td>
+        </tr>
+      );
+    }
+
+    return productos.map((prod) => (
+      <tr key={prod.id}>
+
+        {/* ID */}
+        <td>
+          #{prod.id}
+        </td>
+
+        {/* IMAGEN */}
+        <td>
+          {prod.imagen ? (
+            <img
+              src={`${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${prod.imagen}`}
+              alt={prod.nombre}
+              style={{
+                width: '50px',
+                height: '50px',
+                objectFit: 'cover'
+              }}
+              className="rounded"
+            />
+          ) : (
+            <div
+              className="bg-light d-flex align-items-center justify-content-center rounded"
+              style={{
+                width: '50px',
+                height: '50px'
+              }}
+            >
+              <i
+                className="bi bi-image text-muted"
+                aria-hidden="true"
+              />
+            </div>
+          )}
+        </td>
+
+        {/* NOMBRE */}
+        <td>
+          <strong>
+            {prod.nombre}
+          </strong>
+
+          <div className="small text-muted">
+            {prod.proveedor?.nombre ||
+              (prod.proveedorId && (
+                (typeof proveedores !== 'undefined' &&
+                  proveedores.find?.(
+                    (p) => p.id === prod.proveedorId
+                  )?.nombre) ||
+                '—'
+              ))}
+          </div>
+        </td>
+
+        {/* CATEGORÍA */}
+        <td>
+          {prod.Categoria?.nombre || '—'}
+        </td>
+
+        {/* PRECIO */}
+        <td>
+          {formatearPrecio(prod.precio)}
+        </td>
+
+        {/* STOCK */}
+        <td>
+          <div className="d-flex align-items-center gap-2">
+
+            <Badge bg={getColorStock(prod.stock)}>
+              {prod.stock}
+            </Badge>
+
+            <StockManager
+              productoId={prod.id}
+              stockActual={prod.stock}
+              onStockUpdated={fetchProductos}
+            />
+
+          </div>
+        </td>
+
+        {/* ESTADO */}
+        <td>
+          <Badge
+            bg={
+              prod.activo
+                ? 'success'
+                : 'secondary'
+            }
+          >
+            {prod.activo
+              ? 'Activo'
+              : 'Inactivo'}
+          </Badge>
+        </td>
+
+        {/* ACCIONES */}
+        <td>
+
+          {/* EDITAR */}
+          <Button
+            variant="outline-primary"
+            size="sm"
+            className="me-1"
+            onClick={() => handleEdit(prod)}
+            aria-label={`Editar ${prod.nombre}`}
+          >
+            <i
+              className="bi bi-pencil"
+              aria-hidden="true"
+            />
+          </Button>
+
+          {/* ACTIVAR / DESACTIVAR */}
+          <Button
+            variant="outline-warning"
+            size="sm"
+            className="me-1"
+            onClick={() => handleToggle(prod.id)}
+            aria-label={
+              prod.activo
+                ? `Desactivar ${prod.nombre}`
+                : `Activar ${prod.nombre}`
+            }
+          >
+            <i
+              className={`bi bi-${prod.activo ? 'eye-slash' : 'eye'}`}
+              aria-hidden="true"
+            />
+          </Button>
+
+          {/* ELIMINAR */}
+          {isAdmin && (
+            <Button
+              variant="outline-danger"
+              size="sm"
+              onClick={() => handleDelete(prod.id)}
+              aria-label={`Eliminar ${prod.nombre}`}
+            >
+              <i
+                className="bi bi-trash"
+                aria-hidden="true"
+              />
+            </Button>
+          )}
+
+        </td>
+
+      </tr>
+    ));
+  };
+
   return (
     <Container fluid className="py-4">
 
@@ -291,194 +477,7 @@ const ProductoList = () => {
             </thead>
 
             <tbody>
-
-              {/* CARGANDO */}
-              {loading ? (
-                <tr>
-                  <td
-                    colSpan="8"
-                    className="text-center py-4"
-                  >
-                    Cargando productos...
-                  </td>
-                </tr>
-
-              ) : productos.length === 0 ? (
-
-                /* SIN PRODUCTOS */
-                <tr>
-                  <td
-                    colSpan="8"
-                    className="text-center py-4"
-                  >
-                    No hay productos que mostrar
-                  </td>
-                </tr>
-
-              ) : (
-
-                /* PRODUCTOS */
-                productos.map((prod) => (
-                  <tr key={prod.id}>
-
-                    {/* ID */}
-                    <td>
-                      #{prod.id}
-                    </td>
-
-                    {/* IMAGEN */}
-                    <td>
-                      {prod.imagen ? (
-                        <img
-                          src={`${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${prod.imagen}`}
-                          alt={prod.nombre}
-                          style={{
-                            width: '50px',
-                            height: '50px',
-                            objectFit: 'cover'
-                          }}
-                          className="rounded"
-                        />
-                      ) : (
-                        <div
-                          className="bg-light d-flex align-items-center justify-content-center rounded"
-                          style={{
-                            width: '50px',
-                            height: '50px'
-                          }}
-                        >
-                          <i
-                            className="bi bi-image text-muted"
-                            aria-hidden="true"
-                          />
-                        </div>
-                      )}
-                    </td>
-
-                    {/* NOMBRE */}
-                    <td>
-                      <strong>
-                        {prod.nombre}
-                      </strong>
-
-                      <div className="small text-muted">
-                        {prod.proveedor?.nombre ||
-                          (prod.proveedorId && (
-                            (typeof proveedores !== 'undefined' &&
-                              proveedores.find?.(
-                                (p) => p.id === prod.proveedorId
-                              )?.nombre) ||
-                            '—'
-                          ))}
-                      </div>
-                    </td>
-
-                    {/* CATEGORÍA */}
-                    <td>
-                      {prod.Categoria?.nombre || '—'}
-                    </td>
-
-                    {/* PRECIO */}
-                    <td>
-                      {formatearPrecio(prod.precio)}
-                    </td>
-
-                    {/* STOCK */}
-                    <td>
-                      <div className="d-flex align-items-center gap-2">
-
-                        <Badge
-                          bg={
-                            prod.stock > 10
-                              ? 'success'
-                              : prod.stock > 0
-                                ? 'warning'
-                                : 'danger'
-                          }
-                        >
-                          {prod.stock}
-                        </Badge>
-
-                        <StockManager
-                          productoId={prod.id}
-                          stockActual={prod.stock}
-                          onStockUpdated={fetchProductos}
-                        />
-
-                      </div>
-                    </td>
-
-                    {/* ESTADO */}
-                    <td>
-                      <Badge
-                        bg={
-                          prod.activo
-                            ? 'success'
-                            : 'secondary'
-                        }
-                      >
-                        {prod.activo
-                          ? 'Activo'
-                          : 'Inactivo'}
-                      </Badge>
-                    </td>
-
-                    {/* ACCIONES */}
-                    <td>
-
-                      {/* EDITAR */}
-                      <Button
-                        variant="outline-primary"
-                        size="sm"
-                        className="me-1"
-                        onClick={() => handleEdit(prod)}
-                        aria-label={`Editar ${prod.nombre}`}
-                      >
-                        <i
-                          className="bi bi-pencil"
-                          aria-hidden="true"
-                        />
-                      </Button>
-
-                      {/* ACTIVAR / DESACTIVAR */}
-                      <Button
-                        variant="outline-warning"
-                        size="sm"
-                        className="me-1"
-                        onClick={() => handleToggle(prod.id)}
-                        aria-label={
-                          prod.activo
-                            ? `Desactivar ${prod.nombre}`
-                            : `Activar ${prod.nombre}`
-                        }
-                      >
-                        <i
-                          className={`bi bi-${prod.activo ? 'eye-slash' : 'eye'}`}
-                          aria-hidden="true"
-                        />
-                      </Button>
-
-                      {/* ELIMINAR */}
-                      {isAdmin && (
-                        <Button
-                          variant="outline-danger"
-                          size="sm"
-                          onClick={() => handleDelete(prod.id)}
-                          aria-label={`Eliminar ${prod.nombre}`}
-                        >
-                          <i
-                            className="bi bi-trash"
-                            aria-hidden="true"
-                          />
-                        </Button>
-                      )}
-
-                    </td>
-
-                  </tr>
-                ))
-              )}
-
+              {renderFilasProductos()}
             </tbody>
           </Table>
 

@@ -57,6 +57,14 @@ const ProductoDetallePage = () => {
   const stock = Number(producto?.stock || 0);
   const sinStock = stock <= 0;
   const cantidadMaxima = stock > 0 ? stock : 1;
+
+  const getStockBadgeVariant = () => {
+    if (sinStock) return 'danger';
+    if (stock < 10) return 'warning';
+    return 'success';
+  };
+  const stockBadgeVariant = getStockBadgeVariant();
+
   const imageUrl = useMemo(() => getImageUrl(producto?.imagen), [producto?.imagen]);
 
   useEffect(() => {
@@ -116,7 +124,7 @@ const ProductoDetallePage = () => {
           <div className="d-flex flex-wrap gap-2 align-items-center">
             {producto.categoria?.nombre && <Badge bg="secondary">{producto.categoria.nombre}</Badge>}
             {producto.subcategoria?.nombre && <Badge bg="info">{producto.subcategoria.nombre}</Badge>}
-            <Badge bg={sinStock ? 'danger' : stock < 10 ? 'warning' : 'success'}>
+            <Badge bg={stockBadgeVariant}>
               {sinStock ? 'Agotado' : `Stock: ${stock}`}
             </Badge>
           </div>

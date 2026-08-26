@@ -63,8 +63,7 @@ const AdminCategoriasPage = () => {
         const busqueda = filtros.busqueda.toLowerCase();
         const coincide =
           cat.nombre.toLowerCase().includes(busqueda) ||
-          (cat.descripcion &&
-            cat.descripcion.toLowerCase().includes(busqueda));
+          cat.descripcion?.toLowerCase().includes(busqueda);
 
         if (!coincide) return false;
       }
@@ -277,7 +276,7 @@ const AdminCategoriasPage = () => {
 
         <div>
           <Dropdown className="d-inline-block me-2">
-                      <Dropdown.Toggle
+            <Dropdown.Toggle
               variant="success"
               id="dropdown-exportar-categorias"
             >
@@ -291,10 +290,11 @@ const AdminCategoriasPage = () => {
                   exportarCategoriasAPDF(categoriasFiltradas);
                 }}
               >
-              <i className="bi bi-file-earmark-pdf me-2"></i><span>Tu texto aquí</span>                Exportar a PDF
+                <i className="bi bi-file-earmark-pdf me-2"></i>{' '}
+                Exportar a PDF
               </Dropdown.Item>
 
-                          <Dropdown.Item
+              <Dropdown.Item
                 onClick={async () => {
                   await exportarCategoriasAExcel(categoriasFiltradas);
                 }}
@@ -391,7 +391,7 @@ const AdminCategoriasPage = () => {
               md={3}
               className="d-flex align-items-end"
             >
-                            <Button
+              <Button
                 variant="outline-secondary"
                 onClick={() =>
                   setFiltros({
@@ -529,7 +529,7 @@ const AdminCategoriasPage = () => {
           <Card.Body>
             <div className="d-flex justify-content-between align-items-center">
               <div>
-                  <small className="text-muted">
+                <small className="text-muted">
                   <i className="bi bi-file-text me-1"></i>{' '}
                   Página <strong>{paginaActual}</strong> de{' '}
                   <strong>{totalPaginas}</strong> - Mostrando{' '}
@@ -555,7 +555,7 @@ const AdminCategoriasPage = () => {
                   <i className="bi bi-chevron-bar-left"></i>
                 </Button>
 
-                              <Button
+                <Button
                   variant="outline-primary"
                   size="sm"
                   onClick={() =>

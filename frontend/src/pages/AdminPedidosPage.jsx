@@ -42,7 +42,7 @@ const AdminPedidosPage = () => {
     totalPaginas: 0
   });
 
-  const [tipoExportacion, setTipoExportacion] = useState('pdf');
+  
 
   const cargarPedidos = useCallback(async () => {
     setLoading(true);
@@ -152,10 +152,12 @@ const AdminPedidosPage = () => {
       const res = await api.get(`/admin/pedidos/${pedido.id}`);
       setPedidoSeleccionado(res.data.data.pedido);
       setShowModal(true);
-    } catch (err) {
+    }catch (err) {
+      console.error('Error al cargar detalle del pedido:', err);
       alert('Error al cargar detalle del pedido');
     }
   };
+
 
   const formatearPrecio = (precio) => {
     return new Intl.NumberFormat('es-CO', {
@@ -635,8 +637,8 @@ const AdminPedidosPage = () => {
 
                 <tbody>
                   {pedidoSeleccionado.detalles?.map(
-                    (detalle, idx) => (
-                      <tr key={idx}>
+                    (detalle) => (
+                      <tr key={detalle.id}>
                         <td>
                           {detalle.producto?.nombre ||
                             'Producto eliminado'}

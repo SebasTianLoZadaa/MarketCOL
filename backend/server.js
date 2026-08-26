@@ -23,7 +23,7 @@
 
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
+const path = require('node:path');
 
 require('dotenv').config();
 
@@ -291,16 +291,16 @@ app.use(
         : 500;
 
     // Mensaje genérico para producción.
+    const getMensajeError = (err) => {
+      if (typeof err.message === 'string' && err.message.length <= 200) {
+        return err.message;
+      }
+      return 'Error interno del servidor';
+    };
+
     const message =
-      process.env.NODE_ENV ===
-      'development'
-        ? (
-            typeof err.message ===
-            'string' &&
-            err.message.length <= 200
-              ? err.message
-              : 'Error interno del servidor'
-          )
+      process.env.NODE_ENV === 'development'
+        ? getMensajeError(err)
         : 'Error interno del servidor';
 
     const response = {
@@ -456,7 +456,8 @@ const startServer =
       // Se registra únicamente en el servidor.
 
       console.error(
-        '❌ Error fatal al iniciar el servidor'
+        '❌ Error fatal al iniciar el servidor:',
+        error
       );
 
       process.exit(1);

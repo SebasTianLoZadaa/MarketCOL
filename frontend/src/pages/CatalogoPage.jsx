@@ -251,6 +251,137 @@ const CatalogoPage = () => {
     return pages;
   };
 
+  const renderContenidoProductos = () => {
+    if (loading) {
+      return <LoadingSpinner message="Cargando productos..." />;
+    }
+
+    if (productos.length > 0) {
+      return (
+        <>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns:
+                'repeat(auto-fill, minmax(200px, 1fr))',
+              gap: 18
+            }}
+          >
+            {productos.map((p, i) => (
+              <div
+                key={p.id}
+                className="fade-up"
+                style={{
+                  animationDelay: `${i * 0.04}s`
+                }}
+              >
+                <ProductCard
+                  producto={p}
+                  onAddToCart={handleAddToCart}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Paginación */}
+          {paginacion.totalPaginas > 1 && (
+            <div className="mk-pagination">
+              <button
+                className="mk-btn mk-btn-ghost mk-btn-sm"
+                type="button"
+                disabled={paginacion.pagina === 1}
+                onClick={() =>
+                  handlePageChange(
+                    paginacion.pagina - 1
+                  )
+                }
+              >
+                ← Anterior
+              </button>
+
+              {getPages().map((n) => (
+                <button
+                  type="button"
+                  key={n}
+                  className={`mk-btn mk-btn-sm ${
+                    paginacion.pagina === n
+                      ? 'mk-btn-primary'
+                      : 'mk-btn-ghost'
+                  }`}
+                  onClick={() => handlePageChange(n)}
+                >
+                  {n}
+                </button>
+              ))}
+
+              <button
+                type="button"
+                className="mk-btn mk-btn-ghost mk-btn-sm"
+                disabled={
+                  paginacion.pagina ===
+                  paginacion.totalPaginas
+                }
+                onClick={() =>
+                  handlePageChange(
+                    paginacion.pagina + 1
+                  )
+                }
+              >
+                Siguiente →
+              </button>
+            </div>
+          )}
+        </>
+      );
+    }
+
+    return (
+      <div
+        style={{
+          textAlign: 'center',
+          padding: '60px 20px'
+        }}
+      >
+        <div
+          style={{
+            fontSize: 48,
+            marginBottom: 16
+          }}
+        >
+          📭
+        </div>
+
+        <h4
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontWeight: 700,
+            color: 'var(--carbon)',
+            marginBottom: 8
+          }}
+        >
+          No se encontraron productos
+        </h4>
+
+        <p
+          style={{
+            color: 'var(--gray)',
+            marginBottom: 24
+          }}
+        >
+          Intenta cambiar los filtros de búsqueda
+        </p>
+
+        <button
+          type="button"
+          className="mk-btn mk-btn-primary"
+          onClick={handleLimpiar}
+        >
+          Limpiar filtros
+        </button>
+      </div>
+    );
+  };
+
   return (
     <div
       style={{
@@ -553,128 +684,7 @@ const CatalogoPage = () => {
         )}
 
         {/* Grid */}
-        {loading ? (
-          <LoadingSpinner message="Cargando productos..." />
-        ) : productos.length > 0 ? (
-          <>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns:
-                  'repeat(auto-fill, minmax(200px, 1fr))',
-                gap: 18
-              }}
-            >
-              {productos.map((p, i) => (
-                <div
-                  key={p.id}
-                  className="fade-up"
-                  style={{
-                    animationDelay: `${i * 0.04}s`
-                  }}
-                >
-                  <ProductCard
-                    producto={p}
-                    onAddToCart={handleAddToCart}
-                  />
-                </div>
-              ))}
-            </div>
-
-            {/* Paginación */}
-            {paginacion.totalPaginas > 1 && (
-              <div className="mk-pagination">
-                <button
-                  className="mk-btn mk-btn-ghost mk-btn-sm"
-                  type="button"
-                  disabled={paginacion.pagina === 1}
-                  onClick={() =>
-                    handlePageChange(
-                      paginacion.pagina - 1
-                    )
-                  }
-                >
-                  ← Anterior
-                </button>
-
-                {getPages().map((n) => (
-                  <button
-                    type="button"
-                    key={n}
-                    className={`mk-btn mk-btn-sm ${
-                      paginacion.pagina === n
-                        ? 'mk-btn-primary'
-                        : 'mk-btn-ghost'
-                    }`}
-                    onClick={() => handlePageChange(n)}
-                  >
-                    {n}
-                  </button>
-                ))}
-
-                <button
-                  type="button"
-                  className="mk-btn mk-btn-ghost mk-btn-sm"
-                  disabled={
-                    paginacion.pagina ===
-                    paginacion.totalPaginas
-                  }
-                  onClick={() =>
-                    handlePageChange(
-                      paginacion.pagina + 1
-                    )
-                  }
-                >
-                  Siguiente →
-                </button>
-              </div>
-            )}
-          </>
-        ) : (
-          <div
-            style={{
-              textAlign: 'center',
-              padding: '60px 20px'
-            }}
-          >
-            <div
-              style={{
-                fontSize: 48,
-                marginBottom: 16
-              }}
-            >
-              📭
-            </div>
-
-            <h4
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontWeight: 700,
-                color: 'var(--carbon)',
-                marginBottom: 8
-              }}
-            >
-              No se encontraron productos
-            </h4>
-
-            <p
-              style={{
-                color: 'var(--gray)',
-                marginBottom: 24
-              }}
-            >
-              Intenta cambiar los filtros de búsqueda
-            </p>
-
-            <button
-              type="button"
-              className="mk-btn mk-btn-primary"
-              onClick={handleLimpiar}
-            >
-              Limpiar filtros
-            </button>
-          </div>
-        )}
+        {renderContenidoProductos()}
       </div>
     </div>
   );

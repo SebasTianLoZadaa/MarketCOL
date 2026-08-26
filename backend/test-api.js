@@ -1,4 +1,4 @@
-const http = require('http');
+const http = require('node:http');
 
 const API_HOST = 'localhost';
 const API_PORT = 5000;
@@ -48,9 +48,10 @@ const request = http.get(
 
         process.exit(0);
 
-      } catch (error) {
+      }catch (error) {
         console.error(
-          '❌ La respuesta de la API no tiene un formato JSON válido.'
+          '❌ La respuesta de la API no tiene un formato JSON válido.',
+          error
         );
 
         process.exit(1);

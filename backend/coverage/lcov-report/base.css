@@ -107,7 +107,7 @@ table.coverage td span.cline-any {
     margin-right: 10px;
     position: relative;
     padding: 0 4px;
-    background: #ccc;
+    background:#595959;
     color: white;
 }
 .missing-if-branch .typ, .skip-if-branch .typ {
@@ -129,14 +129,13 @@ table.coverage td span.cline-any {
   white-space: nowrap;
 }
 .coverage-summary th.file { border-right: none !important; }
-.coverage-summary th.pct { }
 .coverage-summary th.pic,
 .coverage-summary th.abs,
 .coverage-summary td.pct,
 .coverage-summary td.abs { text-align: right; }
 .coverage-summary td.file { white-space: nowrap;  }
 .coverage-summary td.pic { min-width: 120px !important;  }
-.coverage-summary tfoot td { }
+
 
 .coverage-summary .sorter {
     height: 10px;
@@ -162,7 +161,7 @@ table.coverage td span.cline-any {
   background: #C21F39 !important;
 }
 /* medium red */
-.cstat-no, .fstat-no, .cbranch-no, .cbranch-no { background:#F6C6CE }
+.cstat-no, .fstat-no, .cbranch-no { background:#F6C6CE }
 /* light red */
 .low, .cline-no { background:#FCE1E5 }
 /* light green */

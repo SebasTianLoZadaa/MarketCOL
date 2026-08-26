@@ -67,7 +67,7 @@ const buildStaticImageCandidates = (imagePath) => {
   const normalized = normalizeImagePath(imagePath);
   const base = `/images/${normalized}`;
   const encodedBase = encodeImageUrl(base);
-  const extMatch = normalized.match(/\.(png|jpg|jpeg|webp)$/i);
+  const extMatch = /\.(png|jpg|jpeg|webp)$/i.exec(normalized);
   if (!extMatch) {
     return [encodedBase, encodeImageUrl(`${base}.webp`), encodeImageUrl(`${base}.jpg`), encodeImageUrl(`${base}.png`)];
   }
@@ -89,10 +89,11 @@ export const getImageUrlCandidates = (imagePath) => {
   if (imagePath.startsWith('/images/')) return [encodeImageUrl(imagePath)];
   if (imagePath.startsWith('/uploads/')) {
     const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-    try {
+   try {
       const u = new URL(apiUrl);
       return [encodeImageUrl(`${u.origin}${imagePath}`)];
     } catch (err) {
+      console.error('apiUrl inválida, usando origen por defecto:', err.message);
       return [encodeImageUrl(`http://localhost:5000${imagePath}`)];
     }
   }
@@ -106,6 +107,7 @@ export const getImageUrlCandidates = (imagePath) => {
     const base = u.origin;
     return [encodeImageUrl(`${base}/uploads/${normalizeImagePath(imagePath)}`)];
   } catch (err) {
+    console.error('apiUrl inválida, usando origen por defecto:', err.message);
     return [encodeImageUrl(`http://localhost:5000/uploads/${normalizeImagePath(imagePath)}`)];
   }
 };

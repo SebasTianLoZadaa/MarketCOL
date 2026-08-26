@@ -161,13 +161,14 @@ const verificarAuthOpcional = async (req, res, next) => {
       });
       
       // Solo adjunta el usuario si existe Y está activo
-      if (usuario && usuario.activo) {
+           if (usuario?.activo) {
         req.usuario = usuario;         // Usuario autenticado disponible
       } else {
         req.usuario = null;            // Usuario no existe o está inactivo
       }
     } catch (error) {
       // Token inválido o expirado → NO rechaza, simplemente continúa sin usuario
+      console.error('Token inválido o expirado en autenticación opcional:', error.message);
       req.usuario = null;
     }
     

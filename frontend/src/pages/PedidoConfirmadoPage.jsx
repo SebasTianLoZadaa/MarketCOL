@@ -189,7 +189,7 @@ const PedidoConfirmadoPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {pedido.detalles && pedido.detalles.map((detalle) => (
+                  {pedido.detalles?.map((detalle) => (
                     <tr key={detalle.id}>
                       <td>
                         <div className="d-flex align-items-center">
@@ -337,7 +337,7 @@ const PedidoConfirmadoPage = () => {
                   <i className="bi bi-printer me-2"></i>{' '}
                   Imprimir Comprobante
                 </Button>
-                                <Button
+                <Button
                   variant="outline-secondary"
                   onClick={() => navigate('/catalogo')}
                 >

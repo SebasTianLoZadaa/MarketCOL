@@ -844,10 +844,7 @@ const validarCategoriaActualizacion = async (
         categoriaIdNum
       );
 
-    if (
-      !categoria ||
-      !categoria.activo
-    ) {
+    if (!categoria?.activo) {
       return {
         categoriaIdNum,
         error:
@@ -901,10 +898,7 @@ const validarSubcategoriaActualizacion = async (
         subcategoriaIdNum
       );
 
-    if (
-      !subcategoria ||
-      !subcategoria.activo
-    ) {
+    if (!subcategoria?.activo) {
       return {
         subcategoriaIdNum,
         error:
@@ -1055,22 +1049,10 @@ const actualizarImagenProducto = (
   }
 
   const tieneImagenEnBody =
-    Object.prototype.hasOwnProperty.call(
-      req.body,
-      'imagen'
-    ) ||
-    Object.prototype.hasOwnProperty.call(
-      req.body,
-      'image'
-    ) ||
-    Object.prototype.hasOwnProperty.call(
-      req.body,
-      'imagenUrl'
-    ) ||
-    Object.prototype.hasOwnProperty.call(
-      req.body,
-      'imageUrl'
-    );
+    Object.hasOwn(req.body, 'imagen') ||
+    Object.hasOwn(req.body, 'image') ||
+    Object.hasOwn(req.body, 'imagenUrl') ||
+    Object.hasOwn(req.body, 'imageUrl');
 
   if (tieneImagenEnBody) {
     producto.imagen =
