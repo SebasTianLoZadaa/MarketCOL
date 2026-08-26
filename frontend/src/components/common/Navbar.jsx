@@ -60,7 +60,7 @@ const NavigationBar = memo(() => {
               fontSize: 10, color: 'var(--gray)',
               letterSpacing: '0.8px', textTransform: 'uppercase', lineHeight: 1.2,
             }}>
-              
+            MarketCOL
             </div>
           </div>
         </Navbar.Brand>
