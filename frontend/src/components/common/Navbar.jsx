@@ -4,7 +4,7 @@
  * ============================================
  */
 
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
 import { useAuth } from '../../context/AuthContext';
@@ -13,6 +13,7 @@ const NavigationBar = memo(() => {
   const { user, isAuthenticated, isAdmin, isAuxiliar, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLogout = useCallback(() => {
     logout();
@@ -21,9 +22,15 @@ const NavigationBar = memo(() => {
 
   const isActive = (path) => location.pathname === path;
 
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location.pathname]);
+
   return (
     <Navbar
       expand="lg"
+      expanded={isMenuOpen}
+      onToggle={setIsMenuOpen}
       sticky="top"
       className="mk-navbar"
       style={{ height: 60 }}
@@ -60,12 +67,21 @@ const NavigationBar = memo(() => {
               fontSize: 10, color: 'var(--gray)',
               letterSpacing: '0.8px', textTransform: 'uppercase', lineHeight: 1.2,
             }}>
-              MarketCOL
+            MarketCOL
             </div>
           </div>
         </Navbar.Brand>
 
-        <Navbar.Toggle aria-controls="marketcol-nav" style={{ border: 'none' }} />
+        <Navbar.Toggle
+          aria-controls="marketcol-nav"
+          aria-label={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+          className={isMenuOpen ? 'menu-open' : ''}
+          style={{ border: 'none' }}
+        >
+          <span className="menu-line" />
+          <span className="menu-line" />
+          <span className="menu-line" />
+        </Navbar.Toggle>
 
         <Navbar.Collapse id="marketcol-nav">
           {/* ── Nav links ── */}
@@ -117,11 +133,12 @@ const NavigationBar = memo(() => {
           <Nav className="align-items-center gap-1">
             {/* Carrito */}
             <Nav.Link as={Link} to="/carrito" style={{ position: 'relative', padding: '6px 10px' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <svg className="cart-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
                 <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.5 6h13" stroke="var(--charcoal)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                 <circle cx="9" cy="21" r="1" fill="var(--charcoal)"/>
                 <circle cx="20" cy="21" r="1" fill="var(--charcoal)"/>
               </svg>
+              <span className="cart-label">Carrito</span>
             </Nav.Link>
 
             {isAuthenticated ? (
