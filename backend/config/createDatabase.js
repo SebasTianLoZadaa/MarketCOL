@@ -50,8 +50,8 @@ const createDatabase = async () => {
     console.log('✅ Conexión a MySQL establecida\n');
     
     // Obtiene el nombre de la base de datos del .env (variable DB_NAME)
-    // Si no existe la variable, usa 'ecommerce_db' como nombre por defecto
-    const dbName = process.env.DB_NAME || 'ecommerce_db';
+    // Si no existe la variable, usa 'marketcol_db' como nombre por defecto
+    const dbName = process.env.DB_NAME || 'marketcol_db';
     console.log(`📦 Creando base de datos: ${dbName}...`);
     
     // Ejecuta la query SQL para crear la base de datos:
