@@ -762,10 +762,29 @@ const productosData = {
 /**
  * Crea un usuario si no existe.
  */
-const crearUsuarioSiNoExiste = async (datos, mensajeCreado, mensajeExistente) => {
-  const usuarioExistente = await Usuario.findOne({
+const crearUsuarioSiNoExiste = async (
+  datos,
+  mensajeCreado,
+  mensajeExistente,
+  emailsAnteriores = []
+) => {
+  let usuarioExistente = await Usuario.findOne({
     where: { email: datos.email }
   });
+
+  if (!usuarioExistente) {
+    for (const emailAnterior of emailsAnteriores) {
+      usuarioExistente = await Usuario.findOne({
+        where: { email: emailAnterior }
+      });
+
+      if (usuarioExistente) {
+        await usuarioExistente.update({ email: datos.email });
+        break;
+      }
+    }
+
+  }
 
   if (usuarioExistente) {
     console.log(mensajeExistente);
@@ -791,15 +810,16 @@ const crearUsuariosPrincipales = async () => {
       direccion: 'SENA - Oficina Principal',
       activo: true
     },
-    '✅ Administrador creado\n   📧 Usuario: admin@ecommerce.com\n   🔑 Password: admin1234\n',
-    '✅ Administrador ya existe\n'
+    '✅ Administrador creado\n   📧 Usuario: admin@MarketCOL.com\n   🔑 Password: admin1234\n',
+    '✅ Administrador ya existe\n',
+    ['admin@ecommerce.com']
   );
 
   await crearUsuarioSiNoExiste(
     {
       nombre: 'Auxiliar',
       apellido: 'Soporte',
-      email: 'auxiliar@MrketCOL.com',
+      email: 'auxiliar@ecommerce.com',
       password: 'aux123',
       rol: 'auxiliar',
       telefono: '3009876543',
@@ -807,7 +827,8 @@ const crearUsuariosPrincipales = async () => {
       activo: true
     },
     '✅ Auxiliar creado\n   📧 Usuario: auxiliar@ecommerce.com\n   🔑 Password: aux123\n',
-    '✅ Auxiliar ya existe\n'
+    '✅ Auxiliar ya existe\n',
+    ['auxiliar@MrketCOL.com']
   );
 };
 
@@ -1112,7 +1133,7 @@ const mostrarResumen = async () => {
   console.log('🔑 CREDENCIALES DE ACCESO:\n');
 
   console.log('   👨‍💼 ADMINISTRADOR');
-  console.log('      Email: admin@ecommerce.com');
+  console.log('      Email: admin@MarketCOL.com');
   console.log('      Password: admin1234\n');
 
   console.log('   👤 AUXILIAR');

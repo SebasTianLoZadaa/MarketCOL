@@ -130,7 +130,7 @@ const AdminProductosPage = () => {
 
     try {
       const [prodResponse, catResponse, subcatResponse, provResponse] = await Promise.all([
-        api.get('/admin/productos?limite=1000'),
+        api.get('/admin/productos?limite=100'),
         api.get('/admin/categorias'),
         api.get('/admin/subcategorias'),
         api.get('/admin/proveedores?activo=true') // Cargar proveedores activos

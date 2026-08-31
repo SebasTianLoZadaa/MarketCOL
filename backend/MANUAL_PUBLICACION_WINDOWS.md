@@ -3,7 +3,7 @@
 Este manual explica cómo publicar MarketCOL para que usuarios externos puedan entrar usando:
 
 ```text
-http://52.201.112.50/
+http://3.218.230.106/
 ```
 
 El proyecto tiene:
@@ -11,7 +11,7 @@ El proyecto tiene:
 - Frontend: React.
 - Backend: Node.js y Express.
 - Base de datos: MySQL.
-- Backend interno: puerto `5000`.
+- Backend interno: puerto `3001`.
 - Acceso público: puerto `80`.
 
 ## 1. Cómo funciona la publicación
@@ -19,11 +19,11 @@ El proyecto tiene:
 El usuario externo entra por el puerto `80`:
 
 ```text
-Navegador -> http://52.201.112.50/ -> Gateway -> Frontend React
-Navegador -> http://52.201.112.50/api -> Gateway -> Backend Node.js:5000
+Navegador -> http://3.218.230.106/ -> Gateway -> Frontend React
+Navegador -> http://3.218.230.106/api -> Gateway -> Backend Node.js:3001
 ```
 
-El puerto `5000` no se publica directamente. Solo se utiliza internamente en el servidor.
+El puerto `3001` no se publica directamente. Solo se utiliza internamente en el servidor.
 
 ## 2. Requisitos
 
@@ -34,7 +34,7 @@ Antes de comenzar, el servidor debe tener:
 3. npm instalado.
 4. MySQL funcionando.
 5. El proyecto copiado en la carpeta del servidor.
-6. La IP pública `52.201.112.50` asignada al servidor.
+6. La IP pública `3.218.230.106` asignada al servidor.
 7. Permisos de administrador en PowerShell.
 
 Para comprobar Node.js y npm, abrir PowerShell y ejecutar:
@@ -51,7 +51,7 @@ Si alguno de los comandos no funciona, instalar Node.js desde su instalador ofic
 En esta instalación la carpeta principal es:
 
 ```text
-C:\Users\Administrator\Downloads\MarketCOL-main\MarketCOL-main\MarketCOL
+C:\Users\Administrator\Documents\GitHub\MarketCOL
 ```
 
 Dentro de ella existen las carpetas:
@@ -66,14 +66,14 @@ frontend
 Abrir PowerShell y entrar al backend:
 
 ```powershell
-cd "C:\Users\Administrator\Downloads\MarketCOL-main\MarketCOL-main\MarketCOL\backend"
+cd "C:\Users\Administrator\Documents\GitHub\MarketCOL\backend"
 npm install
 ```
 
 Después instalar las dependencias del frontend:
 
 ```powershell
-cd "C:\Users\Administrator\Downloads\MarketCOL-main\MarketCOL-main\MarketCOL\frontend"
+cd "C:\Users\Administrator\Documents\GitHub\MarketCOL\frontend"
 npm install
 ```
 
@@ -86,7 +86,7 @@ El archivo de configuración es:
 Debe contener los datos correctos de MySQL. La configuración importante es similar a esta:
 
 ```env
-port=5000
+PORT=3001
 NODE_ENV=development
 DB_HOST=localhost
 DB_PORT=3306
@@ -101,7 +101,7 @@ Cambiar `DB_PASSWORD` si el usuario de MySQL tiene contraseña.
 El backend debe responder internamente en:
 
 ```text
-http://127.0.0.1:5000/api/health
+http://127.0.0.1:3001/api/health
 ```
 
 ## 6. Archivos creados
@@ -110,12 +110,12 @@ http://127.0.0.1:5000/api/health
 
 Archivo creado:
 
-[publish-server.js](publish-server.js)
+[../publish-server.js](../publish-server.js)
 
 Este archivo hace tres tareas:
 
 1. Sirve el frontend compilado desde `frontend/build`.
-2. Envía las rutas `/api` al backend en `127.0.0.1:5000`.
+2. Envía las rutas `/api` al backend en `127.0.0.1:3001`.
 3. Envía `/uploads` e `/images` al backend para que funcionen las imágenes.
 
 También permite que React Router funcione al devolver `index.html` cuando el usuario abre una ruta del frontend.
@@ -124,14 +124,14 @@ También permite que React Router funcione al devolver `index.html` cuando el us
 
 Archivo creado:
 
-[publish.ps1](publish.ps1)
+[../publish.ps1](../publish.ps1)
 
 Este script realiza automáticamente estas acciones:
 
 1. Compila el frontend React.
 2. Crea la carpeta `logs`.
 3. Crea la regla de firewall para permitir TCP `80`.
-4. Crea una regla para bloquear el acceso externo directo al puerto `5000`.
+4. Crea una regla para bloquear el acceso externo directo al puerto `3001`.
 5. Comprueba si el backend ya está activo.
 6. Inicia el backend si no está iniciado.
 7. Inicia el gateway público en el puerto `80`.
@@ -154,7 +154,7 @@ REACT_APP_API_URL=/api
 Esto hace que el navegador utilice la misma dirección pública para llamar al backend. Por ejemplo:
 
 ```text
-http://52.201.112.50/api/auth/login
+http://3.218.230.106/api/auth/login
 ```
 
 ## 7. Archivos modificados
@@ -165,18 +165,18 @@ Archivo modificado:
 
 [frontend/src/utils/helpers.jsx](frontend/src/utils/helpers.jsx)
 
-Se cambiaron las rutas de respaldo que apuntaban a `localhost:5000`. Ahora las imágenes utilizan el mismo origen desde el que se abrió la aplicación.
+Se cambiaron las rutas de respaldo que apuntaban a `localhost:3001`. Ahora las imágenes utilizan el mismo origen desde el que se abrió la aplicación.
 
 Antes, un usuario externo podía intentar cargar imágenes desde:
 
 ```text
-http://localhost:5000/uploads/...
+http://localhost:3001/uploads/...
 ```
 
 Para el usuario externo, `localhost` significa su propio computador, no el servidor. Por eso se corrigió para usar:
 
 ```text
-http://52.201.112.50/uploads/...
+http://3.218.230.106/uploads/...
 ```
 
 ### 7.2 Consulta de productos del dashboard
@@ -217,9 +217,9 @@ Para hacerlo:
 Después ejecutar:
 
 ```powershell
-cd "C:\Users\Administrator\Downloads\MarketCOL-main\MarketCOL-main\MarketCOL"
+cd "C:\Users\Administrator\Documents\GitHub\MarketCOL"
 Set-ExecutionPolicy -Scope Process Bypass -Force
-.\publish.ps1
+& ".\publish.ps1"
 ```
 
 El comando `Set-ExecutionPolicy` permite ejecutar el script solamente durante esa sesión de PowerShell. No cambia permanentemente la política de seguridad del servidor.
@@ -227,7 +227,7 @@ El comando `Set-ExecutionPolicy` permite ejecutar el script solamente durante es
 Al terminar correctamente se debe mostrar algo parecido a:
 
 ```text
-Publicacion lista: http://52.201.112.50/
+Publicacion lista: http://3.218.230.106/
 Frontend: HTTP 200
 API: HTTP 200
 ```
@@ -271,12 +271,12 @@ Puerto: 80
 Origen: 0.0.0.0/0
 ```
 
-No es necesario abrir el puerto `5000` para Internet.
+No es necesario abrir el puerto `3001` para Internet.
 
 Después de guardar la regla, probar desde otro computador o desde un teléfono usando datos móviles:
 
 ```text
-http://52.201.112.50/
+http://3.218.230.106/
 ```
 
 ## 11. Inicio de sesión del administrador
@@ -345,12 +345,12 @@ Comprobar que la consulta no utilice un límite superior a `100`:
 
 ### Error `502 Backend no disponible`
 
-El gateway está activo, pero el backend no responde en el puerto `5000`.
+El gateway está activo, pero el backend no responde en el puerto `3001`.
 
 Comprobar:
 
 ```powershell
-Get-NetTCPConnection -LocalPort 5000 -State Listen
+Get-NetTCPConnection -LocalPort 3001 -State Listen
 ```
 
 También revisar los archivos:
@@ -369,7 +369,7 @@ Significa que el puerto ya está ocupado. En esta implementación el script dete
 Para revisar qué proceso usa el puerto:
 
 ```powershell
-Get-NetTCPConnection -LocalPort 5000 -State Listen | Select-Object OwningProcess
+Get-NetTCPConnection -LocalPort 3001 -State Listen | Select-Object OwningProcess
 ```
 
 ## 13. Reiniciar la publicación
@@ -383,9 +383,9 @@ Get-Process node | Stop-Process -Force
 Después iniciar nuevamente:
 
 ```powershell
-cd "C:\Users\Administrator\Downloads\MarketCOL-main\MarketCOL-main\MarketCOL"
+cd "C:\Users\Administrator\Documents\GitHub\MarketCOL"
 Set-ExecutionPolicy -Scope Process Bypass -Force
-.\publish.ps1
+& ".\publish.ps1"
 ```
 
 No ejecutar este comando si existen otros proyectos Node importantes en el mismo servidor, porque detiene todos los procesos Node.
@@ -395,7 +395,7 @@ No ejecutar este comando si existen otros proyectos Node importantes en el mismo
 Instalar dependencias:
 
 ```powershell
-cd "C:\Users\Administrator\Downloads\MarketCOL-main\MarketCOL-main\MarketCOL\backend"
+cd "C:\Users\Administrator\Documents\GitHub\MarketCOL\backend"
 npm install
 cd ..\frontend
 npm install
@@ -404,9 +404,9 @@ npm install
 Publicar:
 
 ```powershell
-cd "C:\Users\Administrator\Downloads\MarketCOL-main\MarketCOL-main\MarketCOL"
+cd "C:\Users\Administrator\Documents\GitHub\MarketCOL"
 Set-ExecutionPolicy -Scope Process Bypass -Force
-.\publish.ps1
+& ".\publish.ps1"
 ```
 
 Probar frontend:
@@ -424,7 +424,7 @@ Invoke-WebRequest "http://127.0.0.1/api/health" -UseBasicParsing
 URL para usuarios externos:
 
 ```text
-http://52.201.112.50/
+http://3.218.230.106/
 ```
 
 ## 15. Resultado final
@@ -436,11 +436,11 @@ Puerto 80 público
     |
     +-- Frontend React compilado
     |
-    +-- /api       -> Backend Node.js en 127.0.0.1:5000
-    +-- /uploads   -> Backend Node.js en 127.0.0.1:5000
-    +-- /images    -> Backend Node.js en 127.0.0.1:5000
+    +-- /api       -> Backend Node.js en 127.0.0.1:3001
+    +-- /uploads   -> Backend Node.js en 127.0.0.1:3001
+    +-- /images    -> Backend Node.js en 127.0.0.1:3001
 
-Puerto 5000
+Puerto 3001
     |
     +-- Uso interno del servidor
 ```
@@ -448,5 +448,5 @@ Puerto 5000
 La dirección pública final es:
 
 ```text
-http://52.201.112.50/
+http://3.218.230.106/
 ```
