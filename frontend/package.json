@@ -11,7 +11,7 @@
     "axios": "^1.13.4",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.11.3",
-    "exceljs": "^3.10.0",
+    "exceljs": "^3.4.0",
     "jspdf": "^4.1.0",
     "jspdf-autotable": "^5.0.7",
     "react": "^19.2.4",
