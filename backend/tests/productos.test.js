@@ -3,16 +3,99 @@ const app = require('../server');
 
 describe('Pruebas de caja blanca - productos', () => {
   let adminToken;
+  let productoId;
 
-  beforeAll(async () => {
-    const loginResponse = await request(app)
+  // ============================================
+  // HELPERS PARA ELIMINAR DUPLICIDAD
+  // ============================================
+
+  /**
+   * Helper para login de admin
+   */
+  const loginAdmin = async () => {
+    const response = await request(app)
       .post('/api/auth/login')
       .send({
-        email: 'admin@ecommerce.com',
+        email: 'admin@marketcol.com',
         password: 'admin1234'
       });
+    return response.body.data.token;
+  };
 
-    adminToken = loginResponse.body.data.token;
+  /**
+   * Helper para crear producto
+   */
+  const crearProducto = async (token, productoData = {}) => {
+    const defaultData = {
+      nombre: `Producto test ${Date.now()}`,
+      descripcion: 'Producto creado por pruebas',
+      precio: '15000',
+      stock: '10',
+      categoriaId: '1',
+      subcategoriaId: '1'
+    };
+
+    const data = { ...defaultData, ...productoData };
+
+    const response = await request(app)
+      .post('/api/admin/productos')
+      .set('Authorization', `Bearer ${token}`)
+      .field('nombre', data.nombre)
+      .field('descripcion', data.descripcion)
+      .field('precio', data.precio)
+      .field('stock', data.stock)
+      .field('categoriaId', data.categoriaId)
+      .field('subcategoriaId', data.subcategoriaId);
+
+    return response;
+  };
+
+  /**
+   * Helper para gestionar stock
+   */
+  const gestionarStock = async (token, productoId, cantidad, operacion) => {
+    const response = await request(app)
+      .patch(`/api/admin/productos/${productoId}/stock`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ cantidad, operacion });
+    return response;
+  };
+
+  /**
+   * Helper para validar respuesta de error
+   */
+  const expectErrorResponse = (response, status, mensajeEsperado) => {
+    expect(response.status).toBe(status);
+    expect(response.body.success).toBe(false);
+    if (mensajeEsperado) {
+      // Soporta tanto strings exactos como expresiones regulares
+      if (typeof mensajeEsperado === 'string') {
+        expect(response.body.message).toContain(mensajeEsperado);
+      } else {
+        expect(response.body.message).toMatch(mensajeEsperado);
+      }
+    }
+  };
+
+  /**
+   * Helper para validar respuesta exitosa de producto
+   */
+  const expectProductoSuccess = (response, status, nombreEsperado = null) => {
+    expect(response.status).toBe(status);
+    expect(response.body.success).toBe(true);
+    expect(response.body.data).toHaveProperty('producto');
+    if (nombreEsperado) {
+      expect(response.body.data.producto.nombre).toBe(nombreEsperado);
+    }
+    return response.body.data.producto;
+  };
+
+  // ============================================
+  // TESTS
+  // ============================================
+
+  beforeAll(async () => {
+    adminToken = await loginAdmin();
   });
 
   test('debe listar productos con token admin', async () => {
@@ -32,90 +115,62 @@ describe('Pruebas de caja blanca - productos', () => {
       .field('nombre', 'Producto prueba')
       .field('precio', '10000');
 
-    expect(response.status).toBe(400);
-    expect(response.body.success).toBe(false);
-    expect(response.body.message).toBe('Faltan campos requeridos: nombre, precio, categoriaId y subcategoriaId');
+    expectErrorResponse(
+      response,
+      400,
+      'Faltan campos requeridos: nombre, precio, categoriaId y subcategoriaId'
+    );
   });
 
   test('debe rechazar precio inválido al crear producto', async () => {
-    const response = await request(app)
-      .post('/api/admin/productos')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .field('nombre', 'Producto precio inválido')
-      .field('precio', '0')
-      .field('categoriaId', '1')
-      .field('subcategoriaId', '1');
+    const response = await crearProducto(adminToken, {
+      nombre: 'Producto precio inválido',
+      precio: '0'
+    });
 
-    expect(response.status).toBe(400);
-    expect(response.body.success).toBe(false);
-    expect(response.body.message).toBe('El precio debe ser mayor a 0');
+    expectErrorResponse(response, 400, 'El precio debe ser mayor a 0');
   });
 
   test('debe crear un producto válido', async () => {
-    const response = await request(app)
-      .post('/api/admin/productos')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .field('nombre', 'Producto prueba jest')
-      .field('descripcion', 'Producto creado por pruebas')
-      .field('precio', '15000')
-      .field('stock', '10')
-      .field('categoriaId', '1')
-      .field('subcategoriaId', '1');
+    const nombreProducto = 'Producto prueba jest';
+    const response = await crearProducto(adminToken, {
+      nombre: nombreProducto,
+      precio: '15000',
+      stock: '10'
+    });
 
-    expect(response.status).toBe(201);
-    expect(response.body.success).toBe(true);
-    expect(response.body.data.producto.nombre).toBe('Producto prueba jest');
+    const producto = expectProductoSuccess(response, 201, nombreProducto);
+    expect(producto).toHaveProperty('id');
   });
 
   test('debe gestionar stock de producto', async () => {
-    const createResponse = await request(app)
-      .post('/api/admin/productos')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .field('nombre', `Producto stock ${Date.now()}`)
-      .field('descripcion', 'Producto para pruebas de stock')
-      .field('precio', '12000')
-      .field('stock', '5')
-      .field('categoriaId', '1')
-      .field('subcategoriaId', '1');
+    // 1. Crear producto para pruebas de stock
+    const nombreProducto = `Producto stock ${Date.now()}`;
+    const createResponse = await crearProducto(adminToken, {
+      nombre: nombreProducto,
+      precio: '12000',
+      stock: '5'
+    });
 
-    expect(createResponse.status).toBe(201);
-    const producto = createResponse.body.data.producto;
-    expect(producto).toHaveProperty('id');
+    const producto = expectProductoSuccess(createResponse, 201);
+    productoId = producto.id;
 
-    const aumentarResponse = await request(app)
-      .patch(`/api/admin/productos/${producto.id}/stock`)
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({ cantidad: 3, operacion: 'aumentar' });
+    // 2. Probar operaciones de stock
+    const operaciones = [
+      { cantidad: 3, operacion: 'aumentar', stockEsperado: 8 },
+      { cantidad: 2, operacion: 'reducir', stockEsperado: 6 },
+      { cantidad: 15, operacion: 'establecer', stockEsperado: 15 }
+    ];
 
-    expect(aumentarResponse.status).toBe(200);
-    expect(aumentarResponse.body.success).toBe(true);
-    expect(aumentarResponse.body.data.stockNuevo).toBe(8);
+    for (const op of operaciones) {
+      const response = await gestionarStock(adminToken, productoId, op.cantidad, op.operacion);
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.stockNuevo).toBe(op.stockEsperado);
+    }
 
-    const reducirResponse = await request(app)
-      .patch(`/api/admin/productos/${producto.id}/stock`)
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({ cantidad: 2, operacion: 'reducir' });
-
-    expect(reducirResponse.status).toBe(200);
-    expect(reducirResponse.body.success).toBe(true);
-    expect(reducirResponse.body.data.stockNuevo).toBe(6);
-
-    const establecerResponse = await request(app)
-      .patch(`/api/admin/productos/${producto.id}/stock`)
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({ cantidad: 15, operacion: 'establecer' });
-
-    expect(establecerResponse.status).toBe(200);
-    expect(establecerResponse.body.success).toBe(true);
-    expect(establecerResponse.body.data.stockNuevo).toBe(15);
-
-    const errorResponse = await request(app)
-      .patch(`/api/admin/productos/${producto.id}/stock`)
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({ cantidad: 999, operacion: 'reducir' });
-
-    expect(errorResponse.status).toBe(400);
-    expect(errorResponse.body.success).toBe(false);
-    expect(errorResponse.body.message).toContain('No hay suficiente stock');
+    // 3. Probar error por stock insuficiente
+    const errorResponse = await gestionarStock(adminToken, productoId, 999, 'reducir');
+    expectErrorResponse(errorResponse, 400, 'No hay suficiente stock');
   });
 });
