@@ -16,6 +16,62 @@
  */
 
 /**
+ * Middleware base que verifica autenticación y roles
+ * Función interna para evitar duplicidad de código
+ * 
+ * @param {Array|string} rolesPermitidos - Rol o roles permitidos
+ * @param {Function} validacionAdicional - Función adicional de validación (opcional)
+ * @returns {Function} Middleware de Express
+ */
+const verificarPermisos = (rolesPermitidos, validacionAdicional = null) => {
+  // Normalizar rolesPermitidos a array
+  const rolesArray = Array.isArray(rolesPermitidos) ? rolesPermitidos : [rolesPermitidos];
+  
+  return (req, res, next) => {
+    try {
+      // Validación común: usuario autenticado
+      if (!req.usuario) {
+        return res.status(401).json({
+          success: false,
+          message: 'No autorizado. Debes iniciar sesión primero'
+        });
+      }
+
+      // Validación común: roles permitidos
+      if (!rolesArray.includes(req.usuario.rol)) {
+        return res.status(403).json({
+          success: false,
+          message: `Acceso denegado. Se requiere uno de los siguientes roles: ${rolesArray.join(', ')}`
+        });
+      }
+
+      // Validación adicional específica (si existe)
+      if (validacionAdicional && typeof validacionAdicional === 'function') {
+        const resultado = validacionAdicional(req);
+        if (resultado !== true) {
+          return res.status(403).json({
+            success: false,
+            message: resultado || 'Acceso denegado'
+          });
+        }
+      }
+
+      // Todas las validaciones pasaron → continúa
+      next();
+    } catch (error) {
+      console.error('Error en middleware de verificación de permisos:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Error al verificar permisos',
+        error: error.message
+      });
+    }
+  };
+};
+
+// ------------------- MIDDLEWARES EXPORTADOS -------------------
+
+/**
  * esAdministrador — Solo permite acceso a administradores
  * 
  * Verifica que req.usuario.rol === 'administrador'.
@@ -24,38 +80,7 @@
  * Uso en rutas de admin (routes/admin.routes.js):
  *   router.post('/crear', verificarAuth, esAdministrador, controlador);
  */
-const esAdministrador = (req, res, next) => {
-  try {
-    // Verifica que req.usuario existe (verificarAuth debió ejecutarse antes)
-    // Si no existe, significa que verificarAuth no se ejecutó o falló
-    if (!req.usuario) {
-      return res.status(401).json({    // 401 = No hay usuario autenticado
-        success: false,
-        message: 'No autorizado. Debes iniciar sesión primero'
-      });
-    }
-    
-    // Verifica que el rol del usuario sea exactamente 'administrador'
-    // req.usuario.rol viene de la columna 'rol' de la tabla Usuario en la BD
-    if (req.usuario.rol !== 'administrador') {
-      return res.status(403).json({    // 403 = Prohibido (no tiene permisos)
-        success: false,
-        message: 'Acceso denegado. Se requieren permisos de administrador'
-      });
-    }
-    
-    // El usuario SÍ es administrador → next() pasa al siguiente middleware o controlador
-    next();
-    
-  } catch (error) {
-    console.error('Error en middleware esAdministrador:', error);
-    return res.status(500).json({      // 500 = Error interno del servidor
-      success: false,
-      message: 'Error al verificar permisos',
-      error: error.message
-    });
-  }
-};
+const esAdministrador = verificarPermisos('administrador');
 
 /**
  * esCliente — Solo permite acceso a clientes
@@ -66,36 +91,30 @@ const esAdministrador = (req, res, next) => {
  * Uso en rutas de cliente (routes/cliente.routes.js):
  *   router.post('/carrito', verificarAuth, esCliente, controlador);
  */
-const esCliente = (req, res, next) => {
-  try {
-    // Verifica que haya un usuario autenticado en req.usuario
-    if (!req.usuario) {
-      return res.status(401).json({
-        success: false,
-        message: 'No autorizado. Debes iniciar sesión primero'
-      });
-    }
-    
-    // Verifica que el rol sea exactamente 'cliente'
-    if (req.usuario.rol !== 'cliente') {
-      return res.status(403).json({    // 403 = Tiene sesión pero no es cliente
-        success: false,
-        message: 'Acceso denegado. Esta función es solo para clientes'
-      });
-    }
-    
-    // Es cliente → continúa al controlador
-    next();
-    
-  } catch (error) {
-    console.error('Error en middleware esCliente:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Error al verificar permisos',
-      error: error.message
-    });
-  }
-};
+const esCliente = verificarPermisos('cliente');
+
+/**
+ * esAdminOAuxiliar — Permite acceso a administradores Y auxiliares
+ * 
+ * Se usa para rutas del panel de administración que los auxiliares también pueden ver.
+ * Verifica que req.usuario.rol sea 'administrador' O 'auxiliar'.
+ * 
+ * Uso en rutas:
+ *   router.get('/lista', verificarAuth, esAdminOAuxiliar, controlador);
+ */
+const esAdminOAuxiliar = verificarPermisos(['administrador', 'auxiliar']);
+
+/**
+ * soloAdministrador — Bloquea incluso a auxiliares
+ * 
+ * Más restrictivo que esAdminOAuxiliar.
+ * Se usa para operaciones CRÍTICAS como eliminar datos o cambiar configuraciones.
+ * Solo 'administrador' pasa; 'auxiliar' es rechazado.
+ * 
+ * Uso en rutas críticas:
+ *   router.delete('/eliminar/:id', verificarAuth, soloAdministrador, controlador);
+ */
+const soloAdministrador = verificarPermisos('administrador');
 
 /**
  * tieneRol — Permite acceso a MÚLTIPLES roles (middleware flexible/dinámico)
@@ -112,40 +131,7 @@ const esCliente = (req, res, next) => {
  * @returns {Function} Middleware de Express (req, res, next)
  */
 const tieneRol = (rolesPermitidos) => {
-  // Retorna la función middleware que Express ejecutará
-  // Los rolesPermitidos quedan "capturados" por el closure
-  return (req, res, next) => {
-    try {
-      // Verifica que exista usuario autenticado
-      if (!req.usuario) {
-        return res.status(401).json({
-          success: false,
-          message: 'No autorizado. Debes iniciar sesión primero'
-        });
-      }
-      
-      // includes() verifica si el rol del usuario está dentro del array de roles permitidos
-      // Ejemplo: ['cliente', 'administrador'].includes('cliente') → true
-      if (!rolesPermitidos.includes(req.usuario.rol)) {
-        return res.status(403).json({
-          success: false,
-          // join(', ') convierte el array a texto: ['cliente', 'admin'] → "cliente, admin"
-          message: `Acceso denegado. Se requiere uno de los siguientes roles: ${rolesPermitidos.join(', ')}`
-        });
-      }
-      
-      // El rol del usuario está en la lista de permitidos → continúa
-      next();
-      
-    } catch (error) {
-      console.error('Error en middleware tieneRol:', error);
-      return res.status(500).json({
-        success: false,
-        message: 'Error al verificar permisos',
-        error: error.message
-      });
-    }
-  };
+  return verificarPermisos(rolesPermitidos);
 };
 
 /**
@@ -158,131 +144,31 @@ const tieneRol = (rolesPermitidos) => {
  *   router.get('/pedidos/:usuarioId', verificarAuth, esPropioUsuarioOAdmin, controlador);
  */
 const esPropioUsuarioOAdmin = (req, res, next) => {
-  try {
-    // Verifica que haya usuario autenticado
-    if (!req.usuario) {
-      return res.status(401).json({
-        success: false,
-        message: 'No autorizado. Debes iniciar sesión primero'
-      });
+  // Usamos verificarPermisos con validación adicional
+  return verificarPermisos(['cliente', 'auxiliar', 'administrador'], (request) => {
+    // Si es administrador, permite acceso sin restricciones
+    if (request.usuario.rol === 'administrador') {
+      return true;
     }
-    
-    // EXCEPCIÓN: Los administradores tienen acceso total → pasan directamente
-    if (req.usuario.rol === 'administrador') {
-      return next();
-    }
-    
+
     // Obtiene el ID del usuario de los parámetros de la URL
-    // Busca primero :usuarioId, luego :id (dependiendo de cómo se definió la ruta)
-    const usuarioIdParam = req.params.usuarioId || req.params.id;
-    
+    const usuarioIdParam = request.params.usuarioId || request.params.id;
+
     // Compara el ID de la URL con el ID del usuario autenticado
-    // parseInt() convierte el string de la URL a número para comparar correctamente
-    if (Number.parseInt(usuarioIdParam, 10) !== req.usuario.id) {
-      return res.status(403).json({    // 403 = Intenta acceder a datos de otro usuario
-        success: false,
-        message: 'Acceso denegado. No puedes acceder a datos de otros usuarios'
-      });
+    if (Number.parseInt(usuarioIdParam, 10) !== request.usuario.id) {
+      return 'No puedes acceder a datos de otros usuarios';
     }
-    
-    // El usuario accede a SUS propios datos → continúa al controlador
-    next();
-    
-  } catch (error) {
-    console.error('Error en middleware esPropioUsuarioOAdmin:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Error al verificar permisos',
-      error: error.message
-    });
-  }
-};
 
-/**
- * esAdminOAuxiliar — Permite acceso a administradores Y auxiliares
- * 
- * Se usa para rutas del panel de administración que los auxiliares también pueden ver.
- * Verifica que req.usuario.rol sea 'administrador' O 'auxiliar'.
- * 
- * Uso en rutas:
- *   router.get('/lista', verificarAuth, esAdminOAuxiliar, controlador);
- */
-const esAdminOAuxiliar = (req, res, next) => {
-  try {
-    // Verifica que haya usuario autenticado
-    if (!req.usuario) {
-      return res.status(401).json({
-        success: false,
-        message: 'No autorizado. Debes iniciar sesión primero'
-      });
-    }
-    
-    // includes() verifica si el rol está en el array ['administrador', 'auxiliar']
-    if (!['administrador', 'auxiliar'].includes(req.usuario.rol)) {
-      return res.status(403).json({
-        success: false,
-        message: 'Acceso denegado. Se requieren permisos de administrador o auxiliar'
-      });
-    }
-    
-    // Es admin o auxiliar → continúa
-    next();
-  } catch (error) {
-    console.error('Error en middleware esAdminOAuxiliar:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Error al verificar permisos',
-      error: error.message
-    });
-  }
-};
-
-/**
- * soloAdministrador — Bloquea incluso a auxiliares
- * 
- * Más restrictivo que esAdminOAuxiliar.
- * Se usa para operaciones CRÍTICAS como eliminar datos o cambiar configuraciones.
- * Solo 'administrador' pasa; 'auxiliar' es rechazado.
- * 
- * Uso en rutas críticas:
- *   router.delete('/eliminar/:id', verificarAuth, soloAdministrador, controlador);
- */
-const soloAdministrador = (req, res, next) => {
-  try {
-    // Verifica que haya usuario autenticado
-    if (!req.usuario) {
-      return res.status(401).json({
-        success: false,
-        message: 'No autorizado. Debes iniciar sesión primero'
-      });
-    }
-    
-    // Verifica que sea EXACTAMENTE 'administrador' (no auxiliar, no cliente)
-    if (req.usuario.rol !== 'administrador') {
-      return res.status(403).json({
-        success: false,
-        message: 'Acceso denegado. Solo administradores pueden realizar esta operación'
-      });
-    }
-    
-    // Es administrador → continúa
-    next();
-  } catch (error) {
-    console.error('Error en middleware soloAdministrador:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Error al verificar permisos',
-      error: error.message
-    });
-  }
+    return true;
+  })(req, res, next);
 };
 
 // Exporta todos los middlewares de roles para usarlos en las rutas (routes/*.routes.js)
 module.exports = {
-  esAdministrador,          // Solo admin → rutas CRUD de admin
-  esCliente,                // Solo cliente → carrito, pedidos propios
-  tieneRol,                 // Múltiples roles → flexible, recibe array
-  esPropioUsuarioOAdmin,    // Dueño de los datos o admin → datos personales
-  esAdminOAuxiliar,         // Admin o auxiliar → panel de gestión
-  soloAdministrador         // Solo admin (ni auxiliar) → operaciones críticas
+  esAdministrador,
+  esCliente,
+  tieneRol,
+  esPropioUsuarioOAdmin,
+  esAdminOAuxiliar,
+  soloAdministrador
 };
