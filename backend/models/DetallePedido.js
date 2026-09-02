@@ -9,274 +9,270 @@
  * Guarda precio y cantidad "congelados" al momento de la compra (historial inmutable).
  */
 
-// Importa DataTypes de la librería 'sequelize' (paquete npm)
-// DataTypes proporciona los tipos de datos: INTEGER, DECIMAL, etc.
 const { DataTypes } = require('sequelize');
-
-// Importa la instancia 'sequelize' (conexión activa a MySQL) desde config/database.js
 const { sequelize } = require('../config/database');
 
+// ============================================
+// CONFIGURACIÓN DE VALIDACIONES (DRY)
+// ============================================
+
 /**
- * sequelize.define() crea el modelo que mapea a la tabla 'detalle_pedidos'.
- * 'DetallePedido' → nombre interno del modelo en Sequelize
+ * Validadores reutilizables para evitar duplicidad
  */
+const VALIDACIONES = {
+  // Validación para campos obligatorios con mensaje personalizado
+  required: (campo, mensaje) => ({
+    notNull: { msg: mensaje || `Debe especificar un ${campo}` }
+  }),
+
+  // Validación para números enteros
+  entero: (minimo = 1, mensaje = null) => ({
+    isInt: { msg: mensaje || 'Debe ser un número entero' },
+    min: { 
+      args: [minimo], 
+      msg: mensaje || `Debe ser al menos ${minimo}` 
+    }
+  }),
+
+  // Validación para números decimales (precios)
+  decimal: (minimo = 0, mensaje = null) => ({
+    isDecimal: { msg: mensaje || 'Debe ser un número decimal válido' },
+    min: { 
+      args: [minimo], 
+      msg: mensaje || 'No puede ser negativo' 
+    }
+  })
+};
+
+// ============================================
+// CONFIGURACIÓN DE CLAVES FORÁNEAS (DRY)
+// ============================================
+
+/**
+ * Configuración base para claves foráneas
+ */
+const CLAVE_FORANEA = (tablaReferencia, onDelete = 'CASCADE', campo = null) => ({
+  type: DataTypes.INTEGER,
+  allowNull: false,
+  references: {
+    model: tablaReferencia,
+    key: 'id'
+  },
+  onUpdate: 'CASCADE',
+  onDelete: onDelete,
+  validate: VALIDACIONES.required(campo || tablaReferencia.slice(0, -1))
+});
+
+// ============================================
+// DEFINICIÓN DEL MODELO
+// ============================================
+
 const DetallePedido = sequelize.define('DetallePedido', {
   // ==========================================
   // COLUMNAS DE LA TABLA 'detalle_pedidos'
   // ==========================================
   
-  // Columna 'id' → Identificador único de cada línea de detalle
   id: {
-    type: DataTypes.INTEGER,           // Tipo INT en MySQL
-    primaryKey: true,                  // Es la clave primaria
-    autoIncrement: true,               // Auto-incrementa: 1, 2, 3...
-    allowNull: false                   // No permite NULL
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+    allowNull: false
   },
 
-  // Columna 'pedidoId' → Clave foránea (FK) que apunta a la tabla 'pedidos'
-  // Indica A QUÉ pedido pertenece este detalle
   pedidoId: {
-    type: DataTypes.INTEGER,           // Tipo INT, coincide con pedidos.id
-    allowNull: false,                  // Obligatorio: todo detalle pertenece a un pedido
-    references: {                      // Define la relación FK en MySQL
-      model: 'pedidos',               // Tabla referenciada → tabla 'pedidos'
-      key: 'id'                       // Columna referenciada → pedidos.id
-    },
-    onUpdate: 'CASCADE',              // Si cambia pedidos.id → actualiza aquí
-    onDelete: 'CASCADE',              // Si se elimina el pedido → elimina sus detalles
+    ...CLAVE_FORANEA('pedidos', 'CASCADE', 'pedido'),
+    // Sobrescribimos el mensaje para que sea más específico
     validate: {
-      notNull: {
-        msg: 'Debe especificar un pedido'
-      }
+      notNull: { msg: 'Debe especificar un pedido' }
     }
   },
 
-  // Columna 'productoId' → Clave foránea (FK) que apunta a la tabla 'productos'
-  // Indica QUÉ producto se compró en esta línea del pedido
   productoId: {
-    type: DataTypes.INTEGER,           // Tipo INT, coincide con productos.id
-    allowNull: false,                  // Obligatorio: todo detalle tiene un producto
-    references: {
-      model: 'productos',             // Tabla referenciada → tabla 'productos'
-      key: 'id'                       // Columna referenciada → productos.id
-    },
-    onUpdate: 'CASCADE',              // Si cambia productos.id → actualiza aquí
-    onDelete: 'RESTRICT',             // RESTRICT → NO permite eliminar un producto que tiene pedidos
+    ...CLAVE_FORANEA('productos', 'RESTRICT', 'producto'),
+    // Sobrescribimos el mensaje y añadimos validación adicional
     validate: {
-      notNull: {
-        msg: 'Debe especificar un producto'
-      }
+      notNull: { msg: 'Debe especificar un producto' }
     }
   },
 
-  // Columna 'cantidad' → Cuántas unidades de este producto se compraron
   cantidad: {
-    type: DataTypes.INTEGER,           // Tipo INT (entero)
-    allowNull: false,                  // Obligatorio
-    validate: {
-      isInt: {                         // Valida que sea entero
-        msg: 'La cantidad debe ser un número entero'
-      },
-      min: {                           // Mínimo 1 unidad
-        args: [1],
-        msg: 'La cantidad debe ser al menos 1'
-      }
-    }
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validate: VALIDACIONES.entero(1, 'La cantidad debe ser al menos 1')
   },
 
-  // Columna 'precioUnitario' → Precio del producto AL MOMENTO de la compra
-  // Se guarda como "foto" del precio para mantener el historial
-  // Si el producto sube o baja de precio después, este registro NO cambia
   precioUnitario: {
-    type: DataTypes.DECIMAL(10, 2),    // DECIMAL(10,2) → hasta 99,999,999.99
-    allowNull: false,                  // Obligatorio
-    validate: {
-      isDecimal: {                     // Valida formato decimal
-        msg: 'El precio debe ser un número decimal válido'
-      },
-      min: {                           // No permite negativos
-        args: [0],
-        msg: 'El precio no puede ser negativo'
-      }
-    }
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+    validate: VALIDACIONES.decimal(0, 'El precio no puede ser negativo')
   },
 
-  // Columna 'subtotal' → Total de esta línea = precioUnitario × cantidad
-  // Se calcula automáticamente en el hook beforeCreate
-  // Ejemplo: Si precio = 50000 y cantidad = 3, subtotal = 150000
   subtotal: {
-    type: DataTypes.DECIMAL(10, 2),    // DECIMAL(10,2)
-    allowNull: false,                  // Obligatorio (se asigna en el hook)
-    validate: {
-      isDecimal: {
-        msg: 'El subtotal debe ser un número decimal válido'
-      },
-      min: {
-        args: [0],
-        msg: 'El subtotal no puede ser negativo'
-      }
-    }
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+    validate: VALIDACIONES.decimal(0, 'El subtotal no puede ser negativo')
   }
 
 }, {
-  // ==========================================
-  // OPCIONES DEL MODELO
-  // ==========================================
+  tableName: 'detalle_pedidos',
+  timestamps: false,
   
-  tableName: 'detalle_pedidos',        // Nombre EXACTO de la tabla en MySQL
-  timestamps: false,                   // NO crea createdAt/updatedAt (los detalles no cambian)
-  
-  // Índices → aceleran las consultas SQL frecuentes
   indexes: [
-    {
-      // Índice en 'pedidoId' → acelera: SELECT * FROM detalle_pedidos WHERE pedidoId = ?
-      // Usado cuando se consultan los detalles de un pedido específico
-      fields: ['pedidoId']
-    },
-    {
-      // Índice en 'productoId' → acelera búsquedas por producto
-      // Usado para estadísticas de productos más vendidos
-      fields: ['productoId']
-    }
+    { fields: ['pedidoId'] },
+    { fields: ['productoId'] }
   ],
   
-  // HOOKS → funciones automáticas del ciclo de vida del registro
   hooks: {
-    /**
-     * beforeCreate → Se ejecuta ANTES de insertar un nuevo detalle en la BD
-     * Calcula automáticamente el subtotal = precioUnitario × cantidad
-     */
     beforeCreate: (detalle) => {
-      // parseFloat() convierte el DECIMAL de Sequelize a número JavaScript
-      // Luego multiplica por la cantidad para obtener el subtotal
-      detalle.subtotal = Number.parseFloat(detalle.precioUnitario) * detalle.cantidad;
+      detalle.subtotal = calcularSubtotal(detalle.precioUnitario, detalle.cantidad);
     },
 
-    /**
-     * beforeUpdate → Se ejecuta ANTES de actualizar un detalle existente
-     * Recalcula el subtotal si el precio o la cantidad cambiaron
-     */
     beforeUpdate: (detalle) => {
-      // changed() verifica si un campo fue modificado
       if (detalle.changed('precioUnitario') || detalle.changed('cantidad')) {
-        detalle.subtotal = Number.parseFloat(detalle.precioUnitario) * detalle.cantidad;
+        detalle.subtotal = calcularSubtotal(detalle.precioUnitario, detalle.cantidad);
       }
     }
   }
 });
 
-// ==========================================
-// MÉTODOS DE INSTANCIA
-// ==========================================
-// Se llaman sobre UN registro: detalle.calcularSubtotal()
+// ============================================
+// FUNCIONES REUTILIZABLES (DRY)
+// ============================================
+
+/**
+ * Calcula el subtotal de una línea de detalle
+ * @param {number|string} precioUnitario - Precio unitario del producto
+ * @param {number} cantidad - Cantidad comprada
+ * @returns {number} Subtotal calculado
+ */
+const calcularSubtotal = (precioUnitario, cantidad) => {
+  return Number.parseFloat(precioUnitario) * cantidad;
+};
+
+/**
+ * Suma los subtotales de un array de detalles
+ * @param {Array} detalles - Array de instancias de DetallePedido
+ * @returns {number} Total sumado
+ */
+const sumarSubtotales = (detalles) => {
+  return detalles.reduce((total, detalle) => {
+    return total + Number.parseFloat(detalle.subtotal);
+  }, 0);
+};
+
+// ============================================
+// MÉTODOS DE INSTANCIA (DRY)
+// ============================================
 
 /**
  * calcularSubtotal() → Calcula manualmente el subtotal de esta línea
- * Útil para verificaciones antes de guardar
  * @returns {number} precioUnitario × cantidad
  */
 DetallePedido.prototype.calcularSubtotal = function() {
-  return Number.parseFloat(this.precioUnitario) * this.cantidad;
+  return calcularSubtotal(this.precioUnitario, this.cantidad);
 };
 
 /**
  * obtenerProducto() → Busca y retorna el producto asociado a este detalle
- * Ejecuta: SELECT * FROM productos WHERE id = this.productoId
  * @returns {Promise<Producto>} Instancia del modelo Producto
  */
 DetallePedido.prototype.obtenerProducto = async function() {
-  const Producto = require('./Producto');   // Importa el modelo Producto
-  return await Producto.findByPk(this.productoId);  // findByPk = Find By Primary Key
+  const Producto = require('./Producto');
+  return await Producto.findByPk(this.productoId);
 };
 
-// ==========================================
-// MÉTODOS ESTÁTICOS (DE CLASE)
-// ==========================================
-// Se llaman sobre el MODELO, no sobre una instancia: DetallePedido.crearDesdeCarrito(...)
+// ============================================
+// MÉTODOS ESTÁTICOS (DRY)
+// ============================================
 
 /**
  * crearDesdeCarrito() → Convierte los items del carrito en detalles de pedido
- * Se usa durante el checkout: los items del carrito se "copian" como detalles del nuevo pedido.
- * 
  * @param {number} pedidoId - ID del pedido recién creado
- * @param {Array} itemsCarrito - Array de items del carrito (cada uno tiene productoId, cantidad, precioUnitario)
+ * @param {Array} itemsCarrito - Array de items del carrito
  * @returns {Promise<Array>} Array de detalles creados
  */
 DetallePedido.crearDesdeCarrito = async function(pedidoId, itemsCarrito) {
-  const detalles = [];                     // Array para acumular los detalles creados
+  const detalles = await Promise.all(
+    itemsCarrito.map(item => 
+      this.create({
+        pedidoId,
+        productoId: item.productoId,
+        cantidad: item.cantidad,
+        precioUnitario: item.precioUnitario
+      })
+    )
+  );
   
-  // Recorre cada item del carrito
-  for (const item of itemsCarrito) {
-    // this.create() → INSERT INTO detalle_pedidos VALUES (...)
-    // El hook beforeCreate calcula el subtotal automáticamente
-    const detalle = await this.create({
-      pedidoId: pedidoId,                  // ID del pedido al que pertenece
-      productoId: item.productoId,         // Producto que se compró
-      cantidad: item.cantidad,             // Cantidad comprada
-      precioUnitario: item.precioUnitario  // Precio al momento de la compra
-    });
-    
-    detalles.push(detalle);                // Agrega al array de resultados
-  }
-  
-  return detalles;                         // Retorna todos los detalles creados
+  return detalles;
 };
 
 /**
  * calcularTotalPedido() → Suma los subtotales de todos los detalles de un pedido
- * Ejecuta: SELECT * FROM detalle_pedidos WHERE pedidoId = ? → luego suma los subtotales
- * 
  * @param {number} pedidoId - ID del pedido
  * @returns {Promise<number>} Total calculado del pedido
  */
 DetallePedido.calcularTotalPedido = async function(pedidoId) {
-  // Trae todos los detalles del pedido
   const detalles = await this.findAll({
     where: { pedidoId }
   });
   
-  // Recorre y acumula los subtotales
-  let total = 0;
-  for (const detalle of detalles) {
-    total += Number.parseFloat(detalle.subtotal); // parseFloat convierte DECIMAL a número JS
-  }
-  
-  return total;
+  return sumarSubtotales(detalles);
 };
 
 /**
  * obtenerMasVendidos() → Obtiene los productos más vendidos (ranking)
- * Usa funciones de agregación SQL: SUM() y GROUP BY
- * 
- * SQL equivalente:
- *   SELECT productoId, SUM(cantidad) as totalVendido
- *   FROM detalle_pedidos
- *   GROUP BY productoId
- *   ORDER BY totalVendido DESC
- *   LIMIT ?
- * 
  * @param {number} limite - Cuántos productos retornar (default: 10)
  * @returns {Promise<Array>} Array de { productoId, totalVendido }
  */
 DetallePedido.obtenerMasVendidos = async function(limite = 10) {
-  // Importa sequelize para usar funciones SQL (fn, col)
   const { sequelize } = require('../config/database');
   
   return await this.findAll({
     attributes: [
-      'productoId',                        // Columna productoId
-      // sequelize.fn('SUM', ...) → función SQL SUM()
-      // sequelize.col('cantidad') → referencia a la columna 'cantidad'
-      // El resultado se nombra como 'totalVendido' (alias)
+      'productoId',
       [sequelize.fn('SUM', sequelize.col('cantidad')), 'totalVendido']
     ],
-    group: ['productoId'],                 // GROUP BY productoId → agrupa por producto
-    // Ordena por totalVendido de mayor a menor (los más vendidos primero)
+    group: ['productoId'],
     order: [[sequelize.fn('SUM', sequelize.col('cantidad')), 'DESC']],
-    limit: limite                          // Limita la cantidad de resultados
+    limit: limite
   });
 };
 
-// Exporta el modelo DetallePedido para usarlo en controladores y otros modelos
-// Se importa como: const DetallePedido = require('./DetallePedido')
+// ============================================
+// MÉTODOS ESTÁTICOS ADICIONALES (para más funcionalidad)
+// ============================================
+
+/**
+ * obtenerDetallesPorPedido() → Obtiene todos los detalles de un pedido con sus productos
+ * @param {number} pedidoId - ID del pedido
+ * @returns {Promise<Array>} Detalles con productos incluidos
+ */
+DetallePedido.obtenerDetallesPorPedido = async function(pedidoId) {
+  const Producto = require('./Producto');
+  
+  return await this.findAll({
+    where: { pedidoId },
+    include: [{
+      model: Producto,
+      attributes: ['id', 'nombre', 'imagen']
+    }]
+  });
+};
+
+/**
+ * obtenerTotalPorProducto() → Obtiene el total vendido de un producto específico
+ * @param {number} productoId - ID del producto
+ * @returns {Promise<number>} Total de unidades vendidas
+ */
+DetallePedido.obtenerTotalPorProducto = async function(productoId) {
+  const resultado = await this.findOne({
+    attributes: [
+      [sequelize.fn('SUM', sequelize.col('cantidad')), 'totalVendido']
+    ],
+    where: { productoId }
+  });
+  
+  return resultado ? Number.parseInt(resultado.get('totalVendido'), 10) : 0;
+};
+
 module.exports = DetallePedido;
