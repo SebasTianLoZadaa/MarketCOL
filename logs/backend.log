@@ -1,0 +1,884 @@
+
+> ecommerce-backend@1.0.0 start
+> node server.js
+
+🚀 Iniciando servidor E-commerce Backend...
+
+📡 Conectando a MySQL...
+Executing (default): SELECT 1+1 AS result
+✅ Conexión a MySQL establecida correctamente.
+
+📊 Sincronizando modelos con la base de datos...
+🔗 Asociaciones entre modelos establecidas correctamente
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'usuarios' AND TABLE_SCHEMA = 'marketcol'
+Executing (default): SHOW FULL COLUMNS FROM `usuarios`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'usuarios' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='marketcol' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): ALTER TABLE `usuarios` CHANGE `nombre` `nombre` VARCHAR(100) NOT NULL;
+Executing (default): ALTER TABLE `usuarios` CHANGE `apellido` `apellido` VARCHAR(100);
+Executing (default): ALTER TABLE `usuarios` CHANGE `cedula` `cedula` VARCHAR(20) UNIQUE;
+Executing (default): ALTER TABLE `usuarios` CHANGE `email` `email` VARCHAR(100) NOT NULL;
+Executing (default): ALTER TABLE `usuarios` CHANGE `password` `password` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `usuarios` CHANGE `rol` `rol` ENUM('cliente', 'auxiliar', 'administrador') NOT NULL DEFAULT 'cliente';
+Executing (default): ALTER TABLE `usuarios` CHANGE `telefono` `telefono` VARCHAR(20);
+Executing (default): ALTER TABLE `usuarios` CHANGE `direccion` `direccion` TEXT;
+Executing (default): ALTER TABLE `usuarios` CHANGE `activo` `activo` TINYINT(1) NOT NULL DEFAULT true;
+Executing (default): ALTER TABLE `usuarios` CHANGE `createdAt` `createdAt` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `usuarios` CHANGE `updatedAt` `updatedAt` DATETIME NOT NULL;
+Executing (default): SHOW INDEX FROM `usuarios`
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'categorias' AND TABLE_SCHEMA = 'marketcol'
+Executing (default): SHOW FULL COLUMNS FROM `categorias`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'categorias' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='marketcol' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): ALTER TABLE `categorias` CHANGE `nombre` `nombre` VARCHAR(100) NOT NULL;
+Executing (default): ALTER TABLE `categorias` CHANGE `descripcion` `descripcion` TEXT;
+Executing (default): ALTER TABLE `categorias` CHANGE `activo` `activo` TINYINT(1) NOT NULL DEFAULT true;
+Executing (default): ALTER TABLE `categorias` CHANGE `createdAt` `createdAt` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `categorias` CHANGE `updatedAt` `updatedAt` DATETIME NOT NULL;
+Executing (default): SHOW INDEX FROM `categorias`
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'subcategorias' AND TABLE_SCHEMA = 'marketcol'
+Executing (default): SHOW FULL COLUMNS FROM `subcategorias`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'subcategorias' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='marketcol' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): ALTER TABLE `subcategorias` CHANGE `nombre` `nombre` VARCHAR(100) NOT NULL;
+Executing (default): ALTER TABLE `subcategorias` CHANGE `descripcion` `descripcion` TEXT;
+Executing (default): SELECT CONSTRAINT_CATALOG AS constraintCatalog, CONSTRAINT_NAME AS constraintName, CONSTRAINT_SCHEMA AS constraintSchema, CONSTRAINT_TYPE AS constraintType, TABLE_NAME AS tableName, TABLE_SCHEMA AS tableSchema from INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE table_name='subcategorias' AND constraint_name = 'subcategorias_ibfk_1' AND TABLE_SCHEMA = 'marketcol';
+Executing (default): ALTER TABLE `subcategorias` DROP FOREIGN KEY `subcategorias_ibfk_1`;
+Executing (default): ALTER TABLE `subcategorias` ADD FOREIGN KEY (`categoriaId`) REFERENCES `categorias` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+Executing (default): ALTER TABLE `subcategorias` CHANGE `activo` `activo` TINYINT(1) NOT NULL DEFAULT true;
+Executing (default): ALTER TABLE `subcategorias` CHANGE `createdAt` `createdAt` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `subcategorias` CHANGE `updatedAt` `updatedAt` DATETIME NOT NULL;
+Executing (default): SHOW INDEX FROM `subcategorias`
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'proveedores' AND TABLE_SCHEMA = 'marketcol'
+Executing (default): SHOW FULL COLUMNS FROM `proveedores`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'proveedores' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='marketcol' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): ALTER TABLE `proveedores` CHANGE `nombre` `nombre` VARCHAR(100) NOT NULL UNIQUE;
+Executing (default): ALTER TABLE `proveedores` CHANGE `contacto` `contacto` VARCHAR(100);
+Executing (default): ALTER TABLE `proveedores` CHANGE `telefono` `telefono` VARCHAR(20);
+Executing (default): ALTER TABLE `proveedores` CHANGE `email` `email` VARCHAR(100);
+Executing (default): ALTER TABLE `proveedores` CHANGE `direccion` `direccion` TEXT;
+Executing (default): ALTER TABLE `proveedores` CHANGE `activo` `activo` TINYINT(1) DEFAULT true;
+Executing (default): ALTER TABLE `proveedores` CHANGE `createdAt` `createdAt` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `proveedores` CHANGE `updatedAt` `updatedAt` DATETIME NOT NULL;
+Executing (default): SHOW INDEX FROM `proveedores`
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'productos' AND TABLE_SCHEMA = 'marketcol'
+Executing (default): SHOW FULL COLUMNS FROM `productos`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'productos' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='marketcol' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): ALTER TABLE `productos` CHANGE `nombre` `nombre` VARCHAR(200) NOT NULL;
+Executing (default): ALTER TABLE `productos` CHANGE `descripcion` `descripcion` TEXT;
+Executing (default): ALTER TABLE `productos` CHANGE `precio` `precio` DECIMAL(10,2) NOT NULL;
+Executing (default): ALTER TABLE `productos` CHANGE `stock` `stock` INTEGER NOT NULL DEFAULT 0;
+Executing (default): ALTER TABLE `productos` CHANGE `imagen` `imagen` VARCHAR(255);
+Executing (default): SELECT CONSTRAINT_CATALOG AS constraintCatalog, CONSTRAINT_NAME AS constraintName, CONSTRAINT_SCHEMA AS constraintSchema, CONSTRAINT_TYPE AS constraintType, TABLE_NAME AS tableName, TABLE_SCHEMA AS tableSchema from INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE table_name='productos' AND constraint_name = 'productos_ibfk_4' AND TABLE_SCHEMA = 'marketcol';
+Executing (default): ALTER TABLE `productos` DROP FOREIGN KEY `productos_ibfk_4`;
+Executing (default): ALTER TABLE `productos` ADD FOREIGN KEY (`subcategoriaId`) REFERENCES `subcategorias` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+Executing (default): SELECT CONSTRAINT_CATALOG AS constraintCatalog, CONSTRAINT_NAME AS constraintName, CONSTRAINT_SCHEMA AS constraintSchema, CONSTRAINT_TYPE AS constraintType, TABLE_NAME AS tableName, TABLE_SCHEMA AS tableSchema from INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE table_name='productos' AND constraint_name = 'productos_ibfk_5' AND TABLE_SCHEMA = 'marketcol';
+Executing (default): ALTER TABLE `productos` DROP FOREIGN KEY `productos_ibfk_5`;
+Executing (default): ALTER TABLE `productos` ADD FOREIGN KEY (`categoriaId`) REFERENCES `categorias` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+Executing (default): SELECT CONSTRAINT_CATALOG AS constraintCatalog, CONSTRAINT_NAME AS constraintName, CONSTRAINT_SCHEMA AS constraintSchema, CONSTRAINT_TYPE AS constraintType, TABLE_NAME AS tableName, TABLE_SCHEMA AS tableSchema from INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE table_name='productos' AND constraint_name = 'productos_ibfk_6' AND TABLE_SCHEMA = 'marketcol';
+Executing (default): ALTER TABLE `productos` DROP FOREIGN KEY `productos_ibfk_6`;
+Executing (default): ALTER TABLE `productos` ADD FOREIGN KEY (`proveedorId`) REFERENCES `proveedores` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+Executing (default): ALTER TABLE `productos` CHANGE `activo` `activo` TINYINT(1) NOT NULL DEFAULT true;
+Executing (default): ALTER TABLE `productos` CHANGE `createdAt` `createdAt` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `productos` CHANGE `updatedAt` `updatedAt` DATETIME NOT NULL;
+Executing (default): SHOW INDEX FROM `productos`
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'carritos' AND TABLE_SCHEMA = 'marketcol'
+Executing (default): SHOW FULL COLUMNS FROM `carritos`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'carritos' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='marketcol' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): SELECT CONSTRAINT_CATALOG AS constraintCatalog, CONSTRAINT_NAME AS constraintName, CONSTRAINT_SCHEMA AS constraintSchema, CONSTRAINT_TYPE AS constraintType, TABLE_NAME AS tableName, TABLE_SCHEMA AS tableSchema from INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE table_name='carritos' AND constraint_name = 'carritos_ibfk_3' AND TABLE_SCHEMA = 'marketcol';
+Executing (default): ALTER TABLE `carritos` DROP FOREIGN KEY `carritos_ibfk_3`;
+Executing (default): ALTER TABLE `carritos` ADD FOREIGN KEY (`usuarioId`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+Executing (default): SELECT CONSTRAINT_CATALOG AS constraintCatalog, CONSTRAINT_NAME AS constraintName, CONSTRAINT_SCHEMA AS constraintSchema, CONSTRAINT_TYPE AS constraintType, TABLE_NAME AS tableName, TABLE_SCHEMA AS tableSchema from INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE table_name='carritos' AND constraint_name = 'carritos_ibfk_4' AND TABLE_SCHEMA = 'marketcol';
+Executing (default): ALTER TABLE `carritos` DROP FOREIGN KEY `carritos_ibfk_4`;
+Executing (default): ALTER TABLE `carritos` ADD FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+Executing (default): ALTER TABLE `carritos` CHANGE `cantidad` `cantidad` INTEGER NOT NULL DEFAULT 1;
+Executing (default): ALTER TABLE `carritos` CHANGE `precioUnitario` `precioUnitario` DECIMAL(10,2) NOT NULL;
+Executing (default): ALTER TABLE `carritos` CHANGE `createdAt` `createdAt` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `carritos` CHANGE `updatedAt` `updatedAt` DATETIME NOT NULL;
+Executing (default): SHOW INDEX FROM `carritos`
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'pedidos' AND TABLE_SCHEMA = 'marketcol'
+Executing (default): SHOW FULL COLUMNS FROM `pedidos`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'pedidos' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='marketcol' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): SELECT CONSTRAINT_CATALOG AS constraintCatalog, CONSTRAINT_NAME AS constraintName, CONSTRAINT_SCHEMA AS constraintSchema, CONSTRAINT_TYPE AS constraintType, TABLE_NAME AS tableName, TABLE_SCHEMA AS tableSchema from INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE table_name='pedidos' AND constraint_name = 'pedidos_ibfk_1' AND TABLE_SCHEMA = 'marketcol';
+Executing (default): ALTER TABLE `pedidos` DROP FOREIGN KEY `pedidos_ibfk_1`;
+Executing (default): ALTER TABLE `pedidos` ADD FOREIGN KEY (`usuarioId`) REFERENCES `usuarios` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+Executing (default): ALTER TABLE `pedidos` CHANGE `total` `total` DECIMAL(10,2) NOT NULL;
+Executing (default): ALTER TABLE `pedidos` CHANGE `estado` `estado` ENUM('pendiente', 'preparando', 'listo', 'entregado', 'cancelado') NOT NULL DEFAULT 'pendiente';
+Executing (default): ALTER TABLE `pedidos` CHANGE `estadoPago` `estadoPago` ENUM('pendiente', 'confirmado') NOT NULL DEFAULT 'pendiente';
+Executing (default): ALTER TABLE `pedidos` CHANGE `direccionEnvio` `direccionEnvio` TEXT;
+Executing (default): ALTER TABLE `pedidos` CHANGE `telefono` `telefono` VARCHAR(20) NOT NULL;
+Executing (default): ALTER TABLE `pedidos` CHANGE `modalidadEntrega` `modalidadEntrega` ENUM('aliste y recoja', 'domicilio') NOT NULL DEFAULT 'aliste y recoja';
+Executing (default): ALTER TABLE `pedidos` CHANGE `notas` `notas` TEXT;
+Executing (default): ALTER TABLE `pedidos` CHANGE `fechaPago` `fechaPago` DATETIME;
+Executing (default): ALTER TABLE `pedidos` CHANGE `fechaEnvio` `fechaEnvio` DATETIME;
+Executing (default): ALTER TABLE `pedidos` CHANGE `fechaEntrega` `fechaEntrega` DATETIME;
+Executing (default): ALTER TABLE `pedidos` CHANGE `createdAt` `createdAt` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `pedidos` CHANGE `updatedAt` `updatedAt` DATETIME NOT NULL;
+Executing (default): SHOW INDEX FROM `pedidos`
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'detalle_pedidos' AND TABLE_SCHEMA = 'marketcol'
+Executing (default): SHOW FULL COLUMNS FROM `detalle_pedidos`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'detalle_pedidos' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='marketcol' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): SELECT CONSTRAINT_CATALOG AS constraintCatalog, CONSTRAINT_NAME AS constraintName, CONSTRAINT_SCHEMA AS constraintSchema, CONSTRAINT_TYPE AS constraintType, TABLE_NAME AS tableName, TABLE_SCHEMA AS tableSchema from INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE table_name='detalle_pedidos' AND constraint_name = 'detalle_pedidos_ibfk_3' AND TABLE_SCHEMA = 'marketcol';
+Executing (default): ALTER TABLE `detalle_pedidos` DROP FOREIGN KEY `detalle_pedidos_ibfk_3`;
+Executing (default): ALTER TABLE `detalle_pedidos` ADD FOREIGN KEY (`pedidoId`) REFERENCES `pedidos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+Executing (default): SELECT CONSTRAINT_CATALOG AS constraintCatalog, CONSTRAINT_NAME AS constraintName, CONSTRAINT_SCHEMA AS constraintSchema, CONSTRAINT_TYPE AS constraintType, TABLE_NAME AS tableName, TABLE_SCHEMA AS tableSchema from INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE table_name='detalle_pedidos' AND constraint_name = 'detalle_pedidos_ibfk_4' AND TABLE_SCHEMA = 'marketcol';
+Executing (default): ALTER TABLE `detalle_pedidos` DROP FOREIGN KEY `detalle_pedidos_ibfk_4`;
+Executing (default): ALTER TABLE `detalle_pedidos` ADD FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+Executing (default): ALTER TABLE `detalle_pedidos` CHANGE `cantidad` `cantidad` INTEGER NOT NULL;
+Executing (default): ALTER TABLE `detalle_pedidos` CHANGE `precioUnitario` `precioUnitario` DECIMAL(10,2) NOT NULL;
+Executing (default): ALTER TABLE `detalle_pedidos` CHANGE `subtotal` `subtotal` DECIMAL(10,2) NOT NULL;
+Executing (default): SHOW INDEX FROM `detalle_pedidos`
+🔄 Base de datos sincronizada (tablas alteradas según modelos).
+
+🌱 Ejecutando seeders...
+
+
+🌱 ========================================
+   INICIANDO SEEDER DE DATOS COMPLETOS
+========================================
+
+👥 1. CREANDO USUARIOS...
+
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`email` = 'admin@MarketCOL.com';
+✅ Administrador ya existe
+
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`email` = 'auxiliar@ecommerce.com';
+✅ Auxiliar ya existe
+
+👤 Creando 5 clientes...
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`email` = 'cliente1@ecommerce.com';
+
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`email` = 'cliente2@ecommerce.com';
+
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`email` = 'cliente3@ecommerce.com';
+
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`email` = 'cliente4@ecommerce.com';
+
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`email` = 'cliente5@ecommerce.com';
+
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario`;
+
+✅ Total: 7 usuarios en la base de datos
+
+🏭 2. CREANDO PROVEEDORES BASE...
+
+Executing (ee01d898-cb66-43e6-b7c8-d212fdb2819a): START TRANSACTION;
+Executing (ee01d898-cb66-43e6-b7c8-d212fdb2819a): SELECT `id`, `nombre`, `contacto`, `telefono`, `email`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`nombre` = 'Distribuidora El Sol';
+Executing (ee01d898-cb66-43e6-b7c8-d212fdb2819a): COMMIT;
+   ℹ️ Distribuidora El Sol
+Executing (bd24e892-6c0f-466d-996b-abb9a3b82ae6): START TRANSACTION;
+Executing (bd24e892-6c0f-466d-996b-abb9a3b82ae6): SELECT `id`, `nombre`, `contacto`, `telefono`, `email`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`nombre` = 'Alimentos Andina';
+Executing (bd24e892-6c0f-466d-996b-abb9a3b82ae6): COMMIT;
+   ℹ️ Alimentos Andina
+Executing (8b911b95-1710-45f9-9f87-077d7f72b219): START TRANSACTION;
+Executing (8b911b95-1710-45f9-9f87-077d7f72b219): SELECT `id`, `nombre`, `contacto`, `telefono`, `email`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`nombre` = 'Grupo Fresco SAS';
+Executing (8b911b95-1710-45f9-9f87-077d7f72b219): COMMIT;
+   ℹ️ Grupo Fresco SAS
+Executing (0dbaa2bd-035d-4d29-9885-cf1575e904ea): START TRANSACTION;
+Executing (0dbaa2bd-035d-4d29-9885-cf1575e904ea): SELECT `id`, `nombre`, `contacto`, `telefono`, `email`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`nombre` = 'Limpieza Total';
+Executing (0dbaa2bd-035d-4d29-9885-cf1575e904ea): COMMIT;
+   ℹ️ Limpieza Total
+Executing (f34c248a-576f-4799-a18e-c3e6429b8b9d): START TRANSACTION;
+Executing (f34c248a-576f-4799-a18e-c3e6429b8b9d): SELECT `id`, `nombre`, `contacto`, `telefono`, `email`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`nombre` = 'Bebidas del Valle';
+Executing (f34c248a-576f-4799-a18e-c3e6429b8b9d): COMMIT;
+   ℹ️ Bebidas del Valle
+
+✅ Total: 5 proveedores base disponibles
+
+📁 3. CREANDO CATEGORÍAS...
+
+Executing (5588496b-5042-400e-a63e-ccb0a819c88d): START TRANSACTION;
+Executing (5588496b-5042-400e-a63e-ccb0a819c88d): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` WHERE `Categoria`.`nombre` = 'Despensa';
+Executing (5588496b-5042-400e-a63e-ccb0a819c88d): COMMIT;
+   ℹ️ Despensa
+Executing (f7e6cc99-1e2f-43fb-bb44-5cca6d6b8918): START TRANSACTION;
+Executing (f7e6cc99-1e2f-43fb-bb44-5cca6d6b8918): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` WHERE `Categoria`.`nombre` = 'Lacteos y Huevos';
+Executing (f7e6cc99-1e2f-43fb-bb44-5cca6d6b8918): COMMIT;
+   ℹ️ Lacteos y Huevos
+Executing (194ce266-79b1-4d41-beb6-be26c2642adb): START TRANSACTION;
+Executing (194ce266-79b1-4d41-beb6-be26c2642adb): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` WHERE `Categoria`.`nombre` = 'Bebidas';
+Executing (194ce266-79b1-4d41-beb6-be26c2642adb): COMMIT;
+   ℹ️ Bebidas
+Executing (543cc349-fb05-4793-9da1-48ee5f0b8bfd): START TRANSACTION;
+Executing (543cc349-fb05-4793-9da1-48ee5f0b8bfd): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` WHERE `Categoria`.`nombre` = 'Limpieza y Hogar';
+Executing (543cc349-fb05-4793-9da1-48ee5f0b8bfd): COMMIT;
+   ℹ️ Limpieza y Hogar
+Executing (ed8d24c1-18ac-479a-a659-703abe7edd68): START TRANSACTION;
+Executing (ed8d24c1-18ac-479a-a659-703abe7edd68): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` WHERE `Categoria`.`nombre` = 'Frutas y Verduras';
+Executing (ed8d24c1-18ac-479a-a659-703abe7edd68): COMMIT;
+   ℹ️ Frutas y Verduras
+
+✅ Total: 5 categorías disponibles
+
+📂 4. CREANDO SUBCATEGORÍAS...
+
+📁 Despensa:
+Executing (5c8170f9-16dc-4069-98c1-a722e8918328): START TRANSACTION;
+Executing (5c8170f9-16dc-4069-98c1-a722e8918328): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`nombre` = 'Arroz y granos' AND `Subcategoria`.`categoriaId` = 1 LIMIT 1;
+Executing (5c8170f9-16dc-4069-98c1-a722e8918328): COMMIT;
+   ℹ️ Arroz y granos
+Executing (b97f35cf-492c-426e-a435-d4656eb2be7a): START TRANSACTION;
+Executing (b97f35cf-492c-426e-a435-d4656eb2be7a): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`nombre` = 'Aceites y vinagres' AND `Subcategoria`.`categoriaId` = 1 LIMIT 1;
+Executing (b97f35cf-492c-426e-a435-d4656eb2be7a): COMMIT;
+   ℹ️ Aceites y vinagres
+Executing (54e10bac-f1cf-4b93-a106-99f281bd8ced): START TRANSACTION;
+Executing (54e10bac-f1cf-4b93-a106-99f281bd8ced): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`nombre` = 'Azucar y endulzantes' AND `Subcategoria`.`categoriaId` = 1 LIMIT 1;
+Executing (54e10bac-f1cf-4b93-a106-99f281bd8ced): COMMIT;
+   ℹ️ Azucar y endulzantes
+
+📁 Lacteos y Huevos:
+Executing (b090bf54-1975-45a4-995c-d59076479fad): START TRANSACTION;
+Executing (b090bf54-1975-45a4-995c-d59076479fad): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`nombre` = 'Leches' AND `Subcategoria`.`categoriaId` = 2 LIMIT 1;
+Executing (b090bf54-1975-45a4-995c-d59076479fad): COMMIT;
+   ℹ️ Leches
+Executing (8594be88-3ae7-47c5-ba69-96db313abca3): START TRANSACTION;
+Executing (8594be88-3ae7-47c5-ba69-96db313abca3): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`nombre` = 'Quesos' AND `Subcategoria`.`categoriaId` = 2 LIMIT 1;
+Executing (8594be88-3ae7-47c5-ba69-96db313abca3): COMMIT;
+   ℹ️ Quesos
+Executing (0d508c74-25b9-4bfa-8ad0-5bd8c4f48f63): START TRANSACTION;
+Executing (0d508c74-25b9-4bfa-8ad0-5bd8c4f48f63): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`nombre` = 'Huevos' AND `Subcategoria`.`categoriaId` = 2 LIMIT 1;
+Executing (0d508c74-25b9-4bfa-8ad0-5bd8c4f48f63): COMMIT;
+   ℹ️ Huevos
+
+📁 Bebidas:
+Executing (f95d7af6-eb4d-40cb-a99e-70407d3fee29): START TRANSACTION;
+Executing (f95d7af6-eb4d-40cb-a99e-70407d3fee29): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`nombre` = 'Gaseosas' AND `Subcategoria`.`categoriaId` = 3 LIMIT 1;
+Executing (f95d7af6-eb4d-40cb-a99e-70407d3fee29): COMMIT;
+   ℹ️ Gaseosas
+Executing (b9a28510-9451-4835-975e-7888a98d8d80): START TRANSACTION;
+Executing (b9a28510-9451-4835-975e-7888a98d8d80): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`nombre` = 'Jugos' AND `Subcategoria`.`categoriaId` = 3 LIMIT 1;
+Executing (b9a28510-9451-4835-975e-7888a98d8d80): COMMIT;
+   ℹ️ Jugos
+Executing (06e45bb5-2c49-4f44-9df3-882570932c0d): START TRANSACTION;
+Executing (06e45bb5-2c49-4f44-9df3-882570932c0d): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`nombre` = 'Aguas' AND `Subcategoria`.`categoriaId` = 3 LIMIT 1;
+Executing (06e45bb5-2c49-4f44-9df3-882570932c0d): COMMIT;
+   ℹ️ Aguas
+
+📁 Limpieza y Hogar:
+Executing (e68c4ca7-ec2e-415f-b674-388866707b53): START TRANSACTION;
+Executing (e68c4ca7-ec2e-415f-b674-388866707b53): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`nombre` = 'Detergentes' AND `Subcategoria`.`categoriaId` = 4 LIMIT 1;
+Executing (e68c4ca7-ec2e-415f-b674-388866707b53): COMMIT;
+   ℹ️ Detergentes
+Executing (c503e89b-3899-4ad5-a0e1-6cf27e97b3e3): START TRANSACTION;
+Executing (c503e89b-3899-4ad5-a0e1-6cf27e97b3e3): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`nombre` = 'Jabones' AND `Subcategoria`.`categoriaId` = 4 LIMIT 1;
+Executing (c503e89b-3899-4ad5-a0e1-6cf27e97b3e3): COMMIT;
+   ℹ️ Jabones
+Executing (221ca864-6df1-4b09-8d06-46fc5e013dd5): START TRANSACTION;
+Executing (221ca864-6df1-4b09-8d06-46fc5e013dd5): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`nombre` = 'Lavaloza' AND `Subcategoria`.`categoriaId` = 4 LIMIT 1;
+Executing (221ca864-6df1-4b09-8d06-46fc5e013dd5): COMMIT;
+   ℹ️ Lavaloza
+
+📁 Frutas y Verduras:
+Executing (540860a3-7ea8-47d1-b35f-afc395208a94): START TRANSACTION;
+Executing (540860a3-7ea8-47d1-b35f-afc395208a94): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`nombre` = 'Frutas' AND `Subcategoria`.`categoriaId` = 5 LIMIT 1;
+Executing (540860a3-7ea8-47d1-b35f-afc395208a94): COMMIT;
+   ℹ️ Frutas
+Executing (8c41b278-aa9d-487d-b3e6-fc780a3fe480): START TRANSACTION;
+Executing (8c41b278-aa9d-487d-b3e6-fc780a3fe480): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`nombre` = 'Verduras' AND `Subcategoria`.`categoriaId` = 5 LIMIT 1;
+Executing (8c41b278-aa9d-487d-b3e6-fc780a3fe480): COMMIT;
+   ℹ️ Verduras
+Executing (718cb019-deeb-483e-bc4e-670ddc4abc35): START TRANSACTION;
+Executing (718cb019-deeb-483e-bc4e-670ddc4abc35): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`nombre` = 'Hortalizas' AND `Subcategoria`.`categoriaId` = 5 LIMIT 1;
+Executing (718cb019-deeb-483e-bc4e-670ddc4abc35): COMMIT;
+   ℹ️ Hortalizas
+
+✅ Total: 15 subcategorías disponibles
+
+📦 5. CREANDO PRODUCTOS...
+
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` WHERE `Categoria`.`activo` = true;
+📦 Arroz y granos (Despensa):
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Arroz Diana 1kg' AND `Producto`.`subcategoriaId` = 1 AND `Producto`.`categoriaId` = 1 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Arroz Diana 1kg - $3,500 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Lentejas 500g' AND `Producto`.`subcategoriaId` = 1 AND `Producto`.`categoriaId` = 1 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Lentejas 500g - $2,500 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Frijol cargamanto 500g' AND `Producto`.`subcategoriaId` = 1 AND `Producto`.`categoriaId` = 1 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Frijol cargamanto 500g - $4,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Garbanzos 500g' AND `Producto`.`subcategoriaId` = 1 AND `Producto`.`categoriaId` = 1 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Garbanzos 500g - $3,500 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Arroz integral 1kg' AND `Producto`.`subcategoriaId` = 1 AND `Producto`.`categoriaId` = 1 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Arroz integral 1kg - $4,500 (actualizado)
+
+📦 Aceites y vinagres (Despensa):
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Aceite Premier 1L' AND `Producto`.`subcategoriaId` = 2 AND `Producto`.`categoriaId` = 1 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Aceite Premier 1L - $9,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Aceite de oliva 500ml' AND `Producto`.`subcategoriaId` = 2 AND `Producto`.`categoriaId` = 1 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Aceite de oliva 500ml - $18,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Vinagre blanco 1L' AND `Producto`.`subcategoriaId` = 2 AND `Producto`.`categoriaId` = 1 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Vinagre blanco 1L - $3,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Vinagre de manzana 500ml' AND `Producto`.`subcategoriaId` = 2 AND `Producto`.`categoriaId` = 1 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Vinagre de manzana 500ml - $5,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Aceite de girasol 1L' AND `Producto`.`subcategoriaId` = 2 AND `Producto`.`categoriaId` = 1 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Aceite de girasol 1L - $8,500 (actualizado)
+
+📦 Azucar y endulzantes (Despensa):
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Azúcar Manuelita 1kg' AND `Producto`.`subcategoriaId` = 3 AND `Producto`.`categoriaId` = 1 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Azúcar Manuelita 1kg - $3,200 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Panela en bloque' AND `Producto`.`subcategoriaId` = 3 AND `Producto`.`categoriaId` = 1 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Panela en bloque - $4,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Miel de abejas 500g' AND `Producto`.`subcategoriaId` = 3 AND `Producto`.`categoriaId` = 1 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Miel de abejas 500g - $12,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Stevia 100 sobres' AND `Producto`.`subcategoriaId` = 3 AND `Producto`.`categoriaId` = 1 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Stevia 100 sobres - $8,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Azúcar morena 1kg' AND `Producto`.`subcategoriaId` = 3 AND `Producto`.`categoriaId` = 1 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Azúcar morena 1kg - $3,500 (actualizado)
+
+📦 Leches (Lacteos y Huevos):
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Leche Alquería 1L' AND `Producto`.`subcategoriaId` = 4 AND `Producto`.`categoriaId` = 2 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Leche Alquería 1L - $4,200 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Leche deslactosada 1L' AND `Producto`.`subcategoriaId` = 4 AND `Producto`.`categoriaId` = 2 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Leche deslactosada 1L - $4,800 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Leche en polvo 400g' AND `Producto`.`subcategoriaId` = 4 AND `Producto`.`categoriaId` = 2 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Leche en polvo 400g - $15,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Leche de almendras 1L' AND `Producto`.`subcategoriaId` = 4 AND `Producto`.`categoriaId` = 2 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Leche de almendras 1L - $12,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Leche chocolatada 1L' AND `Producto`.`subcategoriaId` = 4 AND `Producto`.`categoriaId` = 2 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Leche chocolatada 1L - $5,000 (actualizado)
+
+📦 Quesos (Lacteos y Huevos):
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Queso campesino 500g' AND `Producto`.`subcategoriaId` = 5 AND `Producto`.`categoriaId` = 2 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Queso campesino 500g - $9,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Queso mozzarella 400g' AND `Producto`.`subcategoriaId` = 5 AND `Producto`.`categoriaId` = 2 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Queso mozzarella 400g - $11,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Queso doble crema' AND `Producto`.`subcategoriaId` = 5 AND `Producto`.`categoriaId` = 2 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Queso doble crema - $9,500 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Queso parmesano 200g' AND `Producto`.`subcategoriaId` = 5 AND `Producto`.`categoriaId` = 2 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Queso parmesano 200g - $12,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Queso tajado 200g' AND `Producto`.`subcategoriaId` = 5 AND `Producto`.`categoriaId` = 2 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Queso tajado 200g - $8,000 (actualizado)
+
+📦 Huevos (Lacteos y Huevos):
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Huevos AA x30' AND `Producto`.`subcategoriaId` = 6 AND `Producto`.`categoriaId` = 2 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Huevos AA x30 - $15,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Huevos A x12' AND `Producto`.`subcategoriaId` = 6 AND `Producto`.`categoriaId` = 2 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Huevos A x12 - $7,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Huevos orgánicos x12' AND `Producto`.`subcategoriaId` = 6 AND `Producto`.`categoriaId` = 2 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Huevos orgánicos x12 - $12,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Huevos jumbo x30' AND `Producto`.`subcategoriaId` = 6 AND `Producto`.`categoriaId` = 2 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Huevos jumbo x30 - $18,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Huevos económicos x30' AND `Producto`.`subcategoriaId` = 6 AND `Producto`.`categoriaId` = 2 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Huevos económicos x30 - $13,000 (actualizado)
+
+📦 Gaseosas (Bebidas):
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Coca-Cola 1.5L' AND `Producto`.`subcategoriaId` = 7 AND `Producto`.`categoriaId` = 3 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Coca-Cola 1.5L - $6,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Pepsi 1.5L' AND `Producto`.`subcategoriaId` = 7 AND `Producto`.`categoriaId` = 3 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Pepsi 1.5L - $5,500 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Colombiana 1.5L' AND `Producto`.`subcategoriaId` = 7 AND `Producto`.`categoriaId` = 3 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Colombiana 1.5L - $5,800 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Sprite 1.5L' AND `Producto`.`subcategoriaId` = 7 AND `Producto`.`categoriaId` = 3 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Sprite 1.5L - $5,700 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Fanta naranja 1.5L' AND `Producto`.`subcategoriaId` = 7 AND `Producto`.`categoriaId` = 3 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Fanta naranja 1.5L - $5,600 (actualizado)
+
+📦 Jugos (Bebidas):
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Jugo Hit mango 1L' AND `Producto`.`subcategoriaId` = 8 AND `Producto`.`categoriaId` = 3 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Jugo Hit mango 1L - $3,500 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Jugo del Valle naranja' AND `Producto`.`subcategoriaId` = 8 AND `Producto`.`categoriaId` = 3 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Jugo del Valle naranja - $4,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Jugo en caja 200ml' AND `Producto`.`subcategoriaId` = 8 AND `Producto`.`categoriaId` = 3 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Jugo en caja 200ml - $1,200 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Jugo de mora 1L' AND `Producto`.`subcategoriaId` = 8 AND `Producto`.`categoriaId` = 3 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Jugo de mora 1L - $5,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Jugo de guanábana' AND `Producto`.`subcategoriaId` = 8 AND `Producto`.`categoriaId` = 3 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Jugo de guanábana - $5,500 (actualizado)
+
+📦 Aguas (Bebidas):
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Agua Cristal 600ml' AND `Producto`.`subcategoriaId` = 9 AND `Producto`.`categoriaId` = 3 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Agua Cristal 600ml - $1,500 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Agua con gas 1L' AND `Producto`.`subcategoriaId` = 9 AND `Producto`.`categoriaId` = 3 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Agua con gas 1L - $2,500 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Agua saborizada' AND `Producto`.`subcategoriaId` = 9 AND `Producto`.`categoriaId` = 3 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Agua saborizada - $3,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Agua 5L' AND `Producto`.`subcategoriaId` = 9 AND `Producto`.`categoriaId` = 3 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Agua 5L - $7,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Agua premium 750ml' AND `Producto`.`subcategoriaId` = 9 AND `Producto`.`categoriaId` = 3 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Agua premium 750ml - $4,000 (actualizado)
+
+📦 Detergentes (Limpieza y Hogar):
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Ariel 1kg' AND `Producto`.`subcategoriaId` = 10 AND `Producto`.`categoriaId` = 4 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Ariel 1kg - $12,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Fab líquido 1L' AND `Producto`.`subcategoriaId` = 10 AND `Producto`.`categoriaId` = 4 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Fab líquido 1L - $10,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Detergente económico' AND `Producto`.`subcategoriaId` = 10 AND `Producto`.`categoriaId` = 4 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Detergente económico - $8,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Suavizante 1L' AND `Producto`.`subcategoriaId` = 10 AND `Producto`.`categoriaId` = 4 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Suavizante 1L - $7,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Detergente cápsulas' AND `Producto`.`subcategoriaId` = 10 AND `Producto`.`categoriaId` = 4 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Detergente cápsulas - $15,000 (actualizado)
+
+📦 Jabones (Limpieza y Hogar):
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Jabón Dove' AND `Producto`.`subcategoriaId` = 11 AND `Producto`.`categoriaId` = 4 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Jabón Dove - $4,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Jabón Protex' AND `Producto`.`subcategoriaId` = 11 AND `Producto`.`categoriaId` = 4 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Jabón Protex - $3,500 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Jabón Rey' AND `Producto`.`subcategoriaId` = 11 AND `Producto`.`categoriaId` = 4 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Jabón Rey - $2,500 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Jabón líquido manos' AND `Producto`.`subcategoriaId` = 11 AND `Producto`.`categoriaId` = 4 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Jabón líquido manos - $6,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Jabón infantil' AND `Producto`.`subcategoriaId` = 11 AND `Producto`.`categoriaId` = 4 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Jabón infantil - $4,500 (actualizado)
+
+📦 Lavaloza (Limpieza y Hogar):
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Axion limón' AND `Producto`.`subcategoriaId` = 12 AND `Producto`.`categoriaId` = 4 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Axion limón - $5,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Lavaloza líquido 1L' AND `Producto`.`subcategoriaId` = 12 AND `Producto`.`categoriaId` = 4 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Lavaloza líquido 1L - $6,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Esponjas x3' AND `Producto`.`subcategoriaId` = 12 AND `Producto`.`categoriaId` = 4 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Esponjas x3 - $3,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Lavaloza antibacterial' AND `Producto`.`subcategoriaId` = 12 AND `Producto`.`categoriaId` = 4 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Lavaloza antibacterial - $6,500 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Cepillo cocina' AND `Producto`.`subcategoriaId` = 12 AND `Producto`.`categoriaId` = 4 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Cepillo cocina - $4,000 (actualizado)
+
+📦 Frutas (Frutas y Verduras):
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Banano 1kg' AND `Producto`.`subcategoriaId` = 13 AND `Producto`.`categoriaId` = 5 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Banano 1kg - $2,500 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Manzana roja 1kg' AND `Producto`.`subcategoriaId` = 13 AND `Producto`.`categoriaId` = 5 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Manzana roja 1kg - $6,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Naranja 1kg' AND `Producto`.`subcategoriaId` = 13 AND `Producto`.`categoriaId` = 5 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Naranja 1kg - $3,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Piña entera' AND `Producto`.`subcategoriaId` = 13 AND `Producto`.`categoriaId` = 5 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Piña entera - $5,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Uva 500g' AND `Producto`.`subcategoriaId` = 13 AND `Producto`.`categoriaId` = 5 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Uva 500g - $7,000 (actualizado)
+
+📦 Verduras (Frutas y Verduras):
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Papa 1kg' AND `Producto`.`subcategoriaId` = 14 AND `Producto`.`categoriaId` = 5 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Papa 1kg - $2,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Tomate 1kg' AND `Producto`.`subcategoriaId` = 14 AND `Producto`.`categoriaId` = 5 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Tomate 1kg - $3,500 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Cebolla cabezona' AND `Producto`.`subcategoriaId` = 14 AND `Producto`.`categoriaId` = 5 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Cebolla cabezona - $3,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Zanahoria 1kg' AND `Producto`.`subcategoriaId` = 14 AND `Producto`.`categoriaId` = 5 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Zanahoria 1kg - $2,500 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Lechuga' AND `Producto`.`subcategoriaId` = 14 AND `Producto`.`categoriaId` = 5 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Lechuga - $2,000 (actualizado)
+
+📦 Hortalizas (Frutas y Verduras):
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Brócoli' AND `Producto`.`subcategoriaId` = 15 AND `Producto`.`categoriaId` = 5 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Brócoli - $4,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Coliflor' AND `Producto`.`subcategoriaId` = 15 AND `Producto`.`categoriaId` = 5 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Coliflor - $4,500 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Espinaca' AND `Producto`.`subcategoriaId` = 15 AND `Producto`.`categoriaId` = 5 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Espinaca - $3,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Pepino cohombro' AND `Producto`.`subcategoriaId` = 15 AND `Producto`.`categoriaId` = 5 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Pepino cohombro - $2,000 (actualizado)
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `subcategoriaId`, `categoriaId`, `proveedorId`, `activo`, `createdAt`, `updatedAt` FROM `productos` AS `Producto` WHERE `Producto`.`nombre` = 'Ajo 250g' AND `Producto`.`subcategoriaId` = 15 AND `Producto`.`categoriaId` = 5 LIMIT 1;
+Executing (default): UPDATE `productos` SET `precio`=?,`updatedAt`=? WHERE `id` = ?
+   ℹ️ Ajo 250g - $3,500 (actualizado)
+
+✅ Total: 75 productos creados
+
+
+🎉 ========================================
+   SEEDER COMPLETADO EXITOSAMENTE
+========================================
+
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario`;
+Executing (default): SELECT count(*) AS `count` FROM `categorias` AS `Categoria`;
+Executing (default): SELECT count(*) AS `count` FROM `subcategorias` AS `Subcategoria`;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto`;
+📊 RESUMEN:
+   👥 Usuarios: 7
+   📁 Categorías: 5
+   📂 Subcategorías: 15
+   📦 Productos: 75
+
+🔑 CREDENCIALES DE ACCESO:
+
+   👨‍💼 ADMINISTRADOR
+      Email: admin@MarketCOL.com
+      Password: admin1234
+
+   👤 AUXILIAR
+      Email: auxiliar@ecommerce.com
+      Password: aux123
+
+   🛍️  CLIENTES (5)
+      Email: cliente1@ecommerce.com - Password: cliente1
+      Email: cliente2@ecommerce.com - Password: cliente2
+      Email: cliente3@ecommerce.com - Password: cliente3
+      Email: cliente4@ecommerce.com - Password: cliente4
+      Email: cliente5@ecommerce.com - Password: cliente5
+
+========================================
+
+
+✅ Seeders ejecutados correctamente
+
+
+╔════════════════════════════════════════════════╗
+║  ✅ Servidor corriendo en puerto 3001          ║
+║  🌐 URL: http://localhost:3001                ║
+║  📚 Documentación API: http://localhost:3001  ║
+║  🗄️  Base de datos: marketcol        ║
+║  🔧 Modo: development                     ║
+╚════════════════════════════════════════════════╝
+
+📝 Servidor listo para recibir peticiones...
+
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `password`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`email` = 'admin@MarketCOL.com';
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `password`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`email` = 'admin@MarketCOL.com';
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `password`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`email` = 'admin@ecommerce.com';
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `password`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`email` = 'admin@MarketCOL.com';
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(*) AS `count` FROM `pedidos` AS `Pedido`;
+Executing (default): SELECT `estado`, COUNT(`id`) AS `cantidad`, SUM(`total`) AS `totalVentas` FROM `pedidos` AS `Pedido` GROUP BY `estado`;
+Executing (default): SELECT sum(`total`) AS `sum` FROM `pedidos` AS `Pedido`;
+Executing (default): SELECT count(*) AS `count` FROM `pedidos` AS `Pedido` WHERE `Pedido`.`createdAt` >= '2026-08-30 19:00:00';
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario`;
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`rol` = 'cliente';
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`rol` = 'administrador';
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`activo` = true;
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`activo` = false;
+Executing (default): SELECT `id`, `nombre`, `descripcion` FROM `categorias` AS `Categoria` WHERE `Categoria`.`activo` = true ORDER BY `Categoria`.`nombre` ASC;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 ORDER BY `Producto`.`createdAt` DESC LIMIT 0, 15;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`categoriaId` = 3 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`categoriaId` = 1 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`categoriaId` = 5 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`categoriaId` = 2 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`categoriaId` = 4 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 ORDER BY `Producto`.`createdAt` DESC LIMIT 0, 15;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario`;
+Executing (default): SELECT count(*) AS `count` FROM `pedidos` AS `Pedido`;
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`rol` = 'cliente';
+Executing (default): SELECT `estado`, COUNT(`id`) AS `cantidad`, SUM(`total`) AS `totalVentas` FROM `pedidos` AS `Pedido` GROUP BY `estado`;
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`rol` = 'administrador';
+Executing (default): SELECT sum(`total`) AS `sum` FROM `pedidos` AS `Pedido`;
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`activo` = true;
+Executing (default): SELECT count(*) AS `count` FROM `pedidos` AS `Pedido` WHERE `Pedido`.`createdAt` >= '2026-08-30 19:00:00';
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`activo` = false;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `password`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`email` = 'admin@MarketCOL.com';
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(*) AS `count` FROM `pedidos` AS `Pedido`;
+Executing (default): SELECT `estado`, COUNT(`id`) AS `cantidad`, SUM(`total`) AS `totalVentas` FROM `pedidos` AS `Pedido` GROUP BY `estado`;
+Executing (default): SELECT sum(`total`) AS `sum` FROM `pedidos` AS `Pedido`;
+Executing (default): SELECT count(*) AS `count` FROM `pedidos` AS `Pedido` WHERE `Pedido`.`createdAt` >= '2026-08-30 19:00:00';
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario`;
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`rol` = 'cliente';
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`rol` = 'administrador';
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`activo` = true;
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`activo` = false;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` LEFT OUTER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` LEFT OUTER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` LEFT OUTER JOIN `proveedores` AS `proveedor` ON `Producto`.`proveedorId` = `proveedor`.`id`;
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre`, `proveedor`.`id` AS `proveedor.id`, `proveedor`.`nombre` AS `proveedor.nombre` FROM `productos` AS `Producto` LEFT OUTER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` LEFT OUTER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` LEFT OUTER JOIN `proveedores` AS `proveedor` ON `Producto`.`proveedorId` = `proveedor`.`id` ORDER BY `Producto`.`nombre` ASC LIMIT 0, 100;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `password`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`email` = 'admin@MarketCOL.com';
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(`Pedido`.`id`) AS `count` FROM `pedidos` AS `Pedido` LEFT OUTER JOIN `usuarios` AS `usuario` ON `Pedido`.`usuarioId` = `usuario`.`id` LEFT OUTER JOIN `detalle_pedidos` AS `detalles` ON `Pedido`.`id` = `detalles`.`pedidoId` LEFT OUTER JOIN `productos` AS `detalles->producto` ON `detalles`.`productoId` = `detalles->producto`.`id`;
+Executing (default): SELECT `Pedido`.*, `usuario`.`id` AS `usuario.id`, `usuario`.`nombre` AS `usuario.nombre`, `usuario`.`email` AS `usuario.email`, `detalles`.`id` AS `detalles.id`, `detalles`.`pedidoId` AS `detalles.pedidoId`, `detalles`.`productoId` AS `detalles.productoId`, `detalles`.`cantidad` AS `detalles.cantidad`, `detalles`.`precioUnitario` AS `detalles.precioUnitario`, `detalles`.`subtotal` AS `detalles.subtotal`, `detalles->producto`.`id` AS `detalles.producto.id`, `detalles->producto`.`nombre` AS `detalles.producto.nombre`, `detalles->producto`.`imagen` AS `detalles.producto.imagen` FROM (SELECT `Pedido`.`id`, `Pedido`.`usuarioId`, `Pedido`.`total`, `Pedido`.`estado`, `Pedido`.`estadoPago`, `Pedido`.`direccionEnvio`, `Pedido`.`telefono`, `Pedido`.`modalidadEntrega`, `Pedido`.`notas`, `Pedido`.`fechaPago`, `Pedido`.`fechaEnvio`, `Pedido`.`fechaEntrega`, `Pedido`.`createdAt`, `Pedido`.`updatedAt` FROM `pedidos` AS `Pedido` ORDER BY `Pedido`.`createdAt` DESC LIMIT 0, 5) AS `Pedido` LEFT OUTER JOIN `usuarios` AS `usuario` ON `Pedido`.`usuarioId` = `usuario`.`id` LEFT OUTER JOIN `detalle_pedidos` AS `detalles` ON `Pedido`.`id` = `detalles`.`pedidoId` LEFT OUTER JOIN `productos` AS `detalles->producto` ON `detalles`.`productoId` = `detalles->producto`.`id` ORDER BY `Pedido`.`createdAt` DESC;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(*) AS `count` FROM `pedidos` AS `Pedido`;
+Executing (default): SELECT `estado`, COUNT(`id`) AS `cantidad`, SUM(`total`) AS `totalVentas` FROM `pedidos` AS `Pedido` GROUP BY `estado`;
+Executing (default): SELECT sum(`total`) AS `sum` FROM `pedidos` AS `Pedido`;
+Executing (default): SELECT count(*) AS `count` FROM `pedidos` AS `Pedido` WHERE `Pedido`.`createdAt` >= '2026-08-30 19:00:00';
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario`;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` LEFT OUTER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` LEFT OUTER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` LEFT OUTER JOIN `proveedores` AS `proveedor` ON `Producto`.`proveedorId` = `proveedor`.`id`;
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre`, `proveedor`.`id` AS `proveedor.id`, `proveedor`.`nombre` AS `proveedor.nombre` FROM `productos` AS `Producto` LEFT OUTER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` LEFT OUTER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` LEFT OUTER JOIN `proveedores` AS `proveedor` ON `Producto`.`proveedorId` = `proveedor`.`id` ORDER BY `Producto`.`nombre` ASC LIMIT 0, 100;
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`rol` = 'cliente';
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`rol` = 'administrador';
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`activo` = true;
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`activo` = false;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(`Pedido`.`id`) AS `count` FROM `pedidos` AS `Pedido` LEFT OUTER JOIN `usuarios` AS `usuario` ON `Pedido`.`usuarioId` = `usuario`.`id` LEFT OUTER JOIN `detalle_pedidos` AS `detalles` ON `Pedido`.`id` = `detalles`.`pedidoId` LEFT OUTER JOIN `productos` AS `detalles->producto` ON `detalles`.`productoId` = `detalles->producto`.`id`;
+Executing (default): SELECT `Pedido`.*, `usuario`.`id` AS `usuario.id`, `usuario`.`nombre` AS `usuario.nombre`, `usuario`.`email` AS `usuario.email`, `detalles`.`id` AS `detalles.id`, `detalles`.`pedidoId` AS `detalles.pedidoId`, `detalles`.`productoId` AS `detalles.productoId`, `detalles`.`cantidad` AS `detalles.cantidad`, `detalles`.`precioUnitario` AS `detalles.precioUnitario`, `detalles`.`subtotal` AS `detalles.subtotal`, `detalles->producto`.`id` AS `detalles.producto.id`, `detalles->producto`.`nombre` AS `detalles.producto.nombre`, `detalles->producto`.`imagen` AS `detalles.producto.imagen` FROM (SELECT `Pedido`.`id`, `Pedido`.`usuarioId`, `Pedido`.`total`, `Pedido`.`estado`, `Pedido`.`estadoPago`, `Pedido`.`direccionEnvio`, `Pedido`.`telefono`, `Pedido`.`modalidadEntrega`, `Pedido`.`notas`, `Pedido`.`fechaPago`, `Pedido`.`fechaEnvio`, `Pedido`.`fechaEntrega`, `Pedido`.`createdAt`, `Pedido`.`updatedAt` FROM `pedidos` AS `Pedido` ORDER BY `Pedido`.`createdAt` DESC LIMIT 0, 5) AS `Pedido` LEFT OUTER JOIN `usuarios` AS `usuario` ON `Pedido`.`usuarioId` = `usuario`.`id` LEFT OUTER JOIN `detalle_pedidos` AS `detalles` ON `Pedido`.`id` = `detalles`.`pedidoId` LEFT OUTER JOIN `productos` AS `detalles->producto` ON `detalles`.`productoId` = `detalles->producto`.`id` ORDER BY `Pedido`.`createdAt` DESC;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` ORDER BY `Categoria`.`nombre` ASC;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` ORDER BY `Categoria`.`nombre` ASC;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` ORDER BY `Subcategoria`.`nombre` ASC;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` ORDER BY `Categoria`.`nombre` ASC;
+Executing (default): SELECT count(*) AS `count` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true;
+Executing (default): SELECT `id`, `nombre`, `contacto`, `telefono`, `email`, `direccion`, `activo`, `createdAt`, `updatedAt`, (
+              SELECT COUNT(*)
+              FROM productos
+              WHERE productos.proveedorId = Proveedor.id
+            ) AS `totalProductos` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true ORDER BY `Proveedor`.`nombre` ASC LIMIT 0, 10;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` ORDER BY `Subcategoria`.`nombre` ASC;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` WHERE `Categoria`.`activo` = true ORDER BY `Categoria`.`nombre` ASC;
+Executing (default): SELECT count(*) AS `count` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true;
+Executing (default): SELECT `id`, `nombre`, `contacto`, `telefono`, `email`, `direccion`, `activo`, `createdAt`, `updatedAt`, (
+              SELECT COUNT(*)
+              FROM productos
+              WHERE productos.proveedorId = Proveedor.id
+            ) AS `totalProductos` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true ORDER BY `Proveedor`.`nombre` ASC LIMIT 0, 10;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` ORDER BY `Categoria`.`nombre` ASC;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` ORDER BY `Categoria`.`nombre` ASC;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(*) AS `count` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true;
+Executing (default): SELECT `id`, `nombre`, `contacto`, `telefono`, `email`, `direccion`, `activo`, `createdAt`, `updatedAt`, (
+              SELECT COUNT(*)
+              FROM productos
+              WHERE productos.proveedorId = Proveedor.id
+            ) AS `totalProductos` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true ORDER BY `Proveedor`.`nombre` ASC LIMIT 0, 10;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` ORDER BY `Subcategoria`.`nombre` ASC;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` WHERE `Categoria`.`activo` = true ORDER BY `Categoria`.`nombre` ASC;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(*) AS `count` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true;
+Executing (default): SELECT `id`, `nombre`, `contacto`, `telefono`, `email`, `direccion`, `activo`, `createdAt`, `updatedAt`, (
+              SELECT COUNT(*)
+              FROM productos
+              WHERE productos.proveedorId = Proveedor.id
+            ) AS `totalProductos` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true ORDER BY `Proveedor`.`nombre` ASC LIMIT 0, 10;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `password`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`email` = 'admin@MarketCOL.com';
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` LEFT OUTER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` LEFT OUTER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` LEFT OUTER JOIN `proveedores` AS `proveedor` ON `Producto`.`proveedorId` = `proveedor`.`id`;
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre`, `proveedor`.`id` AS `proveedor.id`, `proveedor`.`nombre` AS `proveedor.nombre` FROM `productos` AS `Producto` LEFT OUTER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` LEFT OUTER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` LEFT OUTER JOIN `proveedores` AS `proveedor` ON `Producto`.`proveedorId` = `proveedor`.`id` ORDER BY `Producto`.`nombre` ASC LIMIT 0, 100;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` ORDER BY `Categoria`.`nombre` ASC;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` ORDER BY `Subcategoria`.`nombre` ASC;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(*) AS `count` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true;
+Executing (default): SELECT `id`, `nombre`, `contacto`, `telefono`, `email`, `direccion`, `activo`, `createdAt`, `updatedAt`, (
+              SELECT COUNT(*)
+              FROM productos
+              WHERE productos.proveedorId = Proveedor.id
+            ) AS `totalProductos` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true ORDER BY `Proveedor`.`nombre` ASC LIMIT 0, 10;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` ORDER BY `Categoria`.`nombre` ASC;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` ORDER BY `Categoria`.`nombre` ASC;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` ORDER BY `Subcategoria`.`nombre` ASC;
+Executing (default): SELECT count(*) AS `count` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true;
+Executing (default): SELECT `id`, `nombre`, `contacto`, `telefono`, `email`, `direccion`, `activo`, `createdAt`, `updatedAt`, (
+              SELECT COUNT(*)
+              FROM productos
+              WHERE productos.proveedorId = Proveedor.id
+            ) AS `totalProductos` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true ORDER BY `Proveedor`.`nombre` ASC LIMIT 0, 10;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` WHERE `Categoria`.`activo` = true ORDER BY `Categoria`.`nombre` ASC;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(*) AS `count` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true;
+Executing (default): SELECT `id`, `nombre`, `contacto`, `telefono`, `email`, `direccion`, `activo`, `createdAt`, `updatedAt`, (
+              SELECT COUNT(*)
+              FROM productos
+              WHERE productos.proveedorId = Proveedor.id
+            ) AS `totalProductos` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true ORDER BY `Proveedor`.`nombre` ASC LIMIT 0, 10;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` LEFT OUTER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` LEFT OUTER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` LEFT OUTER JOIN `proveedores` AS `proveedor` ON `Producto`.`proveedorId` = `proveedor`.`id`;
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre`, `proveedor`.`id` AS `proveedor.id`, `proveedor`.`nombre` AS `proveedor.nombre` FROM `productos` AS `Producto` LEFT OUTER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` LEFT OUTER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` LEFT OUTER JOIN `proveedores` AS `proveedor` ON `Producto`.`proveedorId` = `proveedor`.`id` ORDER BY `Producto`.`nombre` ASC LIMIT 0, 100;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` ORDER BY `Categoria`.`nombre` ASC;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` ORDER BY `Subcategoria`.`nombre` ASC;
+Executing (default): SELECT count(*) AS `count` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true;
+Executing (default): SELECT `id`, `nombre`, `contacto`, `telefono`, `email`, `direccion`, `activo`, `createdAt`, `updatedAt`, (
+              SELECT COUNT(*)
+              FROM productos
+              WHERE productos.proveedorId = Proveedor.id
+            ) AS `totalProductos` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true ORDER BY `Proveedor`.`nombre` ASC LIMIT 0, 10;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` WHERE `Categoria`.`activo` = true ORDER BY `Categoria`.`nombre` ASC;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(*) AS `count` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true;
+Executing (default): SELECT `id`, `nombre`, `contacto`, `telefono`, `email`, `direccion`, `activo`, `createdAt`, `updatedAt`, (
+              SELECT COUNT(*)
+              FROM productos
+              WHERE productos.proveedorId = Proveedor.id
+            ) AS `totalProductos` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true ORDER BY `Proveedor`.`nombre` ASC LIMIT 0, 10;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` ORDER BY `Categoria`.`nombre` ASC;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` LEFT OUTER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` LEFT OUTER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` LEFT OUTER JOIN `proveedores` AS `proveedor` ON `Producto`.`proveedorId` = `proveedor`.`id`;
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre`, `proveedor`.`id` AS `proveedor.id`, `proveedor`.`nombre` AS `proveedor.nombre` FROM `productos` AS `Producto` LEFT OUTER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` LEFT OUTER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` LEFT OUTER JOIN `proveedores` AS `proveedor` ON `Producto`.`proveedorId` = `proveedor`.`id` ORDER BY `Producto`.`nombre` ASC LIMIT 0, 100;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` ORDER BY `Categoria`.`nombre` ASC;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(*) AS `count` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true;
+Executing (default): SELECT `id`, `nombre`, `contacto`, `telefono`, `email`, `direccion`, `activo`, `createdAt`, `updatedAt`, (
+              SELECT COUNT(*)
+              FROM productos
+              WHERE productos.proveedorId = Proveedor.id
+            ) AS `totalProductos` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true ORDER BY `Proveedor`.`nombre` ASC LIMIT 0, 10;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `categoriaId`, `activo`, `createdAt`, `updatedAt` FROM `subcategorias` AS `Subcategoria` ORDER BY `Subcategoria`.`nombre` ASC;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` WHERE `Categoria`.`activo` = true ORDER BY `Categoria`.`nombre` ASC;
+Executing (default): SELECT count(*) AS `count` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true;
+Executing (default): SELECT `id`, `nombre`, `contacto`, `telefono`, `email`, `direccion`, `activo`, `createdAt`, `updatedAt`, (
+              SELECT COUNT(*)
+              FROM productos
+              WHERE productos.proveedorId = Proveedor.id
+            ) AS `totalProductos` FROM `proveedores` AS `Proveedor` WHERE `Proveedor`.`activo` = true ORDER BY `Proveedor`.`nombre` ASC LIMIT 0, 10;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(*) AS `count` FROM `proveedores` AS `Proveedor`;
+Executing (default): SELECT `id`, `nombre`, `contacto`, `telefono`, `email`, `direccion`, `activo`, `createdAt`, `updatedAt`, (
+              SELECT COUNT(*)
+              FROM productos
+              WHERE productos.proveedorId = Proveedor.id
+            ) AS `totalProductos` FROM `proveedores` AS `Proveedor` ORDER BY `Proveedor`.`nombre` ASC LIMIT 0, 10;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(*) AS `count` FROM `usuarios` AS `Usuario`;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` ORDER BY `Usuario`.`createdAt` DESC LIMIT 0, 1000;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(`Pedido`.`id`) AS `count` FROM `pedidos` AS `Pedido` LEFT OUTER JOIN `usuarios` AS `usuario` ON `Pedido`.`usuarioId` = `usuario`.`id` LEFT OUTER JOIN `detalle_pedidos` AS `detalles` ON `Pedido`.`id` = `detalles`.`pedidoId` LEFT OUTER JOIN `productos` AS `detalles->producto` ON `detalles`.`productoId` = `detalles->producto`.`id`;
+Executing (default): SELECT `Pedido`.*, `usuario`.`id` AS `usuario.id`, `usuario`.`nombre` AS `usuario.nombre`, `usuario`.`email` AS `usuario.email`, `detalles`.`id` AS `detalles.id`, `detalles`.`pedidoId` AS `detalles.pedidoId`, `detalles`.`productoId` AS `detalles.productoId`, `detalles`.`cantidad` AS `detalles.cantidad`, `detalles`.`precioUnitario` AS `detalles.precioUnitario`, `detalles`.`subtotal` AS `detalles.subtotal`, `detalles->producto`.`id` AS `detalles.producto.id`, `detalles->producto`.`nombre` AS `detalles.producto.nombre`, `detalles->producto`.`imagen` AS `detalles.producto.imagen` FROM (SELECT `Pedido`.`id`, `Pedido`.`usuarioId`, `Pedido`.`total`, `Pedido`.`estado`, `Pedido`.`estadoPago`, `Pedido`.`direccionEnvio`, `Pedido`.`telefono`, `Pedido`.`modalidadEntrega`, `Pedido`.`notas`, `Pedido`.`fechaPago`, `Pedido`.`fechaEnvio`, `Pedido`.`fechaEntrega`, `Pedido`.`createdAt`, `Pedido`.`updatedAt` FROM `pedidos` AS `Pedido` ORDER BY `Pedido`.`createdAt` DESC LIMIT 0, 20) AS `Pedido` LEFT OUTER JOIN `usuarios` AS `usuario` ON `Pedido`.`usuarioId` = `usuario`.`id` LEFT OUTER JOIN `detalle_pedidos` AS `detalles` ON `Pedido`.`id` = `detalles`.`pedidoId` LEFT OUTER JOIN `productos` AS `detalles->producto` ON `detalles`.`productoId` = `detalles->producto`.`id` ORDER BY `Pedido`.`createdAt` DESC;
+Executing (default): SELECT `id`, `nombre`, `descripcion` FROM `categorias` AS `Categoria` WHERE `Categoria`.`activo` = true ORDER BY `Categoria`.`nombre` ASC;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 ORDER BY `Producto`.`createdAt` DESC LIMIT 0, 15;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`categoriaId` = 3 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`categoriaId` = 1 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`categoriaId` = 5 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`categoriaId` = 2 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`categoriaId` = 4 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '3';
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '3' ORDER BY `Producto`.`createdAt` DESC LIMIT 0, 15;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '3';
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '3' ORDER BY `Producto`.`createdAt` DESC LIMIT 0, 15;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` WHERE `Categoria`.`id` = '3' AND `Categoria`.`activo` = true;
+Executing (default): SELECT `id`, `nombre`, `descripcion` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`categoriaId` = '3' AND `Subcategoria`.`activo` = true ORDER BY `Subcategoria`.`nombre` ASC;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`subcategoriaId` = 9 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`subcategoriaId` = 7 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`subcategoriaId` = 8 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` WHERE `Categoria`.`id` = '1' AND `Categoria`.`activo` = true;
+Executing (default): SELECT `id`, `nombre`, `descripcion` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`categoriaId` = '1' AND `Subcategoria`.`activo` = true ORDER BY `Subcategoria`.`nombre` ASC;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`subcategoriaId` = 2 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`subcategoriaId` = 1 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`subcategoriaId` = 3 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '1';
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '1' ORDER BY `Producto`.`createdAt` DESC LIMIT 0, 15;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '1';
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '1' ORDER BY `Producto`.`createdAt` DESC LIMIT 0, 15;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` WHERE `Categoria`.`id` = '5' AND `Categoria`.`activo` = true;
+Executing (default): SELECT `id`, `nombre`, `descripcion` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`categoriaId` = '5' AND `Subcategoria`.`activo` = true ORDER BY `Subcategoria`.`nombre` ASC;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`subcategoriaId` = 13 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`subcategoriaId` = 15 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`subcategoriaId` = 14 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '5';
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '5' ORDER BY `Producto`.`createdAt` DESC LIMIT 0, 15;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '5';
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '5' ORDER BY `Producto`.`createdAt` DESC LIMIT 0, 15;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` WHERE `Categoria`.`id` = '2' AND `Categoria`.`activo` = true;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '2';
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '2' ORDER BY `Producto`.`createdAt` DESC LIMIT 0, 15;
+Executing (default): SELECT `id`, `nombre`, `descripcion` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`categoriaId` = '2' AND `Subcategoria`.`activo` = true ORDER BY `Subcategoria`.`nombre` ASC;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`subcategoriaId` = 6 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`subcategoriaId` = 4 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`subcategoriaId` = 5 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '2';
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '2' ORDER BY `Producto`.`createdAt` DESC LIMIT 0, 15;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '4';
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '4' ORDER BY `Producto`.`createdAt` DESC LIMIT 0, 15;
+Executing (default): SELECT `id`, `nombre`, `descripcion`, `activo`, `createdAt`, `updatedAt` FROM `categorias` AS `Categoria` WHERE `Categoria`.`id` = '4' AND `Categoria`.`activo` = true;
+Executing (default): SELECT `id`, `nombre`, `descripcion` FROM `subcategorias` AS `Subcategoria` WHERE `Subcategoria`.`categoriaId` = '4' AND `Subcategoria`.`activo` = true ORDER BY `Subcategoria`.`nombre` ASC;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`subcategoriaId` = 10 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`subcategoriaId` = 11 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(*) AS `count` FROM `productos` AS `Producto` WHERE `Producto`.`subcategoriaId` = 12 AND `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '4';
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '4' ORDER BY `Producto`.`createdAt` DESC LIMIT 0, 15;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '4';
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '4' ORDER BY `Producto`.`createdAt` DESC LIMIT 0, 15;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '4' AND `Producto`.`subcategoriaId` = '11';
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '4' AND `Producto`.`subcategoriaId` = '11' ORDER BY `Producto`.`createdAt` DESC LIMIT 0, 15;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '4' AND `Producto`.`subcategoriaId` = '12';
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 AND `Producto`.`categoriaId` = '4' AND `Producto`.`subcategoriaId` = '12' ORDER BY `Producto`.`createdAt` DESC LIMIT 0, 15;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 ORDER BY `Producto`.`createdAt` DESC LIMIT 0, 15;
+Executing (default): SELECT count(`Producto`.`id`) AS `count` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0;
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 ORDER BY `Producto`.`createdAt` DESC LIMIT 0, 15;
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 ORDER BY `Producto`.`createdAt` DESC LIMIT 8;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT `Carrito`.`id`, `Carrito`.`usuarioId`, `Carrito`.`productoId`, `Carrito`.`cantidad`, `Carrito`.`precioUnitario`, `Carrito`.`createdAt`, `Carrito`.`updatedAt`, `producto`.`id` AS `producto.id`, `producto`.`nombre` AS `producto.nombre`, `producto`.`descripcion` AS `producto.descripcion`, `producto`.`precio` AS `producto.precio`, `producto`.`stock` AS `producto.stock`, `producto`.`imagen` AS `producto.imagen`, `producto`.`activo` AS `producto.activo`, `producto->categoria`.`id` AS `producto.categoria.id`, `producto->categoria`.`nombre` AS `producto.categoria.nombre`, `producto->subcategoria`.`id` AS `producto.subcategoria.id`, `producto->subcategoria`.`nombre` AS `producto.subcategoria.nombre` FROM `carritos` AS `Carrito` LEFT OUTER JOIN `productos` AS `producto` ON `Carrito`.`productoId` = `producto`.`id` LEFT OUTER JOIN `categorias` AS `producto->categoria` ON `producto`.`categoriaId` = `producto->categoria`.`id` LEFT OUTER JOIN `subcategorias` AS `producto->subcategoria` ON `producto`.`subcategoriaId` = `producto->subcategoria`.`id` WHERE `Carrito`.`usuarioId` = 1 ORDER BY `Carrito`.`createdAt` ASC;
+Executing (default): SELECT `Producto`.`id`, `Producto`.`nombre`, `Producto`.`descripcion`, `Producto`.`precio`, `Producto`.`stock`, `Producto`.`imagen`, `Producto`.`subcategoriaId`, `Producto`.`categoriaId`, `Producto`.`proveedorId`, `Producto`.`activo`, `Producto`.`createdAt`, `Producto`.`updatedAt`, `categoria`.`id` AS `categoria.id`, `categoria`.`nombre` AS `categoria.nombre`, `subcategoria`.`id` AS `subcategoria.id`, `subcategoria`.`nombre` AS `subcategoria.nombre` FROM `productos` AS `Producto` INNER JOIN `categorias` AS `categoria` ON `Producto`.`categoriaId` = `categoria`.`id` AND `categoria`.`activo` = true INNER JOIN `subcategorias` AS `subcategoria` ON `Producto`.`subcategoriaId` = `subcategoria`.`id` AND `subcategoria`.`activo` = true WHERE `Producto`.`activo` = true AND `Producto`.`stock` > 0 ORDER BY `Producto`.`createdAt` DESC LIMIT 8;
+Executing (default): SELECT `id`, `nombre`, `apellido`, `cedula`, `email`, `rol`, `telefono`, `direccion`, `activo`, `createdAt`, `updatedAt` FROM `usuarios` AS `Usuario` WHERE `Usuario`.`id` = 1;
+Executing (default): SELECT count(`Pedido`.`id`) AS `count` FROM `pedidos` AS `Pedido` LEFT OUTER JOIN `detalle_pedidos` AS `detalles` ON `Pedido`.`id` = `detalles`.`pedidoId` LEFT OUTER JOIN `productos` AS `detalles->producto` ON `detalles`.`productoId` = `detalles->producto`.`id` WHERE `Pedido`.`usuarioId` = 1;
+Executing (default): SELECT `Pedido`.*, `detalles`.`id` AS `detalles.id`, `detalles`.`pedidoId` AS `detalles.pedidoId`, `detalles`.`productoId` AS `detalles.productoId`, `detalles`.`cantidad` AS `detalles.cantidad`, `detalles`.`precioUnitario` AS `detalles.precioUnitario`, `detalles`.`subtotal` AS `detalles.subtotal`, `detalles->producto`.`id` AS `detalles.producto.id`, `detalles->producto`.`nombre` AS `detalles.producto.nombre`, `detalles->producto`.`imagen` AS `detalles.producto.imagen` FROM (SELECT `Pedido`.`id`, `Pedido`.`usuarioId`, `Pedido`.`total`, `Pedido`.`estado`, `Pedido`.`estadoPago`, `Pedido`.`direccionEnvio`, `Pedido`.`telefono`, `Pedido`.`modalidadEntrega`, `Pedido`.`notas`, `Pedido`.`fechaPago`, `Pedido`.`fechaEnvio`, `Pedido`.`fechaEntrega`, `Pedido`.`createdAt`, `Pedido`.`updatedAt` FROM `pedidos` AS `Pedido` WHERE `Pedido`.`usuarioId` = 1 ORDER BY `Pedido`.`createdAt` DESC LIMIT 0, 10) AS `Pedido` LEFT OUTER JOIN `detalle_pedidos` AS `detalles` ON `Pedido`.`id` = `detalles`.`pedidoId` LEFT OUTER JOIN `productos` AS `detalles->producto` ON `detalles`.`productoId` = `detalles->producto`.`id` ORDER BY `Pedido`.`createdAt` DESC;

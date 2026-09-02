@@ -141,7 +141,7 @@ const AdminDashboardPage = () => {
         const [pedidosRes, usuariosRes, productosRes] = await Promise.all([
           api.get('/admin/pedidos/estadisticas'),
           api.get('/admin/usuarios/stats'),
-          api.get('/admin/productos?limite=1000'),
+          api.get('/admin/productos?limite=100'),
         ]);
 
         const stockBajo = productosRes.data.data.productos.filter(p => p.stock < 10).length;

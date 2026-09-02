@@ -18,6 +18,10 @@ const jwt = require('jsonwebtoken');
 // Necesita las variables JWT_SECRET (clave secreta) y JWT_EXPIRES_IN (tiempo de expiración).
 require('dotenv').config();
 
+const tokenExpiration =
+  process.env.JWT_EXPIRES_IN ||
+  `${process.env.JWT_EXPIRATION || 24}h`;
+
 /**
  * Genera un token JWT para un usuario autenticado.
  * Se llama después de un login exitoso para darle al usuario su "credencial".
@@ -45,7 +49,7 @@ const generateToken = (payload) => {
       //    expiresIn: tiempo de vida del token, leído del .env (variable JWT_EXPIRES_IN).
       //    Ejemplos: '24h' (24 horas), '7d' (7 días), '1h' (1 hora).
       //    Después de este tiempo, el token expira y el usuario debe hacer login de nuevo.
-      { expiresIn: process.env.JWT_EXPIRES_IN }
+      { expiresIn: tokenExpiration }
     );
     
     // Retorna el token generado (cadena como: "eyJhbGciOiJIUzI1NiIs...")
